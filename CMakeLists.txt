@@ -3,4 +3,4 @@ project(tinySTL)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_library(tinySTL tinySTL/alloc.h tinySTL/constrcut.h)
+add_library(tinySTL library.cpp library.h tinySTL/alloc.h tinySTL/constrcut.h)
