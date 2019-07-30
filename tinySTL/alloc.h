@@ -408,13 +408,13 @@ namespace tinySTL {
     template <class T>
     class allocator {
     public:
-        typedef T           ValueType;      // 数据类型
-        typedef T*          Pointer;        // 指针
-        typedef const T*    ConstPointer;   // 指向常量的指针
-        typedef T&          Reference;      // 引用
-        typedef const T&    ConstReference; // 常量引用
-        typedef size_t      SizeType;       // 数量类型
-        typedef ptrdiff_t   DifferentType;  // 用来保存两个指针（迭代器）的距离
+        typedef T           value_type;      // 数据类型
+        typedef T*          pointer;        // 指针
+        typedef const T*    const_pointer;   // 指向常量的指针
+        typedef T&          reference;      // 引用
+        typedef const T&    const_reference; // 常量引用
+        typedef size_t      size_type;       // 数量类型
+        typedef ptrdiff_t   different_type;  // 用来保存两个指针（迭代器）的距离
 
         template <class U>
         class rebind {
@@ -425,7 +425,7 @@ namespace tinySTL {
          * 分配一个足够 T 类型对象的内存空间
          * @return 内存空间起始地址指针
          */
-        static Pointer allocate() {
+        static pointer allocate() {
             return allocator::allocate(sizeof(T));
         }
 
@@ -434,19 +434,19 @@ namespace tinySTL {
          * @param n 对象个数
          * @return 内存空间起始地址指针
          */
-        static Pointer allocate(SizeType n) {
+        static pointer allocate(size_type n) {
             if (n == 0) {
                 return 0;
             }
 
-            return static_cast<Pointer>(alloc::allocate(sizeof(T) * n));
+            return static_cast<pointer>(alloc::allocate(sizeof(T) * n));
         }
 
         /**
          * 销毁 ptr 指向的对象，释放内存
          * @param ptr
          */
-        static void deallocate(Pointer ptr) {
+        static void deallocate(pointer ptr) {
             allocator::deallocate(ptr, 1);
         }
 
@@ -455,7 +455,7 @@ namespace tinySTL {
          * @param ptr 起始地址
          * @param n 对象个数
          */
-        static void deallocate(Pointer ptr, SizeType n) {
+        static void deallocate(pointer ptr, size_type n) {
             if (n == 0) {
                 return;
             }
@@ -467,12 +467,12 @@ namespace tinySTL {
          * @param ptr 用于构造 T 对象的内存空间
          * @param value 构造函数的实参
          */
-        static void construct(Pointer ptr, ConstReference value) {
+        static void construct(pointer ptr, const_reference value) {
             new(ptr) T(value);
         }
 
         // T 的构造函数没有形参，其他同上
-        static void construct(Pointer ptr) {
+        static void construct(pointer ptr) {
             // TODO 学习 new 的高级用法
             // placement new
             // 在 ptr 指向的空间上调用 T 的构造函数
@@ -485,7 +485,7 @@ namespace tinySTL {
          * 析构 ptr 所指的对象
          * @param ptr 被析构的对象的指针
          */
-        static void destory(Pointer ptr) {
+        static void destory(pointer ptr) {
             ptr->~T(); // 调用对象的析构函数
         }
 
@@ -494,7 +494,7 @@ namespace tinySTL {
          * @param first 起始迭代器
          * @param last 最后一个要析构的迭代器的后一个迭代器
          */
-        static void destory(Pointer first, Pointer last) {
+        static void destory(pointer first, pointer last) {
             while (first++ != last) {
                 destory(&*first);
             }
