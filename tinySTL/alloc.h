@@ -414,7 +414,7 @@ namespace tinySTL {
         typedef T&          Reference;      // 引用
         typedef const T&    ConstReference; // 常量引用
         typedef size_t      SizeType;       // 数量类型
-        typedef ptrdiff_t   DifferentType;  // 用来保存两个指针减法操作的结果
+        typedef ptrdiff_t   DifferentType;  // 用来保存两个指针（迭代器）的距离
 
         template <class U>
         class rebind {
