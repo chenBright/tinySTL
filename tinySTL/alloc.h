@@ -1,7 +1,7 @@
 #ifndef TINYSTL_ALLOCATE_H
 #define TINYSTL_ALLOCATE_H
 
-#include <cstddef> // size_t
+#include <cstddef> // size_t、ptrdiff_t
 #include <cstdlib> // malloc、realloc、free
 #include <cstring> // memcpy
 
