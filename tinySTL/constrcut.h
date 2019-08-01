@@ -1,13 +1,12 @@
 #ifndef TINYSTL_CONSTRCUT_H
 #define TINYSTL_CONSTRCUT_H
 
+#include "iterator_base.h"
+#include "type_traits.h"
+
 #include <new> // placement new
 
 namespace tinySTL {
-    // type traits
-    class trueType_ {};
-    class falseTypr_ {};
-
     // 定义了全局函数 construct() 和 destory()。
     // 它们分别负责对象的构造和析构。
 
@@ -43,34 +42,46 @@ namespace tinySTL {
     inline void destory(char*, char*) {}
     inline void destory(wchar_t*, wchar_t*) {}
 
-    template <class ForwardIterator>
-    inline void destory(ForwardIterator first, ForwardIterator last) {
-        // TODO type traits
-    }
+    // 针对迭代器的 destory 版本
+    namespace detail {
+        /**
+         * 析构函数不重要，不做任何操作
+         * @tparam ForwardIterator 迭代器
+         * @param first 起始迭代器
+         * @param last 最后一个要析构的迭代器的后一个迭代器
+         */
+        template <class ForwardIterator>
+        inline void _destory(ForwardIterator first, ForwardIterator last, __true_type) {
 
-    /**
-     * 析构函数不重要，不做任何操作
-     * @tparam ForwardIterator 迭代器
-     * @param first 起始迭代器
-     * @param last 最后一个要析构的迭代器的后一个迭代器
-     */
-    template <class ForwardIterator>
-    inline void destory_(ForwardIterator first, ForwardIterator last, trueType_) {
+        }
 
+        /**
+         * 析构 [first, last) 范围内所指的对象
+         * @tparam ForwardIterator 迭代器
+         * @param first 起始迭代器
+         * @param last 最后一个要析构的迭代器的后一个迭代器
+         */
+        template <class ForwardIterator>
+        inline void _destory(ForwardIterator first, ForwardIterator last, __false_type) {
+            while (first != last) {
+                destory(&*first);
+                ++first;
+            }
+        }
     }
 
     /**
      * 析构 [first, last) 范围内所指的对象
+     * 根据 has_trivial_destructor 选择 _destory 的偏特化版本
      * @tparam ForwardIterator 迭代器
      * @param first 起始迭代器
      * @param last 最后一个要析构的迭代器的后一个迭代器
      */
     template <class ForwardIterator>
-    inline void destory_(ForwardIterator first, ForwardIterator last, falseTypr_) {
-        while (first != last) {
-            destory(&*first);
-            ++first;
-        }
+    inline void destory(ForwardIterator first, ForwardIterator last) {
+        using valueType = typename iterator_traits<ForwardIterator>::value_type;
+        using trivialDestructor = typename __type_traits<valueType>::has_trivial_destructor;
+        detail::_destory(first, last, trivialDestructor());
     }
 
 }
