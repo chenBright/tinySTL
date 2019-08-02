@@ -43,10 +43,10 @@ namespace tinySTL {
               class Reference = T&>
     struct iterator_base {
         using iterator_category = Category;
-        using value_type = T;
-        using differebce_type = Distance;
-        using pointer = Pointer;
-        using reference = Reference;
+        using value_type        = T;
+        using differebce_type   = Distance;
+        using pointer           = Pointer;
+        using reference         = Reference;
     };
 
 
@@ -59,10 +59,10 @@ namespace tinySTL {
     template <class Iterator>
     struct iterator_traits {
         using iterator_category = typename Iterator::iterator_category; // 迭代器类型
-        using value_type = typename Iterator::value_type;               // 迭代器所指的对象的类型
-        using difference_type = typename Iterator::differebce_type;     // 两个迭代器之间的距离
-        using pointer = typename Iterator::pointer;                     // 迭代器所指的对象的指针
-        using reference = typename Iterator::reference;                 // 迭代器所指的对象的引用
+        using value_type        = typename Iterator::value_type;        // 迭代器所指的对象的类型
+        using difference_type   = typename Iterator::differebce_type;   // 两个迭代器之间的距离
+        using pointer           = typename Iterator::pointer;           // 迭代器所指的对象的指针
+        using reference         = typename Iterator::reference;         // 迭代器所指的对象的引用
     };
 
     // 原生指针不是类，不能为他们定义内嵌类型（如 Iterator::value_type）。
@@ -72,20 +72,20 @@ namespace tinySTL {
     template <class T>
     struct iterator_traits<T*> {
         using iterator_category = random_access_iterator_tag;
-        using value_type = T;
-        using difference_type = ptrdiff_t ;
-        using pointer = T*;
-        using reference = T&;
+        using value_type        = T;
+        using difference_type   = ptrdiff_t ;
+        using pointer           = T*;
+        using reference         = T&;
     };
 
     // const pointer 偏特化版本 iterator traits
     template <class T>
     struct iterator_traits<const T*> {
         using iterator_category = random_access_iterator_tag;
-        using value_type = T;
-        using difference_type = ptrdiff_t ;
-        using pointer = T*;
-        using reference = T&;
+        using value_type        = T;
+        using difference_type   = ptrdiff_t ;
+        using pointer           = T*;
+        using reference         = T&;
     };
 
     /**

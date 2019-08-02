@@ -408,13 +408,13 @@ namespace tinySTL {
     template <class T>
     class allocator {
     public:
-        typedef T           value_type;      // 数据类型
-        typedef T*          pointer;        // 指针
-        typedef const T*    const_pointer;   // 指向常量的指针
-        typedef T&          reference;      // 引用
-        typedef const T&    const_reference; // 常量引用
-        typedef size_t      size_type;       // 数量类型
-        typedef ptrdiff_t   different_type;  // 用来保存两个指针（迭代器）的距离
+        using value_type        = T;            // 数据类型
+        using pointer           = T*;           // 指针
+        using const_pointer     = const T*;     // 指向常量的指针
+        using reference         = T&;           // 引用
+        using const_reference   = const T&;     // 常量引用
+        using size_type         = size_t ;      // 数量类型
+        using different_type    = ptrdiff_t;    // 用来保存两个指针（迭代器）的距离
 
         template <class U>
         class rebind {
