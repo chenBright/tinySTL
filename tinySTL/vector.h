@@ -12,6 +12,8 @@
 #include <limits>
 #include <vector>
 #include <memory>
+#include <utility>
+#include <algorithm>
 
 namespace tinySTL {
     template <class T, class Allocator = allocator<T>>
@@ -56,18 +58,18 @@ namespace tinySTL {
             return *this;
         }
 
-        vector& operator=(std::initializer_list<T> ilist) {
-            return *this = vector(ilist);
+        vector& operator=(std::initializer_list<T> iList) {
+            *this = vector(iList);
+            return *this;
         }
 
         vector(vector &&other) noexcept : vector() {
-            // TODO 实参类型是右值，形参类型是左值？
-            swap(other); // TODO 需要 move 吗？
+            swap(other);
         }
 
         vector& operator=(vector &&rhs) noexcept {
             if (this != &rhs) {
-                swap(rhs); // TODO 需要 move 吗？
+                swap(rhs);
             }
             return *this;
         }
@@ -195,7 +197,6 @@ namespace tinySTL {
             std::swap(end_of_storage_, other.end_of_storage_);
         }
 
-
         void push_back(const_reference value) {
             insert(cend(), value);
         }
@@ -231,10 +232,14 @@ namespace tinySTL {
             return newFirst;
         }
 
-        void reverse(size_type newCapacity) {
+        void reserve(size_type newCapacity) {
            if (newCapacity > capacity()) {
                realloctae(newCapacity);
            }
+        }
+
+        void shrink_to_fit(size_type newSize) {
+            realloctae(newSize);
         }
 
         void resize(size_type n, const_reference value) {
@@ -357,6 +362,17 @@ namespace tinySTL {
             return newPosition;
         }
 
+        template <class... Args>
+        iterator emplace(const_iterator position, Args&&... args) {
+            // TODO tinySTL 版本的 forward
+            return insert(position, T(std::forward<Args>(args)...)); // TODO 变长参数 参数展开 https://www.cnblogs.com/qicosmos/p/4325949.html
+        }
+
+        template <class... Args>
+        void emplace_back(Args&&... args) {
+            push_back(T(std::forward<Args>(args)...));
+        }
+
         template <class InputIterator>
         vector& assign(InputIterator first, InputIterator last) {
             return *this = vector(first, last);
@@ -422,6 +438,40 @@ namespace tinySTL {
         }
 
     };
+
+    // 全局函数
+
+    template <class T, class Allocator>
+    constexpr bool operator==(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
+        // TODO tinySTL 版本的 equal
+        return left.size() == right.size() && std::equal(left.cbegin(), left.cend(), right.cbegin());
+    }
+
+    template <class T, class Allocator>
+    constexpr bool operator!=(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
+        return left.size() != right.size() && !std::equal(left.cbegin(), left.cend(), right.cbegin());
+    }
+
+    template <class T, class Allocator>
+    constexpr bool operator<(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
+        // TODO tinySTL 版本的 lexicographical_compare
+        return std::lexicographical_compare(left.cbegin(), left.cend(), right.cbegin(), right.cend());
+    }
+
+    template <class T, class Allocator>
+    constexpr bool operator<=(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
+        return !(right < left); // left 不大于 right => left 小于等于 right
+    }
+
+    template <class T, class Allocator>
+    constexpr bool operator>(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
+        return right < left;
+    }
+
+    template <class T, class Allocator>
+    constexpr bool operator>=(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
+        return right <= left;
+    }
 }
 
 #endif //TINYSTL_VECTOR_H
