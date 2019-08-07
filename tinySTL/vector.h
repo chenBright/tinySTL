@@ -3,6 +3,7 @@
 
 #include "alloc.h"
 #include "iterator_base.h"
+#include "iterator_reverse_iterator.h"
 #include "type_traits.h"
 
 #include <cassert>
@@ -16,18 +17,19 @@ namespace tinySTL {
     template <class T, class Allocator = allocator<T>>
     class vector {
     public:
-        using value_type        = T;            // 数据类型
-        using pointer           = T*;           // 指针
-        using const_pointer     = const T*;     // 指向常量的指针
-        using reference         = T&;           // 引用
-        using const_reference   = const T&;     // 常量引用
-        using size_type         = size_t;       // 数量类型
-        using different_type    = ptrdiff_t;    // 用来保存两个指针（迭代器）的距离
+        using value_type             = T;            // 数据类型
+        using pointer                = T*;           // 指针
+        using const_pointer          = const T*;     // 指向常量的指针
+        using reference              = T&;           // 引用
+        using const_reference        = const T&;     // 常量引用
+        using size_type              = size_t;       // 数量类型
+        using different_type         = ptrdiff_t;    // 用来保存两个指针（迭代器）的距离
 
-        using iterator          = T*;
-        using const_iterator    = const T*;
-        // TODO reverse_iterator
-//        using reverse_iterator  =
+        // 普通迭代器、反向迭代器
+        using iterator               = T*;
+        using const_iterator         = const T*;
+        using reverse_iterator       = tinySTL::reverse_iterator<iterator>;
+        using const_reverse_iterator = tinySTL::reverse_iterator<const_iterator>;
 
         vector() : start_(nullptr), finish_(nullptr), end_of_storage_(nullptr) {}
 
@@ -102,14 +104,29 @@ namespace tinySTL {
             return finish_;
         }
 
-        // TODO reverse_iterator
-//        reverse_iterator  rbegin(){  }
-//        const_reverse_iterator  rbegin() const { }
-//        const_reverse_iterator crbegin() const { }
-//
-//        reverse_iterator    rend()       {}
-//        const_reverse_iterator    rend() const {}
-//        const_reverse_iterator   crend() const {}
+        reverse_iterator rbegin(){
+            return static_cast<reverse_iterator>(end());
+        }
+
+        const_reverse_iterator rbegin() const {
+            return static_cast<const_reverse_iterator>(end());
+        }
+
+        const_reverse_iterator crbegin() const {
+            return static_cast<const_reverse_iterator>(end());
+        }
+
+        reverse_iterator rend() {
+            return static_cast<reverse_iterator>(begin());
+        }
+
+        const_reverse_iterator rend() const {
+            return static_cast<const_reverse_iterator>(begin());
+        }
+
+        const_reverse_iterator crend() const {
+            return static_cast<const_reverse_iterator>(begin());
+        }
 
         pointer data() {
             return start_; // 迭代器的本质是 T*，所以返回目前使用空间的头，即起始地址
