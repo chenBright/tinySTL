@@ -4,6 +4,11 @@
 #include "iterator_base.h"
 
 namespace tinySTL {
+    // 反向迭代器
+    // 除了 forward_list 之外，其他容器都支持反向迭代器。
+    // 反向迭代器与普通迭代器之间的关系：
+    // &*(reverse_iterator(current)) == &*(current - 1)，
+    // 即普通迭代器 - 1 所指的位置即使反向迭代器所指的位置
     template <class Iterator>
     class reverse_iterator {
     public:
@@ -16,29 +21,46 @@ namespace tinySTL {
         using iterator_type     = Iterator;
 
         constexpr reverse_iterator() : current_() {}
-        constexpr explicit reverse_iterator(Iterator current) : current_(current) {}
+        constexpr explicit reverse_iterator(iterator_type current) : current_(current) {}
         template <class U>
-        constexpr explicit reverse_iterator(reverse_iterator<U> &other) : current_(other.base()) {}
+        constexpr explicit reverse_iterator(const reverse_iterator<U> &other) : current_(other.base()) {}
 
-        // TODO 学习 constexpr
-        constexpr Iterator base() const {
+        template <typename U>
+        reverse_iterator& operator=(const reverse_iterator<U> &other) {
+            current_ = other.base();
+            return *this;
+        }
+
+        // C++ 14 引入 constexpr 函数，可强制要求表达式编译时求值
+        // 参考 http://timothyqiu.com/archives/about-constexpr/
+
+        /**
+         * 获取普通迭代器
+         * @return 普通迭代器
+         */
+        iterator_type base() const {
             return current_;
         }
 
-        constexpr reference operator*() const {
+        // 重载 * ->
+
+        reference operator*() {
             return *(current_ - 1);
         }
 
-        constexpr pointer operator->() const {
+        pointer operator->() const {
             return &(operator*());
         }
+
+
+        // 重载 ++ --
 
         reverse_iterator& operator++() {
             --current_;
             return *this;
         }
 
-        reverse_iterator operator++(int) {
+        const reverse_iterator operator++(int) {
             reverse_iterator tmp = *this;
             --current_;
             return tmp;
@@ -49,7 +71,7 @@ namespace tinySTL {
             return *this;
         }
 
-        reverse_iterator operator--(int) {
+        const reverse_iterator operator--(int) {
             reverse_iterator tmp = *this;
             --current_;
             return tmp;
@@ -77,16 +99,13 @@ namespace tinySTL {
             return *operator+(n);
         }
 
-        template <typename U>
-        reverse_iterator& operator=(const reverse_iterator<U> &other) {
-            current_ = other.base();
-            return *this;
-        }
-
     private:
-        // &*(reverse_iterator(i)) == &*(current - 1)
-        Iterator current_;
+        // &*(reverse_iterator(current)) == &*(current - 1)
+        Iterator current_; // 普通迭代器
     };
+
+    // 全局函数
+    // 重载 == != > >= < <= + -
 
     template <class LeftIterator, class RightIterator>
     constexpr bool operator==(reverse_iterator<LeftIterator> left, reverse_iterator<RightIterator> right) {
@@ -129,6 +148,7 @@ namespace tinySTL {
     }
 
     /**
+     * C++ 14 起
      * 将普通迭代器转换为反向迭代器
      * @tparam Iterator 普通迭代器类型
      * @param it 迭代器
