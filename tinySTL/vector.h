@@ -6,16 +6,29 @@
 #include "iterator_reverse_iterator.h"
 #include "type_traits.h"
 
-#include <cassert>
-
 #include <initializer_list>
 #include <limits>
 #include <vector>
 #include <memory>
 #include <utility>
 #include <algorithm>
+#include <stdexcept>
 
 namespace tinySTL {
+    // 封装动态数组的顺序容器
+    // 接口功能见：https://zh.cppreference.com/w/cpp/container/vector
+    //
+    // 常见操作的时间复杂度：
+    // 随机访问——常数 O(1)
+    // 在末尾插入或移除元素——均摊常数 O(1)
+    // 插入或移除元素——与到 vector 结尾的距离成线性 O(n)
+    //
+    // TODO T 不能是 bool 类型，需要一个特化版本 vector<bool>
+    //  参考
+    //  https://zh.cppreference.com/w/cpp/container/vector_bool
+    //  https://www.zhihu.com/question/23367698/answer/148258487
+    //
+    //  TODO 没有考虑输入的迭代器所指内存空间可能由不同的 allocator 分配
     template <class T, class Allocator = allocator<T>>
     class vector {
     public:
@@ -33,6 +46,9 @@ namespace tinySTL {
         using reverse_iterator       = tinySTL::reverse_iterator<iterator>;
         using const_reverse_iterator = tinySTL::reverse_iterator<const_iterator>;
 
+        using allocator_type         = Allocator;
+
+        // 构造函数相关（部分实现）：https://zh.cppreference.com/w/cpp/container/vector/vector
         vector() : start_(nullptr), finish_(nullptr), end_of_storage_(nullptr) {}
 
         vector(size_type n, const_reference value) {
@@ -46,10 +62,17 @@ namespace tinySTL {
             copy_initialize(first, last, iterator_category(first));
         }
 
+        /**
+         * 列表初始化
+         * https://zh.cppreference.com/w/cpp/language/list_initialization
+         * @param iList 列表
+         */
         vector(std::initializer_list<T> iList) : vector(iList.begin(), iList.end()) {}
 
+        // 拷贝构造函数
         vector(const vector &other) : vector(other.begin(), other.end()) {}
 
+        // 重载 =
         vector& operator=(const vector &rhs) {
             if (this != &rhs) {
                 vector tmp(rhs);
@@ -63,6 +86,21 @@ namespace tinySTL {
             return *this;
         }
 
+        // 赋值函数
+        template <class InputIterator>
+        vector& assign(InputIterator first, InputIterator last) {
+            return *this = vector(first, last);
+        }
+
+        vector& assign(size_type n, const_reference value) {
+            return *this = vector(n, value);
+        }
+
+        vector& assign(std::initializer_list<T> ilist) {
+            return *this = vector(ilist);
+        }
+
+        // 移动构造函数
         vector(vector &&other) noexcept : vector() {
             swap(other);
         }
@@ -74,14 +112,17 @@ namespace tinySTL {
             return *this;
         }
 
+        // 析构函数
+        // 调用元素的析构函数，然后回收所用的内存空间。
+        // 注意，若元素是指针，则不销毁所指向的元素。
         ~vector() {
-            clear(); // 析构 vector 内的对象
+            clear(); // 析构 vector 内的元素
             if (start_ != nullptr) {
                 dataAllocator.deallocate(start_, capacity()); // 回收内存空间
             }
         }
 
-
+        // 迭代器相关函数
         iterator begin() {
             return start_;
         }
@@ -130,6 +171,7 @@ namespace tinySTL {
             return static_cast<const_reverse_iterator>(begin());
         }
 
+        // 元素访问相关函数
         pointer data() {
             return start_; // 迭代器的本质是 T*，所以返回目前使用空间的头，即起始地址
         }
@@ -139,17 +181,16 @@ namespace tinySTL {
         }
 
         reference at(size_type position) {
-            assert(position >= 0);
-//            return *next(start_, position);
-            return *(begin() + position);
+            return check_and_at(position); // 返回位于指定位置 pos 的元素的引用，有边界检查
         }
 
         const_reference at(size_type position) const {
-            assert(position >= 0);
-            return *(begin() + position);
+            return check_and_at(position);
         }
 
         reference operator[](size_type position) {
+            // STL 标准中是不进行边界检查的。
+            // 但因为调用了 at() 函数，所以也会进行边界检查
             return at(position);
         }
 
@@ -173,30 +214,57 @@ namespace tinySTL {
             return *(end() - 1);
         }
 
+        // 检查容器是否为空
         bool empty() const {
             return cbegin() == cend();
         }
 
+        // 返回容纳的元素数
         size_type size() const {
             return cend() - cbegin();
         }
 
+        // 返回可容纳的最大元素数（由系统决定）
         size_type max_size() const {
             return std::numeric_limits<size_type>::max();
         }
 
+        // 返回当前存储空间能够容纳的元素数
         size_type capacity() const {
             return end_of_storage_ - start_;
         }
 
-        // TODO tinySTL 版本的 swap、move
-        // TODO 为什么 swap、move 函数可以访问对象的私有成员？因为是友元函数？
-        void swap(vector &other) noexcept {
-            std::swap(start_, other.start_);
-            std::swap(finish_, other.finish_);
-            std::swap(end_of_storage_, other.end_of_storage_);
+        /**
+         * 增加 vector 的容量到大于或等于 new_cap 的值。
+         * 若 new_cap 大于当前的 capacity() ，则分配新存储，否则该方法不做任何事。
+         * reserve() 不更改 vector 的 size 。
+         * 若 new_cap 大于 capacity() ，则所有迭代器，包含尾后迭代器和所有到元素的引用都被非法化。
+         * 否则，没有迭代器或引用被非法化。
+         *
+         * 不能用 reserve() 减少容器容量。为该目的提供的是 shrink_to_fit() 。
+         *
+         * @param newCapacity 新容量
+         */
+        void reserve(size_type newCapacity) {
+            if (newCapacity > capacity()) {
+                realloctae(newCapacity);
+            }
         }
 
+        /**
+         * 通过释放未使用的内存减少内存的使用.
+         * 若发生重分配，则所有迭代器，包含尾后迭代器，和所有到元素的引用都失效。
+         * 若不发生重分配，则没有迭代器或引用失效。
+         */
+        void shrink_to_fit() {
+            if (capacity() > size()) {
+                realloctae(size());
+            }
+        }
+
+        // 修改容器 相关函数
+
+        // 将元素添加到容器末尾
         void push_back(const_reference value) {
             insert(cend(), value);
         }
@@ -208,38 +276,32 @@ namespace tinySTL {
 
         void pop_back() {
             --finish_;
-            dataAllocator.destory(finish_);
+            dataAllocator.destory(finish_); //
         }
 
+        // 擦除指定位置的元素
         iterator erase(const_iterator position) {
+            // 去 const 的原因：
+            // 1. 函数的返回值类型为 iteration，不是 const_iteration；
+            // 2. first 迭代器所指的位置需要被覆盖。
             auto newPosition = const_cast<iterator>(position);
             if (position + 1 == finish_) {
                 // TODO tinySTL 版本的 copy
-                // 将 [position + 1, finish_) 范围的对象复制到以 position 为起始的位置
+                // 将 [position + 1, finish_) 范围的元素复制到以 position 为起始的位置
                 std::copy(position + 1, finish_, newPosition);
             }
             --finish_;
             dataAllocator.destory(finish_);
 
-            return position;
+            return newPosition;
         }
 
         iterator erase(const_iterator first, const_reference last) {
-            auto newFirst = const_cast<iterator>(first); // 去 const
+            auto newFirst = const_cast<iterator>(first); // 去 const，原因同上
             auto newEnd = std::copy(last, cend(), newFirst);
-            dataAllocator.destory(newEnd, end());
+            dataAllocator.destory(newEnd, end()); // 销毁元素
 
             return newFirst;
-        }
-
-        void reserve(size_type newCapacity) {
-           if (newCapacity > capacity()) {
-               realloctae(newCapacity);
-           }
-        }
-
-        void shrink_to_fit(size_type newSize) {
-            realloctae(newSize);
         }
 
         void resize(size_type n, const_reference value) {
@@ -254,16 +316,59 @@ namespace tinySTL {
            resize(n, T());
         }
 
-        // TODO 几个 insert 函数的代码很相似，需要将重复的逻辑抽象出函数
+        // 该 insert() 函数为非标准的
         iterator insert(const_iterator position, const vector &other) {
             return insert(position, other.begin(), other.end());
         }
 
+
+        iterator insert(iterator position, const_reference value) {
+            // TODO insert() 函数相互调用，能正确调用吗？
+            return insert(const_cast<const_iterator>(position), value);
+        }
+
+        iterator insert(const_iterator position, const_reference value) {
+            vector tmp(1, value);
+            return insert(position, tmp.cbegin(), tmp.cend());
+        }
+
+        iterator insert(const_iterator position, const T &&value) {
+            return insert(position, value);
+        }
+
+        iterator insert(iterator position, size_type count, const_reference value) {
+            vector tmp(count, value);
+            return insert(position, tmp.begin(), tmp.end());
+        }
+
+        iterator insert(const_iterator position, size_type count, const_reference value) {
+            vector tmp(count, value);
+            return insert(position, tmp.begin(), tmp.end());
+        }
+
+        // 若 InputItertor 为整数类型，则此重载与
+        // terator insert(iterator position, size_type count, const_reference value)
+        // 拥有相同效果。
+        // 此重载若为迭代器是才参与重载决议，以免有歧义。
+        template <class InputItertor>
+        iterator insert(iterator position, InputItertor first, InputItertor last) {
+            return insert(const_cast<const_iterator>(position), first, last);
+        }
+
+        // 同上
         template <class InputItertor>
         iterator insert(const_iterator position, InputItertor first, InputItertor last) {
+            // 如果目前可用空间可以容纳得下 [first, last)
             if (last - first <= capacity() - size()) {
                 auto newPosition = const_cast<iterator>(position);
-                if (cend() - position >= last - first) { // [position, cend()) 可以装得下 [first, last)
+                if (cend() - position >= last - first) {
+                    // [position, cend()) 可以容纳得下 [first, last)：
+                    // 1. 插入新元素后，[position, end()) 中有一部分元素，
+                    //    即 [cend() - (last - first), cend()) 超出了 end()，将其复制到 end() 外；
+                    // 2. 将剩下部分额元素，即 [position, cend() - (last - first))，
+                    //    复制到当前使用空间的尾部，并与 end() 对齐
+                    // 3. 最后，将 [first, last) 范围的元素插入到 newPosition 的位置
+
                     // TODO tinySTL 版本的 uninitialized_fill_n，注意：此处传入的迭代器有const，有non-const
                     std::uninitialized_copy(cend() - (last - first), cend(), end());
                     // TODO tinySTL 版本的 max，注意：此处传入的迭代器有const，有non-const
@@ -271,6 +376,10 @@ namespace tinySTL {
                     std::copy(first, last, newPosition);
                     finish_ += last - first;
                 } else {
+                    // [position, cend()) 可以容纳得不下 [first, last)：
+                    // 1. 将容纳不下的 [first, last) 的部分先复制到 end() 起始位置 ；
+                    // 2. 将 [position, cend()) 范围的元素复制到步骤1复制过去的元素后面；
+                    // 3. 将 [first, last) 剩下部分复制到 newPosition 的位置
                     auto insertEndIterator = std::uninitialized_copy(first + (cend() - position), last, end());
                     std::uninitialized_copy(position, cend(), insertEndIterator);
                     std::copy(first, first + (last - first), newPosition);
@@ -279,16 +388,27 @@ namespace tinySTL {
                 return newPosition;
             }
 
+            // 目前可用空间可以容纳得不下 [first, last)
+
             // TODO tinySTL 版本的 max
             size_type newSize = size() + std::max(size(), last - first);
-            // TODO 遇到异常，还原现场
+
             vector tmp;
             tmp.start_ = dataAllocator.allocate(newSize);
             iterator newPosition = tmp.start_ + (position - cbegin());
-            tmp.finish_ = std::uninitialized_copy(cbegin(), position, tmp.start_);
-            tmp.finish_ = std::uninitialized_copy(first, last, tmp.finish_);
-            tmp.finish_ = std::uninitialized_copy(position, cend(), tmp.finish_);
-            tmp.end_of_storage_ = tmp.start_ + newSize;
+
+            // "commit or rollback" semantics
+            try {
+                tmp.finish_ = std::uninitialized_copy(cbegin(), position, tmp.start_);
+                tmp.finish_ = std::uninitialized_copy(first, last, tmp.finish_);
+                tmp.finish_ = std::uninitialized_copy(position, cend(), tmp.finish_);
+                tmp.end_of_storage_ = tmp.start_ + newSize;
+            } catch (...) {
+                dataAllocator.destoty(tmp.start_, tmp.finish_);
+                dataAllocator.dealloctae(tmp.start_, newSize);
+                throw;
+            }
+
 
             swap(tmp);
 
@@ -299,125 +419,79 @@ namespace tinySTL {
             return insert(position, ilist.begin(), ilist.end());
         }
 
-        iterator insert(const_iterator position, size_type n, const_reference value) {
-            vector tmp(n, value);
-            return insert(position, tmp.begin(), tmp.end());
-        }
-
-        iterator insert(const_iterator position, const_reference value) {
-            // 改为
-            // vector tmp(1, value);
-            // insert(position, tmp.cbegin(), tmp.cend());
-
-            if (capacity() > size()) {
-                dataAllocator.construct(finish_, value);
-                ++finish_;
-                // 将 [position, cend() - 1) 范围内所有元素向后挪一个位置
-                std::copy_backward(position, cend() - 1, cend());
-
-                auto newPosition = const_cast<iterator>(position);
-                *position = value;
-
-                return newPosition;
-            }
-
-            size_type newSize = empty() == 0 ? 1 : 2 * size();
-            vector tmp;
-            tmp.start_ = dataAllocator.allocate(newSize);
-            iterator newPosition = tmp.start_ + (position - cbegin());
-            tmp.finish_ = std::uninitialized_copy(cbegin(), position, tmp.start_);
-            tmp.finish_ = std::uninitialized_fill_n(tmp.finish_, 1, value);
-            tmp.finish_ = std::uninitialized_copy(position, cend(), tmp.finish_);
-            tmp.end_of_storage_ = tmp.start_ + newSize;
-
-            swap(tmp);
-
-            return newPosition;
-        }
-
-        iterator insert(const_iterator position, const T &&value) {
-            if (capacity() > size()) {
-                dataAllocator.construct(finish_, value);
-                ++finish_;
-                // 将 [position, cend() - 1) 范围内所有元素向后挪一个位置
-                std::copy_backward(position, cend() - 1, cend());
-
-                auto newPosition = const_cast<iterator>(position);
-                *position = std::move(value);
-
-                return newPosition;
-            }
-
-            size_type newSize = empty() == 0 ? 1 : 2 * size();
-            vector tmp;
-            tmp.start_ = dataAllocator.allocate(newSize);
-            iterator newPosition = tmp.start_ + (position - cbegin());
-            tmp.finish_ = std::uninitialized_copy(cbegin(), position, tmp.start_);
-            tmp.finish_ = std::uninitialized_fill_n(tmp.finish_, 1, std::move(value));
-            tmp.finish_ = std::uninitialized_copy(position, cend(), tmp.finish_);
-            tmp.end_of_storage_ = tmp.start_ + newSize;
-
-            swap(tmp);
-
-            return newPosition;
-        }
-
+        // 在容器就地构造元素
         template <class... Args>
         iterator emplace(const_iterator position, Args&&... args) {
             // TODO tinySTL 版本的 forward
             return insert(position, T(std::forward<Args>(args)...)); // TODO 变长参数 参数展开 https://www.cnblogs.com/qicosmos/p/4325949.html
         }
 
+        // 在容器末尾就地构造元素
         template <class... Args>
         void emplace_back(Args&&... args) {
             push_back(T(std::forward<Args>(args)...));
         }
 
-        template <class InputIterator>
-        vector& assign(InputIterator first, InputIterator last) {
-            return *this = vector(first, last);
+        /**
+         * 交换容器的元素
+         * @param other 容器
+         */
+        void swap(vector &other) noexcept {
+            // TODO tinySTL 版本的 swap
+            std::swap(start_, other.start_);
+            std::swap(finish_, other.finish_);
+            std::swap(end_of_storage_, other.end_of_storage_);
         }
 
-        vector& assign(size_type n, const_reference value) {
-            return *this = vector(n, value);
-        }
-
-        vector& assign(std::initializer_list<T> ilist) {
-            return *this = vector(ilist);
-        }
-
+        // 擦除所有元素
         void clear() {
             erase(begin(), end());
         }
 
+        allocator_type get_allocator() const {
+            return dataAllocator;
+        }
+
 
     private:
-        // [start_, finish_) 范围的内存空间上有对象内容
+        // [start_, finish_) 范围的内存空间上元素
         iterator start_;            // 目前使用空间的头
         iterator finish_;           // 目前使用空间的尾
         iterator end_of_storage_;   // 目前可用空间的尾
 
-        Allocator dataAllocator;        // 内存空间配置器
+        allocator_type dataAllocator;        // 内存空间配置器
 
 
+        /**
+         * 分配内存空间，以及在内存空间中构造元素。
+         * @param n 元素个数
+         * @param x 元素值
+         */
         void fill_initialize(size_type n, const_reference x) {
             iterator result = dataAllocator.allocate(n); // 分配可以容纳 n 个 T 类型大小的内存空间
             // TODO tinySTL 版本的 uninitialized_fill_n
-            std::uninitialized_fill_n(result, n, x); // 在内存空间上构造 n 个 T 类型的对象
+            std::uninitialized_fill_n(result, n, x); // 在内存空间上构造 n 个 T 类型的元素
             // 配置 vector<T> 的内存地址信息
             start_ = result;
             finish_ = start_ + n;
             end_of_storage_ = finish_;
         }
 
+        /**
+         * 分配内存空间，并将 [first, last) 复制到内存空间上
+         * @tparam ForwardIterator ForwardIterator 以及比 ForwardIterator 强的迭代器类型
+         * @param first 起始迭代器
+         * @param last 最后一个要析构的迭代器的后一个迭代器
+         */
         template <class ForwardIterator>
         void copy_initialize(ForwardIterator first, ForwardIterator last, forward_iterator_tag) {
-            auto copySize = static_cast<size_type >(distance(first, last)); // TODO 为什么不分配多一倍的空间
+            auto copySize = static_cast<size_type>(distance(first, last)); // TODO 为什么不分配多一倍的空间
             start_ = dataAllocator.allocate(copySize);
             finish_ = std::uninitialized_copy(first, last, start_);
             end_of_storage_ = finish_;
         }
 
+        // InputIterator 类型的特化版本
         template <class InputIterator>
         void copy_initialize(InputIterator first, InputIterator last, input_iterator_tag) {
             while (first != last) {
@@ -428,8 +502,12 @@ namespace tinySTL {
             }
         }
 
+        /**
+         * 重新分配内存空间
+         * @param newSize 新内存空间的大小
+         */
         void realloctae(size_type newSize) {
-            vector tmp;
+            vector tmp; // 新内存空间
             tmp.start_ = dataAllocator.allocate(newSize);
             tmp.finish_ = std::uninitialized_copy(start_, finish_, tmp.start_);
             tmp.end_of_storage_ = tmp.start_ + newSize;
@@ -437,9 +515,24 @@ namespace tinySTL {
             swap(tmp);
         }
 
+        /**
+         * 返回位于指定位置 pos 的元素的引用，有边界检查。
+         * @param position 指定位置
+         * @return 元素的引用
+         */
+        reference check_and_at(size_type position) const {
+            // 如果越界，则抛出 std::out_of_range
+            if (position >= size()) {
+                throw std::out_of_range("Vector");
+            }
+
+            return *(begin() + position);
+        }
+
     };
 
     // 全局函数
+    // 重载 == != < <= > >=
 
     template <class T, class Allocator>
     constexpr bool operator==(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
