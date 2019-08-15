@@ -12,4 +12,11 @@ a subset of STL
 ## TODO
 
 - 单元测试
+- List
+- deque
+- stack
+- queue
+- heap
+- priority_queue
+- slist
 - dynamic_bitset
