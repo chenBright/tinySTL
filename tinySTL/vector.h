@@ -23,11 +23,6 @@ namespace tinySTL {
     // 在末尾插入或移除元素——均摊常数 O(1)
     // 插入或移除元素——与到 vector 结尾的距离成线性 O(n)
     //
-    // TODO T 不能是 bool 类型，需要一个特化版本 vector<bool>
-    //  参考
-    //  https://zh.cppreference.com/w/cpp/container/vector_bool
-    //  https://www.zhihu.com/question/23367698/answer/148258487
-    //
     //  TODO 没有考虑输入的迭代器所指内存空间可能由不同的 allocator 分配
     template <class T, class Allocator = allocator<T>>
     class vector {

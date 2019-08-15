@@ -7,8 +7,9 @@ a subset of STL
 - [x] type traits
 - [x] 普通迭代器
 - [x] 反向迭代器
+- [x] Vector
 
 ## TODO
 
-- Vector（完成一部分，待完善）
 - 单元测试
+- dynamic_bitset
