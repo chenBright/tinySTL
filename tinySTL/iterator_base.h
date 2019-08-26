@@ -38,7 +38,7 @@ namespace tinySTL {
      */
     template <class Category,
               class T,
-              class Distance = ptrdiff_t,
+              class Distance = std::ptrdiff_t,
               class Pointer = T*,
               class Reference = T&>
     struct iterator_base {
@@ -73,7 +73,7 @@ namespace tinySTL {
     struct iterator_traits<T*> {
         using iterator_category = random_access_iterator_tag;
         using value_type        = T;
-        using difference_type   = ptrdiff_t ;
+        using difference_type   = std::ptrdiff_t ;
         using pointer           = T*;
         using reference         = T&;
     };
@@ -83,7 +83,7 @@ namespace tinySTL {
     struct iterator_traits<const T*> {
         using iterator_category = random_access_iterator_tag;
         using value_type        = T;
-        using difference_type   = ptrdiff_t ;
+        using difference_type   = std::ptrdiff_t ;
         using pointer           = T*;
         using reference         = T&;
     };

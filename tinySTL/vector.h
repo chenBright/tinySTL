@@ -7,7 +7,7 @@
 #include "type_traits.h"
 
 #include <initializer_list>
-#include <limits>
+
 #include <vector>
 #include <memory>
 #include <utility>
@@ -27,13 +27,13 @@ namespace tinySTL {
     template <class T, class Allocator = allocator<T>>
     class vector {
     public:
-        using value_type             = T;            // 数据类型
-        using pointer                = T*;           // 指针
-        using const_pointer          = const T*;     // 指向常量的指针
-        using reference              = T&;           // 引用
-        using const_reference        = const T&;     // 常量引用
-        using size_type              = size_t;       // 数量类型
-        using different_type         = ptrdiff_t;    // 用来保存两个指针（迭代器）的距离
+        using value_type             = T;               // 数据类型
+        using pointer                = T*;              // 指针
+        using const_pointer          = const T*;        // 指向常量的指针
+        using reference              = T&;              // 引用
+        using const_reference        = const T&;        // 常量引用
+        using size_type              = std::size_t;     // 数量类型
+        using different_type         = std::ptrdiff_t;  // 用来保存两个指针（迭代器）的距离
 
         // 普通迭代器、反向迭代器
         using iterator               = T*;
