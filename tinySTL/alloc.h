@@ -413,12 +413,13 @@ namespace tinySTL {
         using const_pointer     = const T*;     // 指向常量的指针
         using reference         = T&;           // 引用
         using const_reference   = const T&;     // 常量引用
-        using size_type         = size_t ;      // 数量类型
-        using different_type    = ptrdiff_t;    // 用来保存两个指针（迭代器）的距离
+        using size_type         = std::size_t ;      // 数量类型
+        using different_type    = std::ptrdiff_t;    // 用来保存两个指针（迭代器）的距离
 
         template <class U>
         class rebind {
-            typedef allocator<U> other;
+            using other = allocator<U> ;
+
         };
 
         /**
