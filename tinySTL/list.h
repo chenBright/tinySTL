@@ -10,9 +10,12 @@
 #include "iterator_base.h"
 #include "iterator_reverse_iterator.h"
 #include "alloc.h"
+#include "type_traits.h"
 
-#include <limits>       // numeric_limits
-#include <algorithm>    // swap
+#include <limits>               // numeric_limits
+#include <algorithm>            // swap
+#include <initializer_list>     // initializer_list
+#include <utility>              // forward
 
 namespace tinySTL {
     namespace detail {
@@ -25,36 +28,28 @@ namespace tinySTL {
 
         template <class T, class Reference, class Pointer>
         struct list_iterator {
-            using iterator          = list_iterator<T, T&, T*>;     // 迭代器
-            using self              = list_iterator<T, T&, T*>;
-
             using iterator_category = bidirectional_iterator_tag;   // 迭代器类型
             using value_type        = T;                            // 迭代器所指的对象的类型
             using difference_type   = std::ptrdiff_t;               // 两个迭代器之间的距离
             using pointer           = Pointer;                      // 迭代器所指的对象的指针
             using reference         = Reference;                    // 迭代器所指的对象的引用
 
-            using size_type         = std::size_t;                  // 数值大小的类型
+            using iterator          = list_iterator<T, T&, T*>;     // 迭代器
+            using const_iterator    = list_iterator<T, const T&, const T*>;
+            using self              = list_iterator<T, T&, T*>;
+
             using link_type         = detail::list_node<T>*;        // 结点指针类型
 
-            link_type node;                                         // 迭代器所指向的结点的指针
+            link_type node_;                                         // 迭代器所指向的结点的指针
 
             list_iterator() = default;
 
-            explicit list_iterator(link_type x) : node(x) {}
+            explicit list_iterator(link_type x) : node_(x) {}
 
-            explicit list_iterator(const iterator &x) : node(x.node) {}
-
-            bool operator==(const self &other) const {
-                return node == other.node;
-            }
-
-            bool operator!=(const self &x) const {
-                return node != x.node;
-            }
+            explicit list_iterator(const iterator &x) : node_(x.node_) {}
 
             reference operator*() const {
-                return node->data;
+                return node_->data;
             }
 
             pointer operator->() const {
@@ -62,29 +57,45 @@ namespace tinySTL {
             }
 
             self& operator++() {
-                node = node->next;
+                node_ = node_->next;
 
                 return *this;
             }
 
             // TODO 加 const：https://stackoverflow.com/questions/52871026/overloaded-operator-returns-a-non-const-and-clang-tidy-complains
-            const self operator++(int) {
+            self operator++(int) {
                 self tmp = *this;
-                node = node->next;
+                node_ = node_->next;
 
                 return tmp;
             }
 
             self& operator--() {
-                node = node->previous;
+                node_ = node_->previous;
                 return *this;
             }
 
-            const self operator--(int) {
+            self operator--(int) {
                 self tmp = *this;
-                node = node->previous;
+                node_ = node_->previous;
 
                 return tmp;
+            }
+
+            bool operator==(const self &other) const {
+                return node_ == other.node_;
+            }
+
+            bool operator==(const const_iterator &other) const {
+                return node_ == other.node_;
+            }
+
+            bool operator!=(const self &other) const {
+                return node_ != other.node_;
+            }
+
+            bool operator!=(const const_iterator &other) const {
+                return node_ != other.node_;
             }
         };
     }
@@ -117,6 +128,52 @@ namespace tinySTL {
             node_->previous = node_->next = node_;
         }
 
+        list(size_type count, const_reference value) : list() {
+            insert(begin(), count, value);
+        }
+
+        explicit list(size_type count) : list(count, T()) {}
+
+        template <class InputIterator>
+        list(InputIterator first, InputIterator last) : list() {
+            insert(begin(), first, last);
+        }
+
+        list(const list &other) : list(other.begin(), other.end()) {}
+
+        list(std::initializer_list<T> ilist) : list(ilist.begin(), ilist.end()) {}
+
+        list(list &&other) noexcept {
+            move_from(other);
+        }
+
+        list& operator=(list &&other) noexcept {
+            if (this != other) {
+                return *this;
+            }
+
+            return *this;
+        }
+
+        list& operator=(const list &other) {
+            if (this != &other) {
+                move_from(other);
+            }
+
+            return *this;
+        }
+
+        list& operator=(std::initializer_list<T> ilist) {
+            *this = list(ilist);
+
+            return *this;
+        }
+
+
+        ~list() {
+            delete_list();
+        }
+
         iterator begin() {
             // list_iterator<T, T&, T*> 和 list_node<T> 都是只有一个成员：
             // link_type node_;
@@ -124,8 +181,48 @@ namespace tinySTL {
             return static_cast<iterator>(node_->next);
         }
 
+        const_iterator begin() const {
+            return static_cast<const_iterator>(node_->next);
+        }
+
+        const_iterator cbegin() const {
+            return static_cast<const_iterator>(node_->next);
+        }
+
         iterator end() {
-            return node_;
+            return static_cast<iterator>(node_);
+        }
+
+        const_iterator end() const {
+            return static_cast<const_iterator>(node_);
+        }
+
+        const_iterator cend() const {
+            return static_cast<const_iterator>(node_);
+        }
+
+        reverse_iterator rbegin() {
+            return static_cast<reverse_iterator>(end());
+        }
+
+        const_reverse_iterator rbegin() const {
+            return static_cast<const_reverse_iterator>(end());
+        }
+
+        const_reverse_iterator crbegin() const {
+            return static_cast<const_reverse_iterator>(end());
+        }
+
+        reverse_iterator rend() {
+            return static_cast<reverse_iterator>(begin());
+        }
+
+        const_reverse_iterator rend() const {
+            return static_cast<const_reverse_iterator>(begin());
+        }
+
+        const_reverse_iterator crend() const {
+            return static_cast<const_reverse_iterator>(begin());
         }
 
         bool empty() const {
@@ -148,33 +245,90 @@ namespace tinySTL {
             return *begin();
         }
 
+        const_reference front() const {
+            return *begin();
+        }
+
         reference back() {
             return *--end();
         }
 
-        iterator insert(iterator position, const_reference value) {
-            link_type newNode = create_node(value);
-            newNode->previous = position.node->previous;
-            newNode->next = position.node;
-            newNode->previous->next = newNode->next->previous = newNode;
+        const_reference back() const {
+            return *(--end());
+        }
 
-            return static_cast<iterator>(newNode);
+        template <class InputIterator>
+        void assign(InputIterator first, InputIterator last) {
+            *this = list(first, last);
+        }
+
+        void assign(size_type count, const_reference value) {
+            *this = list(count, value);
+        }
+
+        void assign(std::initializer_list<T> ilist) {
+            *this = list(ilist);
+        }
+
+        iterator insert(const_iterator position, const_reference value) {
+            return insert_aux(position, value);
+        }
+
+        iterator insert(const_iterator position, T &&value) {
+            return insert_aux(position, std::move(value));
+        }
+
+        iterator insert(const_iterator position, size_type count, const_reference value) {
+            while (count-- > 0) {
+                position = insert(position, value);
+            }
+
+            return static_cast<iterator>(position.node_);
+        }
+
+        // TODO is_integral
+        template <class InputIterator>
+        iterator insert(iterator position, InputIterator first, InputIterator last) {
+            return insert_range_aux(position, first, last, __false_type());
+        }
+
+        iterator insert(iterator position, std::initializer_list<T> ilist) {
+            return insert(position, ilist.begin(), ilist.end());
+        }
+
+        template <class... Args>
+        iterator emplace(const_iterator position, Args&&... args) {
+            return insert(position, T(std::forward<Args>(args)...));
         }
 
         void push_back(const_reference value) {
             insert(end(), value);
         }
 
+        void push_back(T &&value) {
+            insert(end(), std::move(value));
+        }
+
+        template <class... Args>
+        void emplace_back(Args&&... args) {
+            emplace(end(), std::forward<Args>(args)...);
+        }
+
         void push_front(const_reference value) {
             insert(begin(), value);
         }
 
-        iterator erase(iterator first, iterator last) {
-
+        void push_front(T &&value) {
+            insert(begin(), std::move(value));
         }
 
-        iterator erase(iterator position) {
-            link_type currentNode = position.node;
+        template <class... Args>
+        void emplace_front(Args&&... args) {
+            emplace(begin(), std::forward<Args>(args)...);
+        }
+
+        iterator erase(const_iterator position) {
+            link_type currentNode = position.node_;
             link_type previousNode = currentNode->previous;
             link_type nextNode = currentNode->next;
 
@@ -186,6 +340,15 @@ namespace tinySTL {
             destroy_node(currentNode);
 
             return static_cast<iterator>(nextNode);
+        }
+
+
+        iterator erase(const_iterator first, const_iterator last) {
+            while (first != last) {
+                first = erase(first);
+            }
+
+            return static_cast<iterator>(last.node_);
         }
 
         void clear() {
@@ -200,35 +363,58 @@ namespace tinySTL {
             erase(begin());
         }
 
+        void resize(size_type count, const_reference value) {
+            if (count == size()) {
+                return;
+            } else if (count < size()) {
+                erase(tinySTL::next(begin(), count), end());
+            } else {
+                insert(end(), count - size(), value);
+            }
+        }
+
+        void resize(size_type count) {
+            resize(count, T());
+        }
+
         void swap(list &other) {
             std::swap(node_, other.node_);
         }
 
-        void remove(const_reference value) {
+        template <class UnaryPredicate>
+        size_type remove_if(UnaryPredicate p) {
+            size_type oldSize = size();
             auto first = begin();
             auto last = end();
             while (first != last) {
-                if (*first == value) {
+                if (p(*first)) {
                     first = erase(first);
                 } else {
                     ++first;
                 }
             }
+
+            return oldSize - size();
         }
 
-        // 移除数值相同的连续的元素。
-        // 注意：只有"连续且相同"的元素才会被移除剩一个。
-        void unique() {
+        size_type remove(const_reference value) {
+            return remove_if([value](const_reference other) {
+                return value == other;
+            });
+        }
+
+        template <class BinaryPredicate>
+        size_type unique(BinaryPredicate p) {
+            if (node_->next == node_ || node_->next->next == node_) {
+                return 0;
+            }
+
             auto first = begin();
             auto last = end();
 
-            if (first != last) {
-                return;
-            }
-
             auto next = first + 1;
             while (next != last) {
-                if (*first == *next) {
+                if (p(*first, *next)) {
                     next = erase(next);
                 } else {
                     ++first;
@@ -237,13 +423,27 @@ namespace tinySTL {
             }
         }
 
+        // 移除数值相同的连续的元素。
+        // 注意：只有"连续且相同"的元素才会被移除剩一个。
+        size_type unique() {
+            // TODO tinySTL 版本的 equal_to
+            return unique(std::equal_to<T>());
+        }
+
 
         // 将链表 other 接合到 position 所指的位置之前， other 必须不同于 *this。
-        void splice(iterator position, list &other) {
+        void splice(const_iterator position, list &other) {
             if (!other.empty()) {
                 transfer(position, other.begin(), other.end());
             }
         }
+
+        void splice(const_iterator position, list &&other) {
+            splice(position, other);
+        }
+
+        // 以下四个函数中的 list& 或者 list&& 形参，在函数体内没被有使用。
+        // 主要作用：用于区分重载版本。
 
         void splice(iterator position, list&, iterator it) {
             // position == it，表示将 position 所指的结点插入到它自己的前面。
@@ -255,14 +455,23 @@ namespace tinySTL {
             transfer(position, it, it + 1);
         }
 
+        void splice(iterator position, list &&other, iterator it) {
+            splice(position, other, it);
+        }
+
         void splice(iterator position, list&, iterator first, iterator last) {
             if (first != last) {
                 transfer(position, first, last);
             }
         }
 
-        void merge(list &other) {
-            if (*this == other) {
+        void splice(iterator position, list &&other, iterator first, iterator last) {
+            splice(position, other, first, last);
+        }
+
+        template <class Compare>
+        void merge(list &other, Compare compare) {
+            if (this == &other) {
                 return;
             }
 
@@ -272,7 +481,7 @@ namespace tinySTL {
             auto last2 = other.end();
 
             while (first1 != last1 && first2 != last2) {
-                if (*first2 < *first1) {
+                if (compare(*first2, *first1)) {
                     auto next = first2 + 1;
                     transfer(first1, first2, next);
                     first2 = next;
@@ -285,9 +494,23 @@ namespace tinySTL {
             }
         }
 
+        template <class Compare>
+        void merge(list &&other, Compare compare) {
+            merge(other, compare);
+        }
+
+        void merge(list &other) {
+            merge(other, std::less<T>());
+        }
+
+        void merge(list &&other) {
+            // TODO tinySTL 版本的 less、greater
+            merge(other);
+        }
+
         void reverse() {
-            // node_->next = node_ || node_->next->next = node_
-            if (size() <= 1) {
+            // 表示 size() <= 1
+            if (node_->next == node_ || node_->next->next == node_) {
                 return;
             }
 
@@ -299,20 +522,30 @@ namespace tinySTL {
             }
         }
 
-        // merge sort
-        void sort() {
-            if (size() <= 1) {
+
+        // merge sort 迭代实现
+        // 参考
+        // https://blog.csdn.net/chenhanzhun/article/details/39337331
+        // https://www.kancloud.cn/digest/stl-sources/177269
+        // http://feihu.me/blog/2014/sgi-std-sort/
+        template <class Compare>
+        void sort(Compare compare) {
+            if (node_->next == node_ || node_->next->next == node_) {
                 return;
             }
 
-            list carry;
+            list carry; // 起到中间缓存的作用
+            // counter[i] 最多保存 2^i 个结点。
+            // 如果超出了，则将结点归并到 counter[i + 1] 中
             list counter[64];
             size_type fill = 0; // 记录存放有链表的最右边的索引
             while (!empty()) {
-                carry.splice(carry.begin(), *this, begin());
+                carry.splice(carry.begin(), *this, begin()); // 取出当前链表的第一个结点
                 size_type i = 0;
+                // 将取出的结点，从 i = 0 开始合并到 counter 中，
+                // 直到遇到空的 counter[i] 或者 最右边。
                 while (i < fill && !counter[i].empty()) {
-                    counter[i].merge(carry);
+                    counter[i].merge(carry, compare);
                     carry.swap(counter[i]);
                 }
                 carry.swap(counter[i]); // 将链表交换到 counter[i]（空链表）
@@ -321,11 +554,16 @@ namespace tinySTL {
                 }
             }
 
+            // 合并 counter 中所有的链表
             for (size_type j = 0; j < fill; ++j) {
                 counter[j] .merge(counter[j - 1]);
             }
 
+            // 最后把已排序好的链表内容交换到当前链表
             swap(counter[fill - 1]);
+        }
+        void sort() {
+            sort(std::less<T>());
         }
 
 
@@ -358,18 +596,55 @@ namespace tinySTL {
             deallocate_node(node);
         }
 
-        void transfer(iterator position, iterator first, iterator last) {
-            auto positionNode = position.node;
-            auto firstNode = first.node;
-            auto lastNode = last.node->previous;
+        template <class Y>
+        iterator insert_aux(const_iterator position, Y &&value) {
+            link_type newNode = create_node(std::forward<Y>(value));
+            newNode->previous = position.node_->previous;
+            newNode->next = position.node_;
+            newNode->previous->next = newNode->next->previous = newNode;
 
-            firstNode->previous->next = last.node;
-            last.node->previous = firstNode->previous;
+            return static_cast<iterator>(newNode);
+        }
+
+        template <class InputIterator>
+        iterator insert_range_aux(const_iterator position, InputIterator first, InputIterator last, __true_type) {
+
+        }
+
+        template <class InputIterator>
+        iterator insert_range_aux(const_iterator position, InputIterator first, InputIterator last, __false_type) {
+
+        }
+
+        void transfer(iterator position, iterator first, iterator last) {
+            auto positionNode = position.node_;
+            auto firstNode = first.node_;
+            auto lastNode = last.node_->previous;
+
+            firstNode->previous->next = last.node_;
+            last.node_->previous = firstNode->previous;
 
             firstNode->previous = positionNode->previous;
             lastNode->next = positionNode;
             firstNode->previous->next = firstNode;
             lastNode->next->previous = lastNode;
+        }
+
+        void delete_list() {
+            if (node_ == nullptr) {
+                return;
+            }
+
+            clear();
+            // node_->data 为 nullptr，所以只需要回收内存空间即可。
+            deallocate_node(node_);
+            node_ = nullptr;
+        }
+
+        void move_from(list &other) {
+            delete_list();
+            node_ = other.node_;
+            other.node_ = nullptr;
         }
     };
 }
