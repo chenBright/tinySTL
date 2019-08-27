@@ -67,13 +67,13 @@ namespace tinySTL {
         }
 
         reverse_iterator& operator--() {
-            --current_;
+            ++current_;
             return *this;
         }
 
         const reverse_iterator operator--(int) {
             reverse_iterator tmp = *this;
-            --current_;
+            ++current_;
             return tmp;
         }
 
