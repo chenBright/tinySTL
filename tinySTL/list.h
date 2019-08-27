@@ -646,7 +646,42 @@ namespace tinySTL {
             node_ = other.node_;
             other.node_ = nullptr;
         }
-    };
+    };  // class list
+
+    template <class T, class Allocator>
+    void swap(list<T, Allocator> &left, list<T, Allocator> &right) {
+        left.swap(right);
+    }
+
+    template <class T, class Allocator>
+    bool operator==(const list<T, Allocator> &left, const list<T, Allocator> &right) {
+        return left.size() == right.size()() && std::equal(left.cbegin(), left.cend(), right.begin());
+    }
+
+    template <class T, class Allocator>
+    bool operator!=(const list<T, Allocator> &left, const list<T, Allocator> &right) {
+        return left.size() != right.size()() || !std::equal(left.cbegin(), left.cend(), right.begin());
+    }
+
+    template <class T, class Allocator>
+    bool operator<(const list<T, Allocator> &left, const list<T, Allocator> &right) {
+        return !std::lexicographical_compare(left.cbegin(), left.cend(), right.cbegin(), right.cend());
+    }
+
+    template <class T, class Allocator>
+    bool operator<=(const list<T, Allocator> &left, const list<T, Allocator> &right) {
+        return !(right < left);
+    }
+
+    template <class T, class Allocator>
+    bool operator>(const list<T, Allocator> &left, const list<T, Allocator> &right) {
+        return right < left;
+    }
+
+    template <class T, class Allocator>
+    bool operator>=(const list<T, Allocator> &left, const list<T, Allocator> &right) {
+        return !(left < right);
+    }
 }
 
 #endif //TINYSTL_LIST_H
