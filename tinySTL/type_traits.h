@@ -6,7 +6,56 @@ namespace tinySTL {
     struct __true_type {};
     struct __false_type {};
 
-    //
+    // is_integral 是否为整数
+    // 作用：用于区分重载函数，例如 Vector<int> 有这样两个构造函数:
+    // 1 vector(size_type n, const_reference value)，其中 const_reference = const int&
+    // 2 template <class InputIterator> vector(InputIterator first, InputIterator last)
+    // 如果 InputIterator 为整数类型，则此构造函数拥有的效果同
+    // vector(static_cast<size_type>(first), static_cast<value_type>(last))。
+    // 如果 InputIterator 为迭代器类型，才参与重载。
+    // 所以引入 is_integral，借助模板函数的类型推到功能，用来区分整数类型和迭代器类型。
+    // 详细使用见 vector 实现。
+
+    template <class T>
+    struct is_integral                      : public __false_type {};
+
+    template <>
+    struct is_integral<bool>                : public __true_type {};
+
+    template <>
+    struct is_integral<char>                : public __true_type {};
+
+    template <>
+    struct is_integral<unsigned char >      : public __true_type {};
+
+    template <>
+    struct is_integral<signed char>         : public __true_type {};
+
+    template <>
+    struct is_integral<short>               : public __true_type {};
+
+    template <>
+    struct is_integral<unsigned short>      : public __true_type {};
+
+    template <>
+    struct is_integral<int>                 : public __true_type {};
+
+    template <>
+    struct is_integral<unsigned int>        : public __true_type {};
+
+    template <>
+    struct is_integral<long>                : public __true_type {};
+
+    template <>
+    struct is_integral<unsigned long>       : public __true_type {};
+
+    template <>
+    struct is_integral<long long>           : public __true_type {};
+
+    template <>
+    struct is_integral<unsigned long long > : public __true_type {};
+
+
     // has_trivial_default_constructor  -> 不重要的构造函数
     // has_trivial_copy_constructor     -> 不重要的拷贝构造函数
     // has_trivial_assignment_operator  -> 不重要的赋值函数
