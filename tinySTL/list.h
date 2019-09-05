@@ -286,10 +286,13 @@ namespace tinySTL {
             return static_cast<iterator>(position.node_);
         }
 
-        // TODO is_integral
         template <class InputIterator>
         iterator insert(iterator position, InputIterator first, InputIterator last) {
-            return insert_range_aux(position, first, last, __false_type());
+            // 如果 InputIterator 为整数类型，则此构造函数拥有的效果同
+            // insert(static_cast<size_type>(first), static_cast<value_type>(last))，
+            // 如果 InputIterator 为迭代器类型，才是迭代器版本的构造函数。
+            // 所以引入 is_integral，借助模板函数的类型推到功能，用来区分整数类型和迭代器类型。
+            return insert_range_aux(position, first, last, is_integral<InputIterator>());
         }
 
         iterator insert(iterator position, std::initializer_list<T> ilist) {
@@ -608,12 +611,21 @@ namespace tinySTL {
 
         template <class InputIterator>
         iterator insert_range_aux(const_iterator position, InputIterator first, InputIterator last, __true_type) {
-
+            insert(position, static_cast<size_type>(first), static_cast<T>(last));
         }
 
         template <class InputIterator>
         iterator insert_range_aux(const_iterator position, InputIterator first, InputIterator last, __false_type) {
+            if (first == last) {
+                return static_cast<iterator>(position.node_);
+            }
 
+            auto result = insert(position, *first);
+            while (++first != last) {
+                insert(position, *first);
+            }
+
+            return result;
         }
 
         void transfer(iterator position, iterator first, iterator last) {

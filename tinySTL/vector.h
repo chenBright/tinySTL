@@ -54,7 +54,13 @@ namespace tinySTL {
 
         template <class InputIterator>
         vector(InputIterator first, InputIterator last) : vector() {
-            copy_initialize(first, last, iterator_category(first));
+            // 如果 InputIterator 为整数类型，则此构造函数拥有的效果同
+            // vector(static_cast<size_type>(first), static_cast<value_type>(last))，
+            // 实际调用 copy_initialize() 函数。
+            // 如果 InputIterator 为迭代器类型，才是迭代器版本的构造函数，
+            // 实际调用 initialize_aux() 函数。
+            // 所以引入 is_integral，借助模板函数的类型推到功能，用来区分整数类型和迭代器类型。
+            initialize_aux(first, last, is_integral<InputIterator>());
         }
 
         /**
@@ -480,7 +486,7 @@ namespace tinySTL {
          */
         template <class ForwardIterator>
         void copy_initialize(ForwardIterator first, ForwardIterator last, forward_iterator_tag) {
-            auto copySize = static_cast<size_type>(distance(first, last)); // TODO 为什么不分配多一倍的空间
+            auto copySize = static_cast<size_type>(distance(first, last));
             start_ = dataAllocator.allocate(copySize);
             finish_ = std::uninitialized_copy(first, last, start_);
             end_of_storage_ = finish_;
@@ -495,6 +501,16 @@ namespace tinySTL {
                 }
                 push_back(*first++);
             }
+        }
+
+        template <class InputIterator>
+        void initialize_aux(InputIterator first, InputIterator last, __true_type) {
+            fill_initialize(static_cast<size_type>(first), static_cast<value_type>(last));
+        }
+
+        template <class InputIterator>
+        void initialize_aux(InputIterator first, InputIterator last, __false_type) {
+            copy_initialize(first, last, iterator_category(first));
         }
 
         /**

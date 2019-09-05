@@ -12,7 +12,7 @@ namespace tinySTL {
     // 2 template <class InputIterator> vector(InputIterator first, InputIterator last)
     // 如果 InputIterator 为整数类型，则此构造函数拥有的效果同
     // vector(static_cast<size_type>(first), static_cast<value_type>(last))。
-    // 如果 InputIterator 为迭代器类型，才参与重载。
+    // 如果 InputIterator 为迭代器类型，才调用迭代器版本的重载函数。
     // 所以引入 is_integral，借助模板函数的类型推到功能，用来区分整数类型和迭代器类型。
     // 详细使用见 vector 实现。
 
