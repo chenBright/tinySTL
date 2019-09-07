@@ -416,6 +416,11 @@ namespace tinySTL {
         using size_type         = std::size_t ;      // 数量类型
         using different_type    = std::ptrdiff_t;    // 用来保存两个指针（迭代器）的距离
 
+        // vector<int> 使用分配器是 allocator<int>，
+        // 但如 list<int> 使用的分配器不是 allocator<int>，
+        // list<int> 需要能分配链表结点的分配器 —— allocator<list_node>，
+        // 而目前的 allocator 接口不能分配，所以需要使用 rebind 才能分配。
+        // using list_node_allocator = typename Allocator::template rebind<detail::list_node<T>>::other;
         template <class U>
         class rebind {
             using other = allocator<U> ;
