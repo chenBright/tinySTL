@@ -11,12 +11,13 @@ a subset of STL
 
 ## TODO
 
+- list size O(n)
 - 单元测试
-- List
 - deque
 - stack
 - queue
 - heap
 - priority_queue
 - slist
+- [allocator static成员函数问题](https://www.zhihu.com/question/53085291/answer/133516400)
 - dynamic_bitset
