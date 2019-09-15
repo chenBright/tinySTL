@@ -87,6 +87,16 @@ namespace tinySTL {
          */
         vector(std::initializer_list<T> iList) : vector(iList.begin(), iList.end()) {}
 
+        // 析构函数
+        // 调用元素的析构函数，然后回收所用的内存空间。
+        // 注意，若元素是指针，则不销毁所指向的元素。
+        ~vector() {
+            clear(); // 析构 vector 内的元素
+            if (start_ != nullptr) {
+                dataAllocator.deallocate(start_, capacity()); // 回收内存空间
+            }
+        }
+
         // 重载 =
         vector& operator=(const vector &rhs) {
             if (this != &rhs) {
@@ -96,9 +106,20 @@ namespace tinySTL {
             return *this;
         }
 
+        vector& operator=(vector &&rhs) noexcept {
+            if (this != &rhs) {
+                swap(rhs);
+            }
+            return *this;
+        }
+
         vector& operator=(std::initializer_list<T> iList) {
             *this = vector(iList);
             return *this;
+        }
+
+        vector& assign(size_type n, const_reference value) {
+            return *this = vector(n, value);
         }
 
         // 赋值函数
@@ -107,29 +128,55 @@ namespace tinySTL {
             return *this = vector(first, last);
         }
 
-        vector& assign(size_type n, const_reference value) {
-            return *this = vector(n, value);
-        }
-
         vector& assign(std::initializer_list<T> ilist) {
             return *this = vector(ilist);
         }
 
-        vector& operator=(vector &&rhs) noexcept {
-            if (this != &rhs) {
-                swap(rhs);
-            }
-            return *this;
+        allocator_type get_allocator() const {
+            return dataAllocator;
         }
 
-        // 析构函数
-        // 调用元素的析构函数，然后回收所用的内存空间。
-        // 注意，若元素是指针，则不销毁所指向的元素。
-        ~vector() {
-            clear(); // 析构 vector 内的元素
-            if (start_ != nullptr) {
-                dataAllocator.deallocate(start_, capacity()); // 回收内存空间
-            }
+        reference at(size_type position) {
+            return check_and_at(position); // 返回位于指定位置 pos 的元素的引用，有边界检查
+        }
+
+        const_reference at(size_type position) const {
+            return check_and_at(position);
+        }
+
+        reference operator[](size_type position) {
+            // STL 标准中是不进行边界检查的。
+            // 但因为调用了 at() 函数，所以也会进行边界检查
+            return at(position);
+        }
+
+        const_reference operator[](size_type position) const {
+            return at(position);
+        }
+
+        reference front() {
+            return *begin();
+        }
+
+        const_reference front() const {
+            return *begin();
+        };
+
+        reference back() {
+            return *(end() - 1);
+        }
+
+        const_reference back() const {
+            return *(end() - 1);
+        }
+
+        // 元素访问相关函数
+        pointer data() {
+            return start_; // 迭代器的本质是 T*，所以返回目前使用空间的头，即起始地址
+        }
+
+        const_pointer data() const {
+            return start_;  // 迭代器的本质是 T*，所以返回目前使用空间的头，即起始地址
         }
 
         // 迭代器相关函数
@@ -181,55 +228,10 @@ namespace tinySTL {
             return static_cast<const_reverse_iterator>(begin());
         }
 
-        // 元素访问相关函数
-        pointer data() {
-            return start_; // 迭代器的本质是 T*，所以返回目前使用空间的头，即起始地址
-        }
-
-        const_pointer data() const {
-            return start_;  // 迭代器的本质是 T*，所以返回目前使用空间的头，即起始地址
-        }
-
-        reference at(size_type position) {
-            return check_and_at(position); // 返回位于指定位置 pos 的元素的引用，有边界检查
-        }
-
-        const_reference at(size_type position) const {
-            return check_and_at(position);
-        }
-
-        reference operator[](size_type position) {
-            // STL 标准中是不进行边界检查的。
-            // 但因为调用了 at() 函数，所以也会进行边界检查
-            return at(position);
-        }
-
-        const_reference operator[](size_type position) const {
-            return at(position);
-        }
-
-        reference front() {
-            return *begin();
-        }
-
-        const_reference front() const {
-            return *begin();
-        };
-
-        reference back() {
-            return *(end() - 1);
-        }
-
-        const_reference back() const {
-            return *(end() - 1);
-        }
-
-        // 检查容器是否为空
         bool empty() const {
             return cbegin() == cend();
         }
 
-        // 返回容纳的元素数
         size_type size() const {
             return cend() - cbegin();
         }
@@ -272,58 +274,9 @@ namespace tinySTL {
             }
         }
 
-        // 修改容器 相关函数
-
-        // 将元素添加到容器末尾
-        void push_back(const_reference value) {
-            insert(cend(), value);
-        }
-
-        void push_back(const T &&value) {
-            // TODO tinySTL 版本的 move
-            insert(cend(), std::move(value));
-        }
-
-        void pop_back() {
-            --finish_;
-            dataAllocator.destory(finish_); //
-        }
-
-        // 擦除指定位置的元素
-        iterator erase(const_iterator position) {
-            // 去 const 的原因：
-            // 1. 函数的返回值类型为 iteration，不是 const_iteration；
-            // 2. first 迭代器所指的位置需要被覆盖。
-            auto newPosition = const_cast<iterator>(position);
-            if (position + 1 == finish_) {
-                // TODO tinySTL 版本的 copy
-                // 将 [position + 1, finish_) 范围的元素复制到以 position 为起始的位置
-                std::copy(position + 1, finish_, newPosition);
-            }
-            --finish_;
-            dataAllocator.destory(finish_);
-
-            return newPosition;
-        }
-
-        iterator erase(const_iterator first, const_reference last) {
-            auto newFirst = const_cast<iterator>(first); // 去 const，原因同上
-            auto newEnd = std::copy(last, cend(), newFirst);
-            dataAllocator.destory(newEnd, end()); // 销毁元素
-
-            return newFirst;
-        }
-
-        void resize(size_type n, const_reference value) {
-           if (n < size()) {
-               erase(begin() + n, end());
-           } else {
-               insert(cend(), n - size(), value);
-           }
-        }
-
-        void resize(size_type n) {
-           resize(n, T());
+        // 擦除所有元素
+        void clear() {
+            erase(begin(), end());
         }
 
         iterator insert(const_iterator position, const_reference value) {
@@ -433,10 +386,62 @@ namespace tinySTL {
             return insert(position, T(std::forward<Args>(args)...)); // TODO 变长参数 参数展开 https://www.cnblogs.com/qicosmos/p/4325949.html
         }
 
+        // 擦除指定位置的元素
+        iterator erase(const_iterator position) {
+            // 去 const 的原因：
+            // 1. 函数的返回值类型为 iteration，不是 const_iteration；
+            // 2. first 迭代器所指的位置需要被覆盖。
+            auto newPosition = const_cast<iterator>(position);
+            if (position + 1 == finish_) {
+                // TODO tinySTL 版本的 copy
+                // 将 [position + 1, finish_) 范围的元素复制到以 position 为起始的位置
+                std::copy(position + 1, finish_, newPosition);
+            }
+            --finish_;
+            dataAllocator.destory(finish_);
+
+            return newPosition;
+        }
+
+        iterator erase(const_iterator first, const_reference last) {
+            auto newFirst = const_cast<iterator>(first); // 去 const，原因同上
+            auto newEnd = std::copy(last, cend(), newFirst);
+            dataAllocator.destory(newEnd, end()); // 销毁元素
+
+            return newFirst;
+        }
+
+        // 将元素添加到容器末尾
+        void push_back(const_reference value) {
+            insert(cend(), value);
+        }
+
+        void push_back(const T &&value) {
+            // TODO tinySTL 版本的 move
+            insert(cend(), std::move(value));
+        }
+
         // 在容器末尾就地构造元素
         template <class... Args>
         void emplace_back(Args&&... args) {
             push_back(T(std::forward<Args>(args)...));
+        }
+
+        void pop_back() {
+            --finish_;
+            dataAllocator.destory(finish_); //
+        }
+
+        void resize(size_type n, const_reference value) {
+           if (n < size()) {
+               erase(begin() + n, end());
+           } else {
+               insert(cend(), n - size(), value);
+           }
+        }
+
+        void resize(size_type n) {
+           resize(n, T());
         }
 
         /**
@@ -448,15 +453,6 @@ namespace tinySTL {
             std::swap(start_, other.start_);
             std::swap(finish_, other.finish_);
             std::swap(end_of_storage_, other.end_of_storage_);
-        }
-
-        // 擦除所有元素
-        void clear() {
-            erase(begin(), end());
-        }
-
-        allocator_type get_allocator() const {
-            return dataAllocator;
         }
 
     private:
