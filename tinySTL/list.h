@@ -126,6 +126,19 @@ namespace tinySTL {
 
         using allocator_type = Allocator;
 
+    private:
+        using list_node_allocator =
+        typename Allocator::template rebind<detail::list_node<T>>::other;
+
+        // node_ 指向末尾的空白结点，即 end()。
+        // 它前一个结点是 begin()，后一个结点是 back()。
+        link_type node_ = nullptr;
+
+        size_type size_ = 0;
+
+        list_node_allocator listNodeAllocator;
+
+    public:
         // 构造函数
         list() {
             node_ = allocate_node();
@@ -263,10 +276,7 @@ namespace tinySTL {
         }
 
         size_type size() const {
-            size_type result = 0;
-            result = distance(begin(), end());
-
-            return result;
+            return size_;
         }
 
         size_type max_size() const {
@@ -286,6 +296,7 @@ namespace tinySTL {
         }
 
         iterator insert(const_iterator position, size_type count, const_reference value) {
+            size_ += count;
             while (count-- > 0) {
                 position = insert(position, value);
             }
@@ -322,6 +333,8 @@ namespace tinySTL {
 
             // 销毁结点
             destroy_node(currentNode);
+
+            --size_;
 
             return static_cast<iterator>(nextNode);
         }
@@ -388,6 +401,7 @@ namespace tinySTL {
 
         void swap(list &other) {
             std::swap(node_, other.node_);
+            std::swap(size_, other.size_);
         }
 
         // 归并两个已排序（升序）的链表，将 other 归并到 *this 中。
@@ -577,18 +591,7 @@ namespace tinySTL {
             sort(std::less<T>());
         }
 
-
-
     private:
-        using list_node_allocator =
-                typename Allocator::template rebind<detail::list_node<T>>::other;
-
-        // node_ 指向末尾的空白结点，即 end()。
-        // 它前一个结点是 begin()，后一个结点是 back()。
-        link_type node_ = nullptr;
-
-        list_node_allocator listNodeAllocator;
-
         // 使用空间配置器分配一个结点的内存空间
         link_type allocate_node() {
             return listNodeAllocator.allocate(1);
@@ -640,9 +643,13 @@ namespace tinySTL {
             }
 
             auto result = insert(position, *first);
+            size_type count = 1;
             while (++first != last) {
                 insert(position, *first);
+                ++count;
             }
+
+            size_ += count;
 
             return result;
         }
@@ -665,6 +672,8 @@ namespace tinySTL {
             lastNode->next = positionNode;
             firstNode->previous->next = firstNode;
             lastNode->next->previous = lastNode;
+
+            size_ += distance(first, last);
         }
 
         // 清空链表，并回收所有内存空间（包括 node_）。
