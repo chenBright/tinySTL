@@ -43,6 +43,15 @@ namespace tinySTL {
 
         using allocator_type         = Allocator;
 
+    private:
+        // [start_, finish_) 范围的内存空间上元素
+        iterator start_;            // 目前使用空间的头
+        iterator finish_;           // 目前使用空间的尾
+        iterator end_of_storage_;   // 目前可用空间的尾
+
+        allocator_type dataAllocator;        // 内存空间配置器
+
+    public:
         // 构造函数相关（部分实现）：https://zh.cppreference.com/w/cpp/container/vector/vector
         vector() : start_(nullptr), finish_(nullptr), end_of_storage_(nullptr) {}
 
@@ -63,15 +72,20 @@ namespace tinySTL {
             initialize_aux(first, last, is_integral<InputIterator>());
         }
 
+        // 拷贝构造函数
+        vector(const vector &other) : vector(other.begin(), other.end()) {}
+
+        // 移动构造函数
+        vector(vector &&other) noexcept : vector() {
+            swap(other);
+        }
+
         /**
          * 列表初始化
          * https://zh.cppreference.com/w/cpp/language/list_initialization
          * @param iList 列表
          */
         vector(std::initializer_list<T> iList) : vector(iList.begin(), iList.end()) {}
-
-        // 拷贝构造函数
-        vector(const vector &other) : vector(other.begin(), other.end()) {}
 
         // 重载 =
         vector& operator=(const vector &rhs) {
@@ -99,11 +113,6 @@ namespace tinySTL {
 
         vector& assign(std::initializer_list<T> ilist) {
             return *this = vector(ilist);
-        }
-
-        // 移动构造函数
-        vector(vector &&other) noexcept : vector() {
-            swap(other);
         }
 
         vector& operator=(vector &&rhs) noexcept {
@@ -317,29 +326,32 @@ namespace tinySTL {
            resize(n, T());
         }
 
-        // 该 insert() 函数为非标准的
-        iterator insert(const_iterator position, const vector &other) {
-            return insert(position, other.begin(), other.end());
-        }
-
-
-        iterator insert(iterator position, const_reference value) {
-            // TODO insert() 函数相互调用，能正确调用吗？
-            return insert(const_cast<const_iterator>(position), value);
-        }
-
         iterator insert(const_iterator position, const_reference value) {
             vector tmp(1, value);
             return insert(position, tmp.cbegin(), tmp.cend());
         }
 
         iterator insert(const_iterator position, const T &&value) {
-            return insert(position, value);
-        }
+            if (capacity() > size()) {
+                auto newPosition = const_cast<iterator>(position);
+                dataAllocator.construct(finish_++, value);
+                std::copy_backward(position, cend() - 1, end());
+                *newPosition = std::move(value);
 
-        iterator insert(iterator position, size_type count, const_reference value) {
-            vector tmp(count, value);
-            return insert(position, tmp.begin(), tmp.end());
+                return newPosition;
+            } else {
+                const size_type newSize = empty() ? 1 : 2 * size();
+                vector tmp;
+                tmp.start_ = dataAllocator.allocate(newSize);
+                auto newPosition = tmp.start_ + (position - cbegin());
+                tmp.finish_ = std::uninitialized_copy(cbegin(), position, tmp.start_);
+                dataAllocator.construct(tmp.finish_++, std::move(value));
+                tmp.finish_ = std::uninitialized_copy(position, cend(), tmp.finish_);
+                tmp.end_of_storage_ = tmp.start_ + newSize;
+                swap(tmp);
+
+                return newPosition;
+            }
         }
 
         iterator insert(const_iterator position, size_type count, const_reference value) {
@@ -351,12 +363,6 @@ namespace tinySTL {
         // terator insert(iterator position, size_type count, const_reference value)
         // 拥有相同效果。
         // 此重载若为迭代器是才参与重载决议，以免有歧义。
-        template <class InputItertor>
-        iterator insert(iterator position, InputItertor first, InputItertor last) {
-            return insert(const_cast<const_iterator>(position), first, last);
-        }
-
-        // 同上
         template <class InputItertor>
         iterator insert(const_iterator position, InputItertor first, InputItertor last) {
             // 如果目前可用空间可以容纳得下 [first, last)
@@ -453,16 +459,7 @@ namespace tinySTL {
             return dataAllocator;
         }
 
-
     private:
-        // [start_, finish_) 范围的内存空间上元素
-        iterator start_;            // 目前使用空间的头
-        iterator finish_;           // 目前使用空间的尾
-        iterator end_of_storage_;   // 目前可用空间的尾
-
-        allocator_type dataAllocator;        // 内存空间配置器
-
-
         /**
          * 分配内存空间，以及在内存空间中构造元素。
          * @param n 元素个数
@@ -540,7 +537,7 @@ namespace tinySTL {
             return *(begin() + position);
         }
 
-    };
+    }; // class vector
 
     // 全局函数
     // 重载 == != < <= > >=
@@ -576,6 +573,6 @@ namespace tinySTL {
     constexpr bool operator>=(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
         return right <= left;
     }
-}
+} // namespace tinySTL
 
 #endif //TINYSTL_VECTOR_H
