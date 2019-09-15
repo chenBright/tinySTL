@@ -7,6 +7,8 @@
 #include <algorithm>            // swap、copy
 #include <initializer_list>     // initializer_list
 #include <utility>              // forward
+#include <initializer_list>
+#include <stdexcept>            // out_of_range
 
 #include "alloc.h"
 #include "iterator_base.h"
@@ -254,12 +256,109 @@ namespace tinySTL {
             empty_initialize();
         }
 
+        explicit deque(size_type count) {
+            fill_initialize(count, T());
+        }
+
         deque(size_type count, const_reference value) {
             fill_initialize(count, value);
         }
 
-        explicit deque(size_type count) {
-            fill_initialize(count, T());
+        template <class InputIterator>
+        deque(InputIterator first, InputIterator last) {
+            fill_initialize(first, last, is_integral<InputIterator>());
+        }
+
+        deque(std::initializer_list<T> ilist) : deque(ilist.begin(), ilist.end()) {
+
+        }
+
+        deque(const deque &other) : deque(other.cbegin(), other.cend()) {
+
+        }
+
+        deque(deque &&other) noexcept {
+            move_from(other);
+        }
+
+        ~deque() {
+            delete_deque();
+        }
+
+        deque& operator=(const deque &other) {
+            if (this != &other) {
+                *this = other;
+            }
+
+            return *this;
+        }
+
+        deque& operator=(deque &&other) noexcept {
+            if (this != &other) {
+                move_from(other);
+            }
+
+            return *this;
+        }
+
+        deque& operator=(std::initializer_list<T> ilist) {
+            *this = deque(ilist);
+
+            return *this;
+        }
+
+        void assign(size_type count, const_reference value) {
+            *this = deque(count, value);
+        }
+
+        template <typename InputIterator>
+        void assign(InputIterator first, InputIterator last) {
+            *this = deque(first, last);
+        }
+
+        void assign(std::initializer_list<T> ilist) {
+            *this = deque(ilist);
+        }
+
+        reference at(size_type position) {
+            if (position >= size()) {
+                throw std::out_of_range("deque: reference at(size_type position), std::out_of_range");
+            }
+
+            return start_[position];
+        }
+
+        const_reference at(size_type position) const {
+            if (position >= size()) {
+                throw std::out_of_range("deque: reference at(size_type position), std::out_of_range");
+            }
+
+            return start_[position];
+        }
+
+        // 不同于 std::map::operator[] ，此运算符决不插入新元素到容器。
+        reference operator[](size_type position) {
+            return start_[static_cast<different_type>(position)];
+        }
+
+        const_reference operator[](size_type position) const {
+            return start_[static_cast<different_type>(position)];
+        }
+
+        reference front() {
+            return *start_;
+        }
+
+        const_reference front() const {
+            return *start_;
+        }
+
+        reference back() {
+            return *(finish_ - 1);
+        }
+
+        const_reference back() const {
+            return *(finish_ - 1);
         }
 
         iterator begin() {
@@ -286,16 +385,32 @@ namespace tinySTL {
             return finish_;
         }
 
-        reference operator[](size_type n) {
-            return start_[static_cast<different_type>(n)];
+        reverse_iterator rbegin() {
+            return static_cast<reverse_iterator>(end());
         }
 
-        reference front() {
-            return *start_;
+        const_reverse_iterator rbegin() const {
+            return static_cast<const_reverse_iterator>(end());
         }
 
-        reference back() {
-            return *(finish_ - 1);
+        const_reverse_iterator crbegin() const {
+            return static_cast<const_reverse_iterator>(end());
+        }
+
+        reverse_iterator rend() {
+            return static_cast<reverse_iterator>(begin());
+        }
+
+        const_reverse_iterator rend() const {
+            return static_cast<const_reverse_iterator>(begin());
+        }
+
+        const_reverse_iterator crend() const {
+            return static_cast<const_reverse_iterator>(begin());
+        }
+
+        bool empty() const {
+            return finish_ == start_;
         }
 
         size_type size() const {
@@ -306,24 +421,36 @@ namespace tinySTL {
             return std::numeric_limits<size_type>::max();
         }
 
-        bool empty() const {
-            return finish_ == start_;
+        void shrink_to_fit() {
+            for (auto current = map_; current < start_.node_; ++current) {
+                nodeAllocator.deallocate(*current, detail::deque_node_size);
+                *current = nullptr;
+            }
+
+            for (auto current = finish_.node_ + 1; current < map_ + mapSize_; ++current) {
+                nodeAllocator.deallocate(*current, detail::deque_node_size);
+                *current = nullptr;
+            }
         }
 
-        void push_back(const_reference value) {
-            insert(cend(), value);
+        // TODO 最终需要保留一个缓冲区。这是 deque的策略，也是 deque的初始状态。
+        void clear() {
+            erase(start_, finish_);
         }
 
-        void push_front(const_reference value) {
-            insert(cbegin(), value);
+        iterator insert(const_iterator position, const_reference value) {
+            auto tmp = deque(1, value);
+            return insert(position, tmp.begin(), tmp.end());
         }
 
-        void pop_back() {
-            erase(cend() - 1);
+        iterator insert(iterator position, const value_type &&value) {
+            auto tmp = deque(1, value);
+            return insert(position, tmp.begin(), tmp.end());
         }
 
-        void pop_front() {
-            erase(cbegin());
+        iterator insert(const_iterator position, size_type count, const_reference value) {
+            auto tmp = deque(count, value);
+            return insert(position, tmp.begin(), tmp.end());
         }
 
         template <class InputIterator>
@@ -359,15 +486,21 @@ namespace tinySTL {
             }
         }
 
-        iterator insert(iterator position, const_reference value) {
-            return insert(position, deque(1, value));
+        iterator insert(const_iterator position, std::initializer_list<T> ilist) {
+            auto tmp = deque(ilist);
+            return insert(position, tmp.begin(), tmp.begin(), tmp.end());
         }
 
-        iterator insert(iterator position, const value_type &&value) {
-            return insert(position, deque(1, value));
+        template <class... Args>
+        iterator emplace(const_iterator position, Args&&... args) {
+            insert(position, T(std::forward<Args>(args)...));
         }
 
         iterator erase(const_iterator first, const_iterator last) {
+            if (first == last) {
+                return last;
+            }
+
             auto newFirst = begin() + (first - cbegin());
             auto newEnd = std::copy(last, cend(), newFirst);
 
@@ -387,14 +520,72 @@ namespace tinySTL {
             return erase(position, position + 1);
         }
 
-        // TODO 最终需要保留一个缓冲区。这是 deque的策略，也是 deque的初始状态。
-        void clear() {
-            erase(start_, finish_);
+        void push_back(const_reference value) {
+            insert(cend(), value);
+        }
+
+        void push_back(const T &&value) {
+            insert(cend(), value);
+        }
+
+        template <class... Args>
+        iterator emplace_back(Args&&... args) {
+            push_back(std::forward(args)...);
+        }
+
+        void pop_back() {
+            erase(cend() - 1);
+        }
+
+        void push_front(const_reference value) {
+            insert(cbegin(), value);
+        }
+
+        void push_front(const T &&value) {
+            insert(cbegin(), value);
+        }
+
+        template <class... Args>
+        iterator emplace_front(Args&&... args) {
+            push_front(std::forward(args)...);
+        }
+
+        void pop_front() {
+            erase(cbegin());
+        }
+
+        void resize(size_type count, const_reference value) {
+            if (count < size()) {
+                erase(cbegin() + count, cend());
+            } else {
+                insert(cend(), count - size(), value);
+            }
+        }
+
+        void resize(size_type count) {
+            resize(count, T());
+        }
+
+        void swap(deque &other) {
+            std::swap(start_, other.start_);
+            std::swap(finish_, other.finish_);
+            std::swap(map_, other.map_);
+            std::swap(mapSize_, other.mapSize_);
         }
 
     private:
         void empty_initialize() {
             create_map_and_nodes();
+        }
+
+        template <class InputIterator>
+        void initialize_aux(InputIterator first, InputIterator last, __true_type) {
+            fill_initialize(first, last);
+        }
+
+        template <class InputIterator>
+        void initialize_aux(InputIterator first, InputIterator last, __false_type) {
+            copy_initialize(first, last, iterator_category(first));
         }
 
         void fill_initialize(size_type count, const_reference value) {
@@ -403,6 +594,27 @@ namespace tinySTL {
                 std::uninitialized_fill(*it, *it + detail::deque_node_size, value);
             }
             std::uninitialized_fill(finish_.first_, finish_.current_, value);
+        }
+
+        template <typename InputIterator>
+        void copy_initialize(InputIterator first, InputIterator last, input_iterator_tag) {
+            create_map_and_nodes();
+            while (first != last) {
+                reserve_elements_at_back(1);
+                nodeAllocator.construct(&*finish_++, *first);
+            }
+        }
+
+        template <typename ForwardIterator>
+        void copy_initialize(ForwardIterator first, ForwardIterator last, forward_iterator_tag) {
+            size_type n = distance(first, last);
+            create_map_and_nodes(n);
+            for (auto it = start_.node_; it < finish_.node_; ++it) {
+                auto nextNode = next(first, detail::deque_node_size);
+                std::uninitialized_copy(first, nextNode, it);
+                first = next;
+            }
+            std::uninitialized_copy(first, last, finish_.first_);
         }
 
         void create_map_and_nodes(size_type numElements = 0) {
@@ -420,6 +632,29 @@ namespace tinySTL {
             finish_.set_node(nFinish);
             start_.current_ = start_.first_;
             finish_.current_ = finish_.first_ + numElements % detail::deque_node_size;
+        }
+
+        void delete_deque() {
+            if (map_ == nullptr) {
+                return;
+            }
+            clear();
+            deallocate_node(*start_.node_);
+            deallocate_map();
+            map_ = nullptr;
+        }
+
+        void set(iterator start, iterator finish, T **map, size_type mapSize) {
+            start_ = start;
+            finish_ = finish;
+            map_ = map;
+            mapSize_ = mapSize;
+        }
+
+        void move_from(deque &other) {
+            delete_deque();
+            set(other.start_, other.finish_, other.map_, other.mapSize_);
+            other.map_ = nullptr;
         }
 
         T** allocate_map() {
@@ -513,7 +748,43 @@ namespace tinySTL {
             start_.set_node(newStart);
             finish_.set_node(newStart + oldNumNodes - 1); // ?
         }
-    };
-}
+    }; // class deque
+
+    template <class T, class Allocator>
+    bool operator==(const deque<T, Allocator> &left, const deque<T, Allocator> &right) {
+        return left.size() == right.size() && std::equal(left.cbegin(), left.cend(), right.cbegin());
+    }
+
+    template <class T, class Allocator>
+    bool operator!=(const deque<T, Allocator> &left, const deque<T, Allocator> &right) {
+        return !(left == right);
+    }
+
+    template <class T, class Allocator>
+    bool operator<(const deque<T, Allocator> &left, const deque<T, Allocator> &right) {
+        return std::lexicographical_compare(left.cbegin(), left.cend(), right.cbegin(), right.cend());
+    }
+
+    template <class T, class Allocator>
+    bool operator<=(const deque<T, Allocator> &left, const deque<T, Allocator> &right) {
+        return !(right < left);
+    }
+
+    template <class T, class Allocator>
+    bool operator>(const deque<T, Allocator> &left, const deque<T, Allocator> &right) {
+        return right < left;
+    }
+
+    template <class T, class Allocator>
+    bool operator>=(const deque<T, Allocator> &left, const deque<T, Allocator> &right) {
+        return !(right > left);
+    }
+
+    template <class T, class Allocator>
+    void swap(const deque<T, Allocator> &left, const deque<T, Allocator> &right) {
+        left.swap(right);
+    }
+
+} // namespace tinySTL
 
 #endif //TINYSTL_DEQUE_H

@@ -19,5 +19,6 @@ a subset of STL
 - heap
 - priority_queue
 - slist
+- 异常保证
 - [allocator static成员函数问题](https://www.zhihu.com/question/53085291/answer/133516400)
 - dynamic_bitset
