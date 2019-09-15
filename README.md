@@ -11,7 +11,6 @@ a subset of STL
 
 ## TODO
 
-- list size O(n)
 - 单元测试
 - deque
 - stack
