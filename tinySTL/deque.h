@@ -525,7 +525,7 @@ namespace tinySTL {
         }
 
         void push_back(const T &&value) {
-            insert(cend(), value);
+            insert(cend(), std::move(value));
         }
 
         template <class... Args>
@@ -542,7 +542,7 @@ namespace tinySTL {
         }
 
         void push_front(const T &&value) {
-            insert(cbegin(), value);
+            insert(cbegin(), std::move(value));
         }
 
         template <class... Args>
@@ -746,7 +746,7 @@ namespace tinySTL {
                 map_ = newMap;
             }
             start_.set_node(newStart);
-            finish_.set_node(newStart + oldNumNodes - 1); // ?
+            finish_.set_node(newStart + oldNumNodes - 1);
         }
     }; // class deque
 
