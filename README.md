@@ -7,11 +7,11 @@ a subset of STL
 - [x] type traits
 - [x] 普通迭代器
 - [x] 反向迭代器
-- [x] Vector
+- [x] vector
+- [x] list
 
 ## TODO
 
-- list size O(n)
 - 单元测试
 - deque
 - stack
@@ -19,5 +19,6 @@ a subset of STL
 - heap
 - priority_queue
 - slist
+- 异常保证
 - [allocator static成员函数问题](https://www.zhihu.com/question/53085291/answer/133516400)
 - dynamic_bitset
