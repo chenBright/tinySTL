@@ -7,7 +7,8 @@ a subset of STL
 - [x] type traits
 - [x] 普通迭代器
 - [x] 反向迭代器
-- [x] Vector
+- [x] vector
+- [x] list
 
 ## TODO
 

@@ -305,7 +305,7 @@ namespace tinySTL {
         }
 
         template <class InputIterator>
-        iterator insert(iterator position, InputIterator first, InputIterator last) {
+        iterator insert(const_iterator position, InputIterator first, InputIterator last) {
             // 如果 InputIterator 为整数类型，则此构造函数拥有的效果同
             // insert(static_cast<size_type>(first), static_cast<value_type>(last))，
             // 如果 InputIterator 为迭代器类型，才是迭代器版本的构造函数。
@@ -313,7 +313,7 @@ namespace tinySTL {
             return insert_range_aux(position, first, last, is_integral<InputIterator>());
         }
 
-        iterator insert(iterator position, std::initializer_list<T> ilist) {
+        iterator insert(const_iterator position, std::initializer_list<T> ilist) {
             return insert(position, ilist.begin(), ilist.end());
         }
 
@@ -734,6 +734,6 @@ namespace tinySTL {
     void swap(list<T, Allocator> &left, list<T, Allocator> &right) {
         left.swap(right);
     }
-}
+} // namespace tinySTL
 
 #endif //TINYSTL_LIST_H
