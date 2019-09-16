@@ -565,6 +565,12 @@ namespace tinySTL {
     constexpr bool operator>=(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
         return right <= left;
     }
+
+    template <class T, class Allocator>
+    void swap(vector<T, Allocator> &left, vector<T, Allocator> &right) {
+        left.swap(right);
+    }
+
 } // namespace tinySTL
 
 #endif //TINYSTL_VECTOR_H
