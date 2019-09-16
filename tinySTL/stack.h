@@ -2,6 +2,7 @@
 #define TINYSTL_STACK_H
 
 #include <algorithm>
+#include <utility>
 
 #include "deque.h"
 
@@ -76,6 +77,11 @@ namespace tinySTL {
 
         void push(value_type &&value) {
             c.push_back(std::move(value));
+        }
+
+        template <class... Args>
+        void emplace(Args&&... args) {
+            c.emplace_back(std::forward(args)...);
         }
 
         void pop() {
