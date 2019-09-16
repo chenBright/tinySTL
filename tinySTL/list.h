@@ -165,6 +165,10 @@ namespace tinySTL {
             move_from(other);
         }
 
+        ~list() {
+            delete_list();
+        }
+
         list& operator=(list &&other) noexcept {
             if (this != other) {
                 return *this;
@@ -200,8 +204,8 @@ namespace tinySTL {
             *this = list(ilist);
         }
 
-        ~list() {
-            delete_list();
+        allocator_type get_allocator() const {
+            return listNodeAllocator;
         }
 
         reference front() {
