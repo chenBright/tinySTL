@@ -1,6 +1,8 @@
 #ifndef TINYSTL_STACK_H
 #define TINYSTL_STACK_H
 
+#include <algorithm>
+
 #include "deque.h"
 
 namespace tinySTL {
@@ -26,12 +28,30 @@ namespace tinySTL {
     public:
         stack() = default;
 
-        bool empty() const {
-            return c.empty();
+        explicit stack(const Container &cont) : c(cont) {}
+
+        explicit stack(const Container &&cont) : c(std::move(cont)) {}
+
+        stack(const stack &other) : c(other.c) {}
+
+        stack(stack &&other) noexcept : c(std::move(other.c)) {}
+
+        ~stack() = default;
+
+        stack& operator=(const stack &other) {
+            if (this != &other) {
+                c = other.c;
+            }
+
+            return *this;
         }
 
-        size_type size() const {
-            return c.size();
+        stack& operator=(stack &&other) noexcept {
+            if (this != &other)  {
+                c = std::move(other.c);
+            }
+
+            return *this;
         }
 
         reference top() {
@@ -42,12 +62,28 @@ namespace tinySTL {
             return c.back();
         }
 
+        bool empty() const {
+            return c.empty();
+        }
+
+        size_type size() const {
+            return c.size();
+        }
+
         void push(const_reference value) {
             c.push_back(value);
         }
 
+        void push(value_type &&value) {
+            c.push_back(std::move(value));
+        }
+
         void pop() {
             c.pop_back();
+        }
+
+        void swap(stack &other) {
+            tinySTL::swap(c, other.c);
         }
     };
 
@@ -57,8 +93,35 @@ namespace tinySTL {
     }
 
     template <class T, class Container>
+    bool operator!=(const stack<T, Container> &left, const stack<T, Container> &right) {
+        return left.c != right.c;
+    }
+
+    template <class T, class Container>
     bool operator<(const stack<T, Container> &left, const stack<T, Container> &right) {
         return left.c < right.c;
+    }
+
+    template <class T, class Container>
+    bool operator<=(const stack<T, Container> &left, const stack<T, Container> &right) {
+        return left.c <= right.c;
+    }
+
+    template <class T, class Container>
+    bool operator>(const stack<T, Container> &left, const stack<T, Container> &right) {
+        return left.c > right.c;
+    }
+
+    template <class T, class Container>
+    bool operator>=(const stack<T, Container> &left, const stack<T, Container> &right) {
+        return left.c >= right.c;
+    }
+
+
+
+    template <class T, class Container>
+    void swap(const stack<T, Container> &left, const stack<T, Container> &right) {
+        left.swap(right);
     }
 }
 
