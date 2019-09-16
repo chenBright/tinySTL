@@ -146,14 +146,14 @@ namespace tinySTL {
             node_->previous = node_->next = node_;
         }
 
-        list(size_type count, const_reference value) : list() {
+        list(size_type count, const_reference value) {
             insert(begin(), count, value);
         }
 
         explicit list(size_type count) : list(count, T()) {}
 
         template <class InputIterator>
-        list(InputIterator first, InputIterator last) : list() {
+        list(InputIterator first, InputIterator last) {
             insert(begin(), first, last);
         }
 
@@ -171,7 +171,7 @@ namespace tinySTL {
 
         list& operator=(list &&other) noexcept {
             if (this != other) {
-                return *this;
+                move_from(other);
             }
 
             return *this;
@@ -179,7 +179,8 @@ namespace tinySTL {
 
         list& operator=(const list &other) {
             if (this != &other) {
-                move_from(other);
+                list tmp(other);
+                swap(tmp);
             }
 
             return *this;
@@ -699,7 +700,9 @@ namespace tinySTL {
         void move_from(list &other) {
             delete_list();
             node_ = other.node_;
+            size_ = other.size_;
             other.node_ = nullptr;
+            other.size_ = 0;
         }
     };  // class list
 

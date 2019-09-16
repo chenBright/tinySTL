@@ -287,7 +287,8 @@ namespace tinySTL {
 
         deque& operator=(const deque &other) {
             if (this != &other) {
-                *this = other;
+                deque tmp(other);
+                swap(tmp);
             }
 
             return *this;
