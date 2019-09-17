@@ -91,7 +91,8 @@ namespace tinySTL {
         void swap(stack &other) {
             tinySTL::swap(c, other.c);
         }
-    };
+
+    }; // class stack
 
     template <class T, class Container>
     bool operator==(const stack<T, Container> &left, const stack<T, Container> &right) {
@@ -123,13 +124,11 @@ namespace tinySTL {
         return left.c >= right.c;
     }
 
-
-
     template <class T, class Container>
     void swap(const stack<T, Container> &left, const stack<T, Container> &right) {
         left.swap(right);
     }
-}
+} // namespace tinySTL
 
 
 #endif //TINYSTL_STACK_H

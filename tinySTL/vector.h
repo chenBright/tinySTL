@@ -132,10 +132,6 @@ namespace tinySTL {
             return *this = vector(ilist);
         }
 
-        allocator_type get_allocator() const {
-            return dataAllocator;
-        }
-
         reference at(size_type position) {
             return check_and_at(position); // 返回位于指定位置 pos 的元素的引用，有边界检查
         }
@@ -569,6 +565,12 @@ namespace tinySTL {
     constexpr bool operator>=(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
         return right <= left;
     }
+
+    template <class T, class Allocator>
+    void swap(vector<T, Allocator> &left, vector<T, Allocator> &right) {
+        left.swap(right);
+    }
+
 } // namespace tinySTL
 
 #endif //TINYSTL_VECTOR_H
