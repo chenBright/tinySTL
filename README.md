@@ -9,12 +9,12 @@ a subset of STL
 - [x] 反向迭代器
 - [x] vector
 - [x] list
+- [x] deque
+- [x] stack
 
 ## TODO
 
 - 单元测试
-- deque
-- stack
 - queue
 - heap
 - priority_queue
