@@ -7,6 +7,10 @@
 #include "deque.h"
 
 namespace tinySTL {
+    // 队列
+    // 以某种容器作为底部数据结构，是底层容器的包装器。
+    // queue 不是 container，是 container adapter。
+    // queue 没有迭代器。
     template <class T, class Container = deque<T>>
     class queue {
         friend bool operator==<>(const queue &left, const queue &right);
