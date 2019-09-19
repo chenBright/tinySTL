@@ -11,12 +11,12 @@ a subset of STL
 - [x] list
 - [x] deque
 - [x] stack
+- [x] queue
+- [x] heap
 
 ## TODO
 
 - 单元测试
-- queue
-- heap
 - priority_queue
 - vector、list、deque 中存在大量的依靠创建临时对象再swap的低效代码，特别是在operator=和insert中。
 - 异常保证
