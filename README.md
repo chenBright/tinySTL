@@ -11,12 +11,12 @@ a subset of STL
 - [x] list
 - [x] deque
 - [x] stack
+- [x] queue
+- [x] heap
 
 ## TODO
 
 - 单元测试
-- queue
-- heap
 - priority_queue
 - 异常保证
 - [allocator static成员函数问题](https://www.zhihu.com/question/53085291/answer/133516400)
