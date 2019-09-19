@@ -19,7 +19,6 @@ a subset of STL
 - heap
 - priority_queue
 - vector、list、deque 中存在大量的依靠创建临时对象再swap的低效代码，特别是在operator=和insert中。
-- slist
 - 异常保证
 - [allocator static成员函数问题](https://www.zhihu.com/question/53085291/answer/133516400)
 - dynamic_bitset
