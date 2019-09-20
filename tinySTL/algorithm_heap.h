@@ -116,6 +116,63 @@ namespace tinySTL {
             detail::pop_heap_aux(first, currentIndex, maxIndex, std::move(first[currentIndex]), comp);
         }
     }
+
+    template<class RandomAccessIterator>
+    bool is_heap(RandomAccessIterator first, RandomAccessIterator last) {
+        return is_heap(first, last, std::less<typename iterator_traits<RandomAccessIterator>::value_type>());
+    }
+
+    template<class RandomAccessIterator, class Compare>
+    bool is_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp) {
+        auto n = distance(first, last);
+        decltype(n) i = 0;
+        while (true) {
+            if (2 * i >= n) {
+                return true;
+            }
+            if (comp(first[i], first[2 * i])) {
+                return false;
+            }
+
+            if (2 * i + 1 >= n) {
+                return true;
+            }
+
+            if (comp(first[i], first[2 * i + 1])) {
+                return false;
+            }
+
+            ++i;
+        }
+    }
+
+    template<class RandomAccessIterator>
+    bool is_heap_until(RandomAccessIterator first, RandomAccessIterator last) {
+        return is_heap_until(first, last, std::less<typename iterator_traits<RandomAccessIterator>::value_type>());
+    }
+
+    template<class RandomAccessIterator, class Compare>
+    bool is_heap_until(RandomAccessIterator first, RandomAccessIterator last, Compare comp) {
+        auto n = distance(first, last);
+        decltype(n) i = 0;
+        while (true) {
+            if (2 * i >= n) {
+                return last;
+            }
+            if (comp(first[i], first[2 * i])) {
+                return first[i];
+            }
+
+            if (2 * i + 1 >= n) {
+                return last;
+            }
+            if (comp(first[i], first[2 * i + 1])) {
+                return first[2 * i + 1];
+            }
+
+            ++i;
+        }
+    }
 }
 
 
