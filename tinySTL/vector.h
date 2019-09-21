@@ -535,34 +535,34 @@ namespace tinySTL {
     // 重载 == != < <= > >=
 
     template <class T, class Allocator>
-    constexpr bool operator==(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
+    bool operator==(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
         // TODO tinySTL 版本的 equal
         return left.size() == right.size() && std::equal(left.cbegin(), left.cend(), right.cbegin());
     }
 
     template <class T, class Allocator>
-    constexpr bool operator!=(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
+    bool operator!=(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
         return left.size() != right.size() && !std::equal(left.cbegin(), left.cend(), right.cbegin());
     }
 
     template <class T, class Allocator>
-    constexpr bool operator<(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
+    bool operator<(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
         // TODO tinySTL 版本的 lexicographical_compare
         return std::lexicographical_compare(left.cbegin(), left.cend(), right.cbegin(), right.cend());
     }
 
     template <class T, class Allocator>
-    constexpr bool operator<=(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
+    bool operator<=(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
         return !(right < left); // left 不大于 right => left 小于等于 right
     }
 
     template <class T, class Allocator>
-    constexpr bool operator>(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
+    bool operator>(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
         return right < left;
     }
 
     template <class T, class Allocator>
-    constexpr bool operator>=(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
+    bool operator>=(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
         return right <= left;
     }
 
