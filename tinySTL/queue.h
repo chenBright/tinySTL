@@ -41,6 +41,8 @@ namespace tinySTL {
 
         queue(queue &&other) noexcept : c(std::move(other.c)) {}
 
+        ~queue() = default;
+
         queue& operator=(const queue &other) {
             if (this != &other) {
                 c = other.c;
