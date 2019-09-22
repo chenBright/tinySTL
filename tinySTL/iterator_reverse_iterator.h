@@ -20,19 +20,16 @@ namespace tinySTL {
 
         using iterator_type     = Iterator;
 
-        constexpr reverse_iterator() : current_() {}
-        constexpr explicit reverse_iterator(iterator_type current) : current_(current) {}
+        reverse_iterator() : current_() {}
+        explicit reverse_iterator(iterator_type current) : current_(current) {}
         template <class U>
-        constexpr explicit reverse_iterator(const reverse_iterator<U> &other) : current_(other.base()) {}
+        explicit reverse_iterator(const reverse_iterator<U> &other) : current_(other.base()) {}
 
         template <typename U>
         reverse_iterator& operator=(const reverse_iterator<U> &other) {
             current_ = other.base();
             return *this;
         }
-
-        // C++ 14 引入 constexpr 函数，可强制要求表达式编译时求值
-        // 参考 http://timothyqiu.com/archives/about-constexpr/
 
         /**
          * 获取普通迭代器
@@ -60,7 +57,7 @@ namespace tinySTL {
             return *this;
         }
 
-        const reverse_iterator operator++(int) {
+        reverse_iterator operator++(int) {
             reverse_iterator tmp = *this;
             --current_;
             return tmp;
@@ -71,7 +68,7 @@ namespace tinySTL {
             return *this;
         }
 
-        const reverse_iterator operator--(int) {
+        reverse_iterator operator--(int) {
             reverse_iterator tmp = *this;
             ++current_;
             return tmp;
@@ -95,7 +92,7 @@ namespace tinySTL {
             return *this;
         }
 
-        constexpr reference operator[](difference_type n) const {
+        reference operator[](difference_type n) const {
             return *operator+(n);
         }
 
@@ -108,40 +105,40 @@ namespace tinySTL {
     // 重载 == != > >= < <= + -
 
     template <class LeftIterator, class RightIterator>
-    constexpr bool operator==(reverse_iterator<LeftIterator> left, reverse_iterator<RightIterator> right) {
+    bool operator==(reverse_iterator<LeftIterator> left, reverse_iterator<RightIterator> right) {
         return left.base() == right.base();
     }
 
     template <class LeftIterator, class RightIterator>
-    constexpr bool operator!=(reverse_iterator<LeftIterator> left, reverse_iterator<RightIterator> right) {
+    bool operator!=(reverse_iterator<LeftIterator> left, reverse_iterator<RightIterator> right) {
         return left.base() != right.base();
     }
     template <class LeftIterator, class RightIterator>
-    constexpr bool operator>(reverse_iterator<LeftIterator> left, reverse_iterator<RightIterator> right) {
+    bool operator>(reverse_iterator<LeftIterator> left, reverse_iterator<RightIterator> right) {
         return left.base() > right.base();
     }
     template <class LeftIterator, class RightIterator>
-    constexpr bool operator>=(reverse_iterator<LeftIterator> left, reverse_iterator<RightIterator> right) {
+    bool operator>=(reverse_iterator<LeftIterator> left, reverse_iterator<RightIterator> right) {
         return left.base() >= right.base();
     }
     template <class LeftIterator, class RightIterator>
-    constexpr bool operator<(reverse_iterator<LeftIterator> left, reverse_iterator<RightIterator> right) {
+    bool operator<(reverse_iterator<LeftIterator> left, reverse_iterator<RightIterator> right) {
         return left.base() < right.base();
     }
     template <class LeftIterator, class RightIterator>
-    constexpr bool operator<=(reverse_iterator<LeftIterator> left, reverse_iterator<RightIterator> right) {
+    bool operator<=(reverse_iterator<LeftIterator> left, reverse_iterator<RightIterator> right) {
         return left.base() <= right.base();
     }
 
     template <class Iterator>
-    constexpr reverse_iterator<Iterator> operator+(
+    reverse_iterator<Iterator> operator+(
             typename reverse_iterator<Iterator>::difference_type n,
             const reverse_iterator<Iterator> &it) {
         return it + n;
     }
 
     template <class Iterator>
-    constexpr reverse_iterator<Iterator> operator-(
+    reverse_iterator<Iterator> operator-(
             typename reverse_iterator<Iterator>::difference_type n,
             const reverse_iterator<Iterator> &it) {
         return it - n;
@@ -155,7 +152,7 @@ namespace tinySTL {
      * @return 反向迭代器
      */
     template <class Iterator>
-    constexpr reverse_iterator<Iterator> make_reverse_iterator(Iterator it) {
+    reverse_iterator<Iterator> make_reverse_iterator(Iterator it) {
         return reverse_iterator<Iterator>(it);
     }
 }

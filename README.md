@@ -16,6 +16,8 @@ a subset of STL
 - [x] priority_queue
 - [x] 算法
     - [x] min 
+- [x] functional
+    - [x] less
 
 ## TODO
 
