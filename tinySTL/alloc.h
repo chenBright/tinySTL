@@ -9,6 +9,8 @@
 #include <functional>
 #include <new>
 
+#include "algorithm.h"
+
 namespace tinySTL {
     // SGI STL Allocator Design
     // http://decsai.ugr.es/mgsilvente/stl/alloc.html
@@ -208,7 +210,7 @@ namespace tinySTL {
 
             void *result = allocate(newSize); // 从相应的内存块链表中取出内存块
             // 防止 oldSize > newSize 而造成 memcpy() 拷贝时出现问题
-            size_t copySize = std::min(oldSize, newSize);
+            size_t copySize = min(oldSize, newSize);
             // 注意：对内存空间的拷贝是按位执行的。如果内存空间上的对象有自定义的构造函数或者析构函数，
             //      则不建议使用 alloc::reallocate() 来调整内存空间。
             //      完全通用的容器实现通常不会使用 alloc::reallocate()。
