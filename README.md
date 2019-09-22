@@ -14,6 +14,8 @@ a subset of STL
 - [x] queue
 - [x] heap
 - [x] priority_queue
+- [x] functional
+    - [x] less
 
 ## TODO
 
