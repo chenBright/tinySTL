@@ -7,15 +7,17 @@
 
 #include <cstddef>              // std::ptrdiff_t、std::size_t
 
-#include "iterator_base.h"
-#include "iterator_reverse_iterator.h"
-#include "alloc.h"
-#include "type_traits.h"
 
 #include <limits>               // numeric_limits
 #include <algorithm>            // swap
 #include <initializer_list>     // initializer_list
 #include <utility>              // forward
+
+#include "alloc.h"
+#include "type_traits.h"
+#include "iterator_base.h"
+#include "iterator_reverse_iterator.h"
+#include "functional.h"
 
 namespace tinySTL {
     namespace detail {
@@ -441,7 +443,7 @@ namespace tinySTL {
         }
 
         void merge(list &other) {
-            merge(other, std::less<T>());
+            merge(other, less<T>());
         }
 
         void merge(list &&other) {
@@ -593,7 +595,7 @@ namespace tinySTL {
             swap(counter[fill - 1]);
         }
         void sort() {
-            sort(std::less<T>());
+            sort(less<T>());
         }
 
     private:
