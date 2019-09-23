@@ -1,14 +1,15 @@
 #ifndef TINYSTL_ALGORITHM_H
 #define TINYSTL_ALGORITHM_H
 
-#include <functional>
 #include <initializer_list>
 #include <algorithm>
+
+#include "functional.h"
 
 namespace tinySTL {
 
     /**
-     * std::min
+     * min
      */
 
     // 返回最小值
@@ -23,7 +24,7 @@ namespace tinySTL {
     // 如果 a == b，则返回 a。
     template <class T>
     const T& min(const T &a, const T &b) {
-        return min(a, b, std::less<T>());
+        return min(a, b, less<T>());
     }
 
     template <class T, class Compare>
