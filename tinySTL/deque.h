@@ -17,7 +17,7 @@
 
 namespace tinySTL {
     namespace detail {
-        constexpr std::size_t deque_node_size = 8;
+        constexpr std::size_t deque_node_size = 8; // 一个缓冲区的容量
 
         template <class T, class Reference, class Pointer>
         struct deque_iterator {
@@ -27,26 +27,34 @@ namespace tinySTL {
             using pointer           = Pointer;                      // 迭代器所指的对象的指针
             using reference         = Reference;                    // 迭代器所指的对象的引用
 
-            using iterator          = deque_iterator<T, T&, T*>;     // 迭代器
+            // 迭代器
+            using iterator          = deque_iterator<T, T&, T*>;
             using const_iterator    = deque_iterator<T, const T&, const T*>;
             using self              = deque_iterator<T, T&, T*>;
 
-            pointer first_;
-            pointer last_;
-            pointer current_;
-            T** node_;
-
-            void set_node(T** newNode) {
-                node_ = newNode;
-                first_ = *node_;
-                last_ = first_ + deque_node_size;
-            }
+            // 具体迭代器内部指针的指向，见《STL源码剖析》P147
+            pointer first_;     // 缓冲区的头
+            pointer last_;      // 缓冲区的尾
+            pointer current_;   // 迭代器所指的元素
+            T** node_;          // 迭代器所在的缓冲区
 
             deque_iterator() : first_(nullptr), last_(nullptr), current_(nullptr), node_(nullptr) {}
 
             explicit deque_iterator(const iterator &other) {
                 set_node(other.node_);
                 current_ = other.current_;
+            }
+
+            ~deque_iterator() = default;
+
+            /**
+             * 设置迭代器所在的缓冲区。
+             * @param newNode 缓冲区
+             */
+            void set_node(T** newNode) {
+                node_ = newNode;
+                first_ = *node_;
+                last_ = first_ + deque_node_size;
             }
 
             self& operator=(const iterator &other) {
@@ -69,6 +77,7 @@ namespace tinySTL {
             self& operator++() {
                 ++current_;
                 if (current_ == last_) {
+                    // 到达尾部，切换到下一个缓冲区
                     set_node(node_ + 1);
                     current_ = first_;
                 }
@@ -85,6 +94,7 @@ namespace tinySTL {
 
             self& operator--() {
                 if (current_ == first_) {
+                    // 到达头部，切换到上一个缓冲区
                     set_node(node_ - 1);
                     current_ = last_;
                 }
@@ -102,16 +112,18 @@ namespace tinySTL {
 
             self& operator+=(difference_type n) {
                 difference_type offset = n + (current_ - first_);
+                // 加上 n 之后，不超出当前缓冲区。
                 if (offset >= 0 && offset < deque_node_size) {
                     current_ += n;
 
                     return *this;
                 }
 
+                // 计算向左还是向右超出了多少个缓冲区。
                 difference_type nodeOffset = offset > 0 ?
                         offset / deque_node_size : -(-offset - 1) / deque_node_size + 1;
-                set_node(node_ + nodeOffset);
-                current_ = first_ + (offset - nodeOffset * deque_node_size);
+                set_node(node_ + nodeOffset); // 更新缓冲区
+                current_ = first_ + (offset - nodeOffset * deque_node_size); // 更新在缓冲区的位置
 
                 return *this;
             }
@@ -219,6 +231,24 @@ namespace tinySTL {
 
     }
 
+    // 双端队列，支持随机访问。
+    // 接口功能见：https://zh.cppreference.com/w/cpp/container/vector
+    //
+    // deque 的元素是分段存储的，不是想 vector 一样，相接存储。
+    // 与 vector 的不同：
+    // - deque 没有容量（capacity）的概念， 因为 deque 的元素是分段存储的，
+    //   它的存储是按需自动扩容及收缩。
+    // - deque 没有 reserve 功能。
+    //
+    // deque 上常见操作的复杂度（效率）如下：
+    // - 随机访问——常数 O(1)
+    // - 在结尾或起始插入或移除元素——常数 O(1)
+    // - 插入或移除元素——线性 O(n)
+    //
+    // 虽然 deque 支持随机访问，但它的迭代器不是指针，随机访问是 deque 迭代器经过处理后结果。
+    // 所以，使用的时候，尽量选择 vector 而不是 deque。
+    //
+    // 注意：迭代器失效完全看实现，不同的实现可能有不同的结果。
     template <class T, class Allocator = allocator<T>>
     class deque {
     public:
@@ -240,16 +270,18 @@ namespace tinySTL {
         using node_allocator = Allocator;
         using map_allocator = typename Allocator::template rebind<T*>::other;
 
-        static constexpr size_type min_map_size_ = 8;
+        static constexpr size_type min_map_size_ = 8;   // map 的最小容量
 
-        node_allocator nodeAllocator;
-        map_allocator mapAllocator;
+        node_allocator nodeAllocator;                   // 缓冲区元素的空间配置器
+        map_allocator mapAllocator;                     // 缓冲区 map 空间配置器
 
-        iterator start_;
-        iterator finish_;
+        // [start_, finish_)
+        iterator start_;                                // 起始迭代器
+        iterator finish_;                               // 末尾迭代器
 
-        T **map_ = nullptr;
-        size_type mapSize_ = 0;
+        // map 的内存分布见《STL源码剖析》P147
+        T **map_ = nullptr;                             // 缓冲区数组
+        size_type mapSize_ = 0;                         // 缓冲区数组大小
 
     public:
         deque() {
@@ -303,21 +335,25 @@ namespace tinySTL {
         }
 
         deque& operator=(std::initializer_list<T> ilist) {
+            // 调用了 operator=()
             *this = deque(ilist);
 
             return *this;
         }
 
         void assign(size_type count, const_reference value) {
+            // 调用了 operator=()
             *this = deque(count, value);
         }
 
         template <typename InputIterator>
         void assign(InputIterator first, InputIterator last) {
+            // 调用了 operator=()
             *this = deque(first, last);
         }
 
         void assign(std::initializer_list<T> ilist) {
+            // 调用了 operator=()
             *this = deque(ilist);
         }
 
@@ -337,7 +373,9 @@ namespace tinySTL {
             return start_[position];
         }
 
-        // 不同于 std::map::operator[] ，此运算符决不插入新元素到容器。
+        // deque:operator[] 是不进行边界检查的。
+        // 如果越界了，程序会发生段错误。
+
         reference operator[](size_type position) {
             return start_[static_cast<different_type>(position)];
         }
@@ -422,6 +460,10 @@ namespace tinySTL {
             return std::numeric_limits<size_type>::max();
         }
 
+        /**
+         * 请求移除未使用的缓冲区。
+         * 所有迭代器都会失效。
+         */
         void shrink_to_fit() {
             for (auto current = map_; current < start_.node_; ++current) {
                 nodeAllocator.deallocate(*current, detail::deque_node_size);
@@ -434,11 +476,15 @@ namespace tinySTL {
             }
         }
 
+        // 所有迭代器都会失效。
         // TODO 最终需要保留一个缓冲区。这是 deque的策略，也是 deque的初始状态。
         void clear() {
+            // TODO 调用 erase()，效率很低。因为 erase() 中有一个将所有元素拷贝到新的起点的操作。而 clear() 完全没必要拷贝。
             erase(start_, finish_);
         }
 
+        // insert() 可能使所有迭代器都会失效。
+        // 注意：实际上不一定全都实现，但是存在可能性，所有需要谨慎使用。
         iterator insert(const_iterator position, const_reference value) {
             auto tmp = deque(1, value);
             return insert(position, tmp.begin(), tmp.end());
@@ -458,16 +504,21 @@ namespace tinySTL {
         iterator insert(const_iterator position, InputIterator first, InputIterator last) {
             size_type elementsBefore = position - start_;
             size_type insertSize = last - first;
+
+            // 因为 position 是 const_iterator，需要转成 iterator 才能修改迭代器指向的内容。
+            // 不能 const_cast，因为 const_iterator 不是 const iterator。
             auto newPosition = start_ + elementsBefore;
             if (elementsBefore < size() / 2) { // 插入位置离 start_ 更近
                 iterator newStart = reserve_elements_at_front(insertSize);
                 // 分配好 map 之后，在 newStart 前已经预留好 insertSize 个位置。
                 if (elementsBefore < insertSize) {
-                    // 可以一次性将 [start, position) 范围的元素拷贝到以 newStart 的起点的空间上。
+                    // 可以一次性将 [start_, position) 范围的元素拷贝到以 newStart 的起点的空间上。
                     auto it = std::uninitialized_copy_n(start_, elementsBefore, newStart);
-                    std::uninitialized_copy_n(first, insertSize - elementsBefore, it);
+                    std::uninitialized_copy_n(first, insertSize - elementsBefore, it); // TODO 当 first == it 时，还会拷贝吗？
                     std::copy(last - elementsBefore, last, start_);
                 } else {
+                    // 不可以一次性将 [start_, position) 范围的元素拷贝到以 newStart 的起点的空间上。
+                    // 一部分拷贝到为构造的内存空间上，一部分拷贝到已经构造过的内存空间上。
                     std::uninitialized_copy_n(start_, insertSize, newStart);
                     auto it = std::copy(start_ + insertSize, newPosition, start_);
                     std::copy(first, last, it);
@@ -475,12 +526,23 @@ namespace tinySTL {
                 start_ = newStart;
                 return newPosition - insertSize;
             } else {
+
+                // 因为 newFinish 是 const_iterator，需要转成 iterator 才能修改迭代器指向的内容。
+                // 不能 const_cast，因为 const_iterator 不是 const iterator。
                 iterator newFinish = reserve_elements_at_back(insertSize);
                 auto elementsAfter = size() - elementsBefore;
                 if (elementsAfter < insertSize) {
+                    // 拷贝 (last - first - elementsAfter) 个元素
                     auto it = std::uninitialized_copy(first + elementsAfter, last, finish_);
+                    // 一次性将 [position, finish_) 范围的元素拷贝到未构造的空间上。
                     std::uninitialized_copy(newPosition, finish_, it);
                     std::copy_n(first, first + elementsAfter, newPosition);
+                } else {
+                    // 不可以一次性将 [position, finish_) 范围的元素拷贝到未构造的空间上。
+                    // 一部分拷贝到为构造的内存空间上，一部分拷贝到已经构造过的内存空间上。
+                    std::uninitialized_copy(end() - insertSize, end(), finish_);
+                    std::copy_backward(newPosition, end() - insertSize, finish_);
+                    std::copy(first, last, newPosition);
                 }
                 finish_ = newFinish;
                 return newPosition;
@@ -492,6 +554,10 @@ namespace tinySTL {
             return insert(position, tmp.begin(), tmp.begin(), tmp.end());
         }
 
+        // erase 会使所有迭代器都会失效。
+        // position == begin()，则 begin() 失效；
+        // position == end()，则 end() 失效；
+        // 否则，则只有未被 erase 的元素不失效；
         template <class... Args>
         iterator emplace(const_iterator position, Args&&... args) {
             insert(position, T(std::forward<Args>(args)...));
@@ -502,14 +568,19 @@ namespace tinySTL {
                 return last;
             }
 
+            // 因为 first、last 是 const_iterator，需要转成 iterator 才能修改迭代器指向的内容。
+            // 不能 const_cast，因为 const_iterator 不是 const iterator。
             auto newFirst = begin() + (first - cbegin());
             auto newEnd = std::copy(last, cend(), newFirst);
 
+            // 销毁 newEnd 所在的缓冲区中 newEnd 后面的元素。
             for (auto it = newEnd; it != finish_; ++it) {
                 nodeAllocator.destory(&*it);
             }
 
+            // 整块地回收整块缓冲区的内存空间。
             for (auto i = newEnd.node_ + 1; i <= finish_.node_; ++i) {
+                // TODO 不需要小析构对象再回收内存空间？在 C 中，没有析构，可以直接 free 内存。
                 deallocate_node(*i);
             }
             finish_ = newEnd;
@@ -524,6 +595,11 @@ namespace tinySTL {
         void push_back(const_reference value) {
             insert(cend(), value);
         }
+
+        // push_back()、emplace_back()、push_front()、emplace_front() 会使所有迭代器失效。
+        // 注意：实际上不一定全都实现，但是存在可能性，所有需要谨慎使用。
+        // pop_front() 只使 begin() 失效。
+        // pop_back() 会是 back()、end() 失效。
 
         void push_back(const T &&value) {
             insert(cend(), std::move(value));
@@ -555,6 +631,9 @@ namespace tinySTL {
             erase(cbegin());
         }
 
+        // count > size()，所有迭代器失效；
+        // count < size()，被 erase 元素 和 end() 失效；
+        // 否则，不失效。
         void resize(size_type count, const_reference value) {
             if (count < size()) {
                 erase(cbegin() + count, cend());
@@ -567,6 +646,7 @@ namespace tinySTL {
             resize(count, T());
         }
 
+        // 迭代器可能失效。
         void swap(deque &other) {
             std::swap(start_, other.start_);
             std::swap(finish_, other.finish_);
@@ -575,57 +655,104 @@ namespace tinySTL {
         }
 
     private:
+        /**
+         * 初始化一个空 deque
+         */
         void empty_initialize() {
             create_map_and_nodes();
         }
 
+        /**
+         * 初始化，填充 first 个 last 值。
+         * @tparam InputIterator
+         * @param first 个数
+         * @param last 数值
+         */
         template <class InputIterator>
         void initialize_aux(InputIterator first, InputIterator last, __true_type) {
             fill_initialize(first, last);
         }
 
+        /**
+         * 初始化，将 [first, last) 范围的数字拷贝过来。
+         * @tparam InputIterator 迭代器类型
+         * @param first 起始迭代器
+         * @param last 末尾迭代器
+         */
         template <class InputIterator>
         void initialize_aux(InputIterator first, InputIterator last, __false_type) {
             copy_initialize(first, last, iterator_category(first));
         }
 
+        /**
+         * 初始化，填充 count 个 vale 值。
+         * @param count 元素个数
+         * @param value 值
+         */
         void fill_initialize(size_type count, const_reference value) {
             create_map_and_nodes(count);
             for (auto it = start_.node_; it < finish_.node_; ++it) {
+                // 整块初填充
                 std::uninitialized_fill(*it, *it + detail::deque_node_size, value);
             }
+            // 填充最后一个缓冲区
             std::uninitialized_fill(finish_.first_, finish_.current_, value);
         }
 
+        /**
+         * 拷贝初始化
+         * @tparam InputIterator 迭代器类型
+         * @param first 起始迭代器
+         * @param last 末尾迭代器
+         */
         template <typename InputIterator>
         void copy_initialize(InputIterator first, InputIterator last, input_iterator_tag) {
             create_map_and_nodes();
             while (first != last) {
                 reserve_elements_at_back(1);
+                // input_iterator_tag 类型迭代器只能逐个遍历。
                 nodeAllocator.construct(&*finish_++, *first);
             }
         }
 
+        /**
+         * 拷贝初始化
+         * @tparam ForwardIterator 迭代器类型
+         * @param first 起始迭代器
+         * @param last 末尾迭代器
+         */
         template <typename ForwardIterator>
         void copy_initialize(ForwardIterator first, ForwardIterator last, forward_iterator_tag) {
             size_type n = distance(first, last);
             create_map_and_nodes(n);
             for (auto it = start_.node_; it < finish_.node_; ++it) {
                 auto nextNode = next(first, detail::deque_node_size);
+                // 整块初始化
                 std::uninitialized_copy(first, nextNode, it);
                 first = next;
             }
+            // 初始化最后一个缓冲区
             std::uninitialized_copy(first, last, finish_.first_);
         }
 
+        /**
+         * 创建并组织好 deque 结构
+         * @param numElements 元素个数
+         */
         void create_map_and_nodes(size_type numElements = 0) {
+            // 缓冲区个数 = (元素个数 / 每个缓冲区的容量（默认为 8）) + 1
             size_type numNodes = numElements / detail::deque_node_size + 1;
+            // 最多会多配置两个缓冲区。
             mapSize_ = std::max(numNodes + 2, min_map_size_);
             map_ = allocate_map();
 
+            // 使 [nStart, nFinish_) 位于中间。
             T **nStart = map_ + (mapSize_ - numNodes) / 2;
             T **nFinish = nStart + numNodes - 1;
 
+            // 分配缓冲区内存，并设置迭代器。
+            // 注意：只有 [nStart, nFinish_) 范围分配了缓冲区，
+            // 其他 map 位置还未分配缓冲区。当需要的时候，动态扩展。
             for (auto it = nStart; it <= nFinish; ++it) {
                 *it = allocate_node();
             }
@@ -635,6 +762,9 @@ namespace tinySTL {
             finish_.current_ = finish_.first_ + numElements % detail::deque_node_size;
         }
 
+        /**
+         * 删除 deque，并回收内存空间。
+         */
         void delete_deque() {
             if (map_ == nullptr) {
                 return;
@@ -645,6 +775,13 @@ namespace tinySTL {
             map_ = nullptr;
         }
 
+        /**
+         * 设置 deque 的信息。
+         * @param start 起始迭代器
+         * @param finish 末尾迭代器
+         * @param map map 指针
+         * @param mapSize 缓冲区个数
+         */
         void set(iterator start, iterator finish, T **map, size_type mapSize) {
             start_ = start;
             finish_ = finish;
@@ -652,47 +789,84 @@ namespace tinySTL {
             mapSize_ = mapSize;
         }
 
+        /**
+         * 移动 other 到当前 deque
+         * @param other 要移动的 deque
+         */
         void move_from(deque &other) {
             delete_deque();
             set(other.start_, other.finish_, other.map_, other.mapSize_);
             other.map_ = nullptr;
         }
 
+        /**
+         * 分配 map 的内存空间。
+         * @return 内存指针
+         */
         T** allocate_map() {
             return mapAllocator.allocate(mapSize_);
         }
 
+        /**
+         * 回收 map 的内存空间。
+         */
         void deallocate_map() {
             mapAllocator.deallocate(map_, mapSize_);
         }
 
+        /**
+         * 分配缓冲区的内存空间。
+         * @return 内存指针
+         */
         T* allocate_node() {
             return nodeAllocator.allocate(detail::deque_node_size);
         }
 
+        /**
+         * 回收缓冲区的内存空间。
+         */
         void deallocate_node(pointer ptr) {
             nodeAllocator.deallocate(ptr, detail::deque_node_size);
         }
 
+        /**
+         * 在前面预留 n 个元素的位置。
+         * @param n 个数
+         * @return 更新位置后的 start_ 迭代器
+         */
         iterator reserve_elements_at_front(size_type n) {
+            // 当前缓冲区剩下的位置的个数
             size_type nBefore = start_.current_ - start_.first_;
             if (n > nBefore) {
+                // 空间不够，需要分配新的缓冲区。
                 new_elements_at_front(n - nBefore);
             }
 
             return start_ - n;
         }
 
+        /**
+         * 在后面预留 n 个元素的位置。
+         * @param n 个数
+         * @return 更新位置后的 finish_ 迭代器
+         */
         iterator reserve_elements_at_back(size_type n) {
+            // 当前缓冲区剩下的位置的个数
             size_type nAfter = finish_.last_ - finish_.current_ - 1;
             if (n > nAfter) {
+                // 空间不够，需要分配新的缓冲区。
                 new_elements_at_back(n - nAfter);
             }
 
             return finish_ + n;
         }
 
+        /**
+         * 在前面分配几个位置
+         * @param n 个数
+         */
         void new_elements_at_front(size_type n) {
+            // 需要增加的缓冲区的个数
             size_type newNodes = (n + detail::deque_node_size - 1)
                     / detail::deque_node_size;
             reserve_map_at_front(newNodes);
@@ -701,7 +875,12 @@ namespace tinySTL {
             }
         }
 
+        /**
+         * 在后面分配几个位置
+         * @param n 个数
+         */
         void new_elements_at_back(size_type n) {
+            // 需要增加的缓冲区的个数
             size_type newNodes = (n + detail::deque_node_size - 1)
                     / detail::deque_node_size;
             reserve_map_at_back(newNodes);
@@ -710,24 +889,45 @@ namespace tinySTL {
             }
         }
 
+        /**
+         * 在前面预留 n 个缓冲区位置（
+         * 只是在 map 中分配了位置，但为实际分配缓冲区的内存空间）。
+         * @param n 个数
+         */
         void reserve_map_at_front(size_type n = 1) {
+            // 如果前面没有足够的位置，才重新分配 map。
             if (n > start_.node_ - map_) {
                 reallocate_map(n, true);
             }
         }
 
+        /**
+         * 在后面预留 n 个缓冲区。
+         * 只是在 map 中分配了位置，但为实际分配缓冲区的内存空间）。
+         * @param n 个数
+         */
         void reserve_map_at_back(size_type n = 1) {
+            // 如果后面没有足够的位置，才重新分配 map。
             if (n > mapSize_ - (finish_.node_ - map_ + 1)) {
                 reallocate_map(n, false);
             }
         }
 
+        /**
+         * 重新分配 map
+         * @param nodesToAdd 增加的缓冲区的个数
+         * @param addToFront true：增加到前面；false：增加到后面
+         */
         void reallocate_map(size_type nodesToAdd, bool addToFront) {
-            size_type oldNumNodes = finish_.node_ - start_.node_ + 1;
-            size_type newNumNodes = oldNumNodes + nodesToAdd;
+            size_type oldNumNodes = finish_.node_ - start_.node_ + 1; // 原缓冲区的个数
+            size_type newNumNodes = oldNumNodes + nodesToAdd; // 新缓冲区的个数
 
             T **newStart;
             if (mapSize_ > 2 * newNumNodes) {
+                // 现在 map 有足够的位置，所以只需要移动元素即可。
+                // 将新的 [start_, finish_) 放到中间。
+                // 如果是在前面增加缓冲区，还要将 newStart 向后移动 nodesToAdd 个位置，
+                // 预留出来给将要增加的缓冲区。
                 newStart = map_ + (mapSize_ - newNumNodes) / 2
                         + (addToFront ? nodesToAdd : 0);
                 if (newStart < start_.node_) {
@@ -738,6 +938,7 @@ namespace tinySTL {
                                        newStart + nodesToAdd);
                 }
             } else {
+                // 现在 map 没有足够的位置，需要重新分配。
                 mapSize_ += std::max(mapSize_, nodesToAdd) + 2;
                 auto newMap = allocate_map();
                 newStart = newMap + (mapSize_ - newNumNodes) / 2
