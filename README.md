@@ -18,6 +18,7 @@ a subset of STL
     - [x] min 
 - [x] functional
     - [x] less
+    - [x] less_equal
 
 ## TODO
 
