@@ -19,6 +19,7 @@ a subset of STL
 - [x] functional
     - [x] less
     - [x] less_equal
+    - [x] greater
 - [x] utility
     - [x] pair
     - [x] make_pair
