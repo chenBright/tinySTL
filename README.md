@@ -18,9 +18,11 @@ a subset of STL
     - [x] min 
 - [x] functional
     - [x] less
+    - [x] less_equal
 - [x] utility
     - [x] pair
     - [x] make_pair
+
 ## TODO
 
 - 单元测试
