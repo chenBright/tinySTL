@@ -47,6 +47,13 @@ namespace tinySTL {
             return lhs >= rhs;
         }
     };
+
+    template <class T>
+    struct equal_to : public binary_finction<T, T, bool> {
+        bool operator()(const T &lhs, const T &rhs) const {
+            return lhs >= rhs;
+        }
+    };
 }
 
 #endif //TINYSTL_FUNCTIONAL_H
