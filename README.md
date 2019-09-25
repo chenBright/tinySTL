@@ -16,6 +16,7 @@ a subset of STL
 - [x] priority_queue
 - [x] initializer_list
 - [x] 算法
+    - [x] max_element
     - [x] min
     - [x] min_element 
 - [x] functional
