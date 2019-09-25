@@ -24,6 +24,7 @@ a subset of STL
     - [x] greater
     - [x] greater_equal
     - [x] equal_to
+    - [x] not_equal_to
 - [x] utility
     - [x] pair
     - [x] make_pair
