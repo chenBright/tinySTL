@@ -50,12 +50,7 @@ namespace tinySTL {
      */
     // 返回 [first, last) 范围内的最小值
     //
-    // 其中 comp 比较函数：
-    // 它的声明等价于 bool cmp(const Type1 &a, const Type2 &b);
-    // 如果 a 小于 b，则返回 true。
-    // 虽然形参的声明不一定是 const&，但是函数不能修改传递给它的对象，
-    // 以及能接受各种形式的（包括 const）Type1 和 Type2 。
-    // 所以，Type1& 是不合法的。除非 Type1 的移动等价于拷贝，否则 Type1 也是不合法的。
+    // comp 比较函数的用法同上。
     //
     // 如果有多个相等的最小值，则返回第一个最小值。
      template <class ForwardIt>

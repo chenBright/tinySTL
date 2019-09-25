@@ -20,38 +20,6 @@ namespace tinySTL {
         using result_type           = Result;
     };
 
-    // 类型 T 必须支持 < 操作符
-    template <class T>
-    struct less : public binary_finction<T, T, bool> {
-        bool operator()(const T &lhs, const T &rhs) const {
-            return lhs < rhs;
-        }
-    };
-
-    // 类型 T 必须支持 <= 操作符
-    template <class T>
-    struct less_equal : public binary_finction<T, T, bool> {
-        bool operator()(const T &lhs, const T &rhs) const {
-            return lhs <= rhs;
-        }
-    };
-
-    // 类型 T 必须支持 > 操作符
-    template <class T>
-    struct greater : public binary_finction<T, T, bool> {
-        bool operator()(const T &lhs, const T &rhs) const {
-            return lhs > rhs;
-        }
-    };
-
-    // 类型 T 必须支持 >= 操作符
-    template <class T>
-    struct greater_equal : public binary_finction<T, T, bool> {
-        bool operator()(const T &lhs, const T &rhs) const {
-            return lhs >= rhs;
-        }
-    };
-
     // 类型 T 必须支持 == 操作符
     template <class T>
     struct equal_to : public binary_finction<T, T, bool> {
@@ -65,6 +33,38 @@ namespace tinySTL {
     struct not_equal_to : public binary_finction<T, T, bool> {
         bool operator()(const T &lhs, const T &rhs) const {
             return lhs != rhs;
+        }
+    };
+
+    // 类型 T 必须支持 > 操作符
+    template <class T>
+    struct greater : public binary_finction<T, T, bool> {
+        bool operator()(const T &lhs, const T &rhs) const {
+            return lhs > rhs;
+        }
+    };
+
+    // 类型 T 必须支持 < 操作符
+    template <class T>
+    struct less : public binary_finction<T, T, bool> {
+        bool operator()(const T &lhs, const T &rhs) const {
+            return lhs < rhs;
+        }
+    };
+
+    // 类型 T 必须支持 >= 操作符
+    template <class T>
+    struct greater_equal : public binary_finction<T, T, bool> {
+        bool operator()(const T &lhs, const T &rhs) const {
+            return lhs >= rhs;
+        }
+    };
+
+    // 类型 T 必须支持 <= 操作符
+    template <class T>
+    struct less_equal : public binary_finction<T, T, bool> {
+        bool operator()(const T &lhs, const T &rhs) const {
+            return lhs <= rhs;
         }
     };
 }

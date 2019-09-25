@@ -19,12 +19,12 @@ a subset of STL
     - [x] min
     - [x] min_element 
 - [x] functional
-    - [x] less
-    - [x] less_equal
-    - [x] greater
-    - [x] greater_equal
     - [x] equal_to
     - [x] not_equal_to
+    - [x] greater
+    - [x] less
+    - [x] greater_equal
+    - [x] less_equal
 - [x] utility
     - [x] pair
     - [x] make_pair
