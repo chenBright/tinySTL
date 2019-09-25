@@ -447,7 +447,6 @@ namespace tinySTL {
         }
 
         void merge(list &&other) {
-            // TODO tinySTL 版本的 less、greater
             merge(other);
         }
 
@@ -551,8 +550,7 @@ namespace tinySTL {
         // 移除数值相同的连续的元素。
         // 注意：只有"连续且相同"的元素才会被移除剩一个。
         size_type unique() {
-            // TODO tinySTL 版本的 equal_to
-            return unique(std::equal_to<T>());
+            return unique(equal_to<T>());
         }
 
         // merge sort 迭代实现

@@ -1,18 +1,18 @@
 #ifndef TINYSTL_VECTOR_H
 #define TINYSTL_VECTOR_H
 
-#include "alloc.h"
-#include "iterator_base.h"
-#include "iterator_reverse_iterator.h"
-#include "type_traits.h"
-
+#include <cstddef>
 #include <initializer_list>
-
 #include <vector>
 #include <memory>
 #include <utility>
 #include <algorithm>
 #include <stdexcept>
+
+#include "alloc.h"
+#include "iterator_base.h"
+#include "iterator_reverse_iterator.h"
+#include "type_traits.h"
 
 namespace tinySTL {
     // 封装动态数组的顺序容器
@@ -379,7 +379,7 @@ namespace tinySTL {
         template <class... Args>
         iterator emplace(const_iterator position, Args&&... args) {
             // TODO tinySTL 版本的 forward
-            return insert(position, T(std::forward<Args>(args)...)); // TODO 变长参数 参数展开 https://www.cnblogs.com/qicosmos/p/4325949.html
+            return insert(position, T(std::forward<Args>(args)...));
         }
 
         // 擦除指定位置的元素

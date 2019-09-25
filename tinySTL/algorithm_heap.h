@@ -7,6 +7,8 @@
 #include "iterator_base.h"
 #include "functional.h"
 
+#include "algorithm_heap.h" // heap 算法
+
 namespace tinySTL {
     template<class RandomAccessIterator, class Compare>
     void push_heap(RandomAccessIterator first, RandomAccessIterator last) {
