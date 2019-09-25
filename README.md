@@ -15,7 +15,8 @@ a subset of STL
 - [x] heap
 - [x] priority_queue
 - [x] 算法
-    - [x] min 
+    - [x] min
+    - [x] min_element 
 - [x] functional
     - [x] less
     - [x] less_equal
