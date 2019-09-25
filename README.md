@@ -14,13 +14,16 @@ a subset of STL
 - [x] queue
 - [x] heap
 - [x] priority_queue
+- [x] initializer_list
 - [x] 算法
-    - [x] min 
+    - [x] min
+    - [x] min_element 
 - [x] functional
     - [x] less
     - [x] less_equal
     - [x] greater
     - [x] greater_equal
+    - [x] equal_to
 - [x] utility
     - [x] pair
     - [x] make_pair
