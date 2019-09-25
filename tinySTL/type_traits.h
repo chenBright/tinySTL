@@ -19,6 +19,8 @@ namespace tinySTL {
     template <class T>
     struct is_integral                      : public __false_type {};
 
+    // 实例化类模板，只需要写 <>。
+    // 参考《C++ Primer》第五版 P584
     template <>
     struct is_integral<bool>                : public __true_type {};
 
@@ -61,7 +63,7 @@ namespace tinySTL {
     // has_trivial_assignment_operator  -> 不重要的赋值函数
     // has_trivial_destructor           -> 不重要的析构函数
     // is_POD_type                      -> Plain Old Data，标量类型或者传统的 C struct 类型。
-    //                                     对 POD 类型，课采用最有效的初值填写方法。
+    //                                     对 POD 类型，可采用最有效的初值填写方法。
     //
     // 决定以上成员为 __true_type 还是 __false_type 的标准：
     // 如果 class 内含指针成员，并且对它进行内存动态配置，

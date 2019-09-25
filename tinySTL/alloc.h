@@ -70,8 +70,8 @@ namespace tinySTL {
         // 无限循环，直到分配到需要的内存位置。
         // 同时，如果用户设置了自定义的处理函数（OutOfMemoryHandler），则还要调用 OutOfMemoryHandler()。
         // 如果用户没有设置自定义处理函数，则直接抛出异常（throw bad_alloc）。
-        // TODO 找出第三版中的 item，且设计"内存不足"的处理函数是用户的职责，该 item 有提到该函数的特定模式
-        // 该实现类似《Effective C++》第二版 item7 中提到的 C++ new-handler 机制。
+        // 该实现类似《Effective C++》第三版 item49 中提到的 C++ new-handler 机制。
+        // 设计"内存不足"的处理函数是用户的职责，该 item 有提到该函数的特定模式。
         // C++ new-handler 机制：
         // 要求系统在无法满足内存分配要求时，调用一个自定义的处理函数。
 

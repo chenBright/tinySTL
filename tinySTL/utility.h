@@ -69,7 +69,7 @@ namespace tinySTL {
             // 则调用该特定版本。
             // 因为如果实参类的命名空间中存在该实参类型版本的 swap() 函数，
             // 则它被查找的优先级比 using 声明的优先级搞。
-            // 见《C++ Primer》P706
+            // 见《C++ Primer》第五版 P706
             swap(first, other.first);
             swap(second, other.second);
         }

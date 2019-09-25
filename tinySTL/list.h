@@ -447,7 +447,6 @@ namespace tinySTL {
         }
 
         void merge(list &&other) {
-            // TODO tinySTL 版本的 less、greater
             merge(other);
         }
 

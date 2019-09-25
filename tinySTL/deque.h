@@ -477,7 +477,7 @@ namespace tinySTL {
         }
 
         // 所有迭代器都会失效。
-        // TODO 最终需要保留一个缓冲区。这是 deque的策略，也是 deque的初始状态。
+        // 最终需要保留一个缓冲区。这是 deque的策略，也是 deque的初始状态。
         void clear() {
             // TODO 调用 erase()，效率很低。因为 erase() 中有一个将所有元素拷贝到新的起点的操作。而 clear() 完全没必要拷贝。
             erase(start_, finish_);
@@ -580,7 +580,7 @@ namespace tinySTL {
 
             // 整块地回收整块缓冲区的内存空间。
             for (auto i = newEnd.node_ + 1; i <= finish_.node_; ++i) {
-                // TODO 不需要小析构对象再回收内存空间？在 C 中，没有析构，可以直接 free 内存。
+                // TODO 不需要析构对象再回收内存空间？在 C 中，没有析构，可以直接 free 内存。
                 deallocate_node(*i);
             }
             finish_ = newEnd;
