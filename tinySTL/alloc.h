@@ -7,8 +7,9 @@
 
 #include <algorithm>
 #include <functional>
-#include <new>
+#include <utility>
 
+#include "constrcut.h"
 #include "algorithm.h"
 
 namespace tinySTL {
@@ -476,16 +477,22 @@ namespace tinySTL {
          * @param value 构造函数的实参
          */
         static void construct(pointer ptr, const_reference value) {
-            new(ptr) T(value);
+            tinySTL::construct(ptr, value);
         }
 
+        static void construct(pointer ptr, T &&value) {
+            tinySTL::construct(ptr, std::move(value));
+        }
+
+        // 可以接受多个 value 参数，支持右值（前提为 Args 类型定义了移动构造函数）。
+        // 其他同上
+        template <class... Args>
+        inline void construct(T *ptr, Args&&... args) {
+            tinySTL::construct(ptr, std::forward<Args>(args)...);
+        }
         // T 的构造函数没有形参，其他同上
         static void construct(pointer ptr) {
-            // TODO 学习 new 的高级用法
-            // placement new
-            // 在 ptr 指向的空间上调用 T 的构造函数
-            // 参考 https://zh.wikipedia.org/wiki/New_(C%2B%2B)#%E5%B8%A6%E4%BD%8D%E7%BD%AE%E7%9A%84new%E8%BF%90%E7%AE%97%E7%AC%A6%E8%A1%A8%E8%BE%BE%E5%BC%8F
-            new(ptr) T();
+            tinySTL::construct(ptr);
         }
 
 
