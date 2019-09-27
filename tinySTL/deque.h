@@ -911,7 +911,7 @@ namespace tinySTL {
             // 缓冲区个数 = (元素个数 / 每个缓冲区的容量（默认为 8）) + 1
             size_type numNodes = numElements / detail::deque_node_size + 1;
             // 最多会多配置两个缓冲区。
-            mapSize_ = std::max(numNodes + 2, min_map_size_);
+            mapSize_ = tinySTL::max(numNodes + 2, min_map_size_);
             map_ = allocate_map();
 
             // 使 [nStart, nFinish_) 位于中间。
@@ -1086,7 +1086,7 @@ namespace tinySTL {
                 }
             } else {
                 // 现在 map 没有足够的位置，需要重新分配。
-                mapSize_ += std::max(mapSize_, nodesToAdd) + 2;
+                mapSize_ += tinySTL::max(mapSize_, nodesToAdd) + 2;
                 auto newMap = allocate_map();
                 newStart = newMap + (mapSize_ - newNumNodes) / 2
                         + (addToFront ? nodesToAdd : 0);

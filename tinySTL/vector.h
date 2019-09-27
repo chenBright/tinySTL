@@ -325,9 +325,10 @@ namespace tinySTL {
                     //    复制到当前使用空间的尾部，并与 end() 对齐
                     // 3. 最后，将 [first, last) 范围的元素插入到 newPosition 的位置
 
-                    // TODO tinySTL 版本的 uninitialized_fill_n，注意：此处传入的迭代器有const，有non-const
+                    // TODO tinySTL 版本的 uninitialized_fill_n
+                    //  注意：此处传入的迭代器有const，有non-const
                     std::uninitialized_copy(cend() - (last - first), cend(), end());
-                    // TODO tinySTL 版本的 max，注意：此处传入的迭代器有const，有non-const
+                    // 注意：此处传入的迭代器有const，有non-const
                     std::copy_backward(position, cend() - (last - first), end());
                     std::copy(first, last, newPosition);
                     finish_ += last - first;
@@ -346,8 +347,7 @@ namespace tinySTL {
 
             // 目前可用空间可以容纳得不下 [first, last)
 
-            // TODO tinySTL 版本的 max
-            size_type newSize = size() + std::max(size(), last - first);
+            size_type newSize = size() + tinySTL::max(size(), last - first);
 
             vector tmp;
             tmp.start_ = dataAllocator.allocate(newSize);
