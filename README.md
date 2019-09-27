@@ -33,7 +33,7 @@ a subset of STL
 ## TODO
 
 - 单元测试
-- vector、list、deque 中存在大量的依靠创建临时对象再swap的低效代码，特别是在operator=和insert中。
+- vector、list 中存在大量的依靠创建临时对象再swap的低效代码，特别是在operator=和insert中。
 - std::get(std::pair)
 - std::tuple_size<std::pair>
 - std::tuple_element<std::pair>
