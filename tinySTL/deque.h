@@ -816,10 +816,11 @@ namespace tinySTL {
 
         // 所有迭代器失效。
         void swap(deque &other) {
-            std::swap(start_, other.start_);
-            std::swap(finish_, other.finish_);
-            std::swap(map_, other.map_);
-            std::swap(mapSize_, other.mapSize_);
+            using std::swap;
+            swap(start_, other.start_);
+            swap(finish_, other.finish_);
+            swap(map_, other.map_);
+            swap(mapSize_, other.mapSize_);
         }
 
     private:
