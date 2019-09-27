@@ -93,7 +93,7 @@ namespace tinySTL {
         }
 
         void swap(stack &other) {
-            tinySTL::swap(c, other.c);
+            c.swap(other.c);
         }
 
     }; // class stack

@@ -407,6 +407,7 @@ namespace tinySTL {
         }
 
         void swap(list &other) {
+            using std::swap;
             std::swap(node_, other.node_);
             std::swap(size_, other.size_);
         }
@@ -519,10 +520,11 @@ namespace tinySTL {
                 return;
             }
 
-            std::swap(node_->previous, node_->next);
+            using std::swap;
+            swap(node_->previous, node_->next);
             auto it = node_->previous; // 原 node_->next
             while (it != node_) {
-                std::swap(it->previous, it->next);
+                swap(it->previous, it->next);
                 it = it->previous; // 原 it->next
             }
         }
@@ -736,7 +738,6 @@ namespace tinySTL {
         return !(left < right);
     }
 
-    // 特化 std::swap 算法
     template <class T, class Allocator>
     void swap(list<T, Allocator> &left, list<T, Allocator> &right) {
         left.swap(right);

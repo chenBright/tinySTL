@@ -446,9 +446,10 @@ namespace tinySTL {
          */
         void swap(vector &other) noexcept {
             // TODO tinySTL 版本的 swap
-            std::swap(start_, other.start_);
-            std::swap(finish_, other.finish_);
-            std::swap(end_of_storage_, other.end_of_storage_);
+            using std::swap;
+            swap(start_, other.start_);
+            swap(finish_, other.finish_);
+            swap(end_of_storage_, other.end_of_storage_);
         }
 
     private:
