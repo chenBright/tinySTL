@@ -12,7 +12,7 @@
 namespace tinySTL {
     template<class RandomAccessIterator, class Compare>
     void push_heap(RandomAccessIterator first, RandomAccessIterator last) {
-        push_heap(first, last, less<typename iterator_traits<RandomAccessIterator>::value_type>());
+        push_heap(first, last, tinySTL::less<typename iterator_traits<RandomAccessIterator>::value_type>());
     }
 
     template<class RandomAccessIterator, class Compare>
@@ -71,7 +71,7 @@ namespace tinySTL {
 
     template<class RandomAccessIterator, class Compare>
     void pop_heap(RandomAccessIterator first, RandomAccessIterator last) {
-        pop_heap(first, last, less<typename iterator_traits<RandomAccessIterator>::value_type>());
+        pop_heap(first, last, tinySTL::less<typename iterator_traits<RandomAccessIterator>::value_type>());
     }
 
     template<class RandomAccessIterator, class Compare>
@@ -90,7 +90,7 @@ namespace tinySTL {
 
     template<class RandomAccessIterator>
     void sort_heap(RandomAccessIterator first, RandomAccessIterator last) {
-        sort_heap(first, last, less<typename iterator_traits<RandomAccessIterator>::value_type>());
+        sort_heap(first, last, tinySTL::less<typename iterator_traits<RandomAccessIterator>::value_type>());
     }
 
     template<class RandomAccessIterator, class Compare>
@@ -102,7 +102,7 @@ namespace tinySTL {
 
     template<class RandomAccessIterator>
     void make_heap(RandomAccessIterator first, RandomAccessIterator last) {
-        make_heap(first, last, less<typename iterator_traits<RandomAccessIterator>::value_type>());
+        make_heap(first, last, tinySTL::less<typename iterator_traits<RandomAccessIterator>::value_type>());
     }
 
     template<class RandomAccessIterator, class Compare>
@@ -122,7 +122,7 @@ namespace tinySTL {
 
     template<class RandomAccessIterator>
     bool is_heap(RandomAccessIterator first, RandomAccessIterator last) {
-        return is_heap(first, last, less<typename iterator_traits<RandomAccessIterator>::value_type>());
+        return is_heap(first, last, tinySTL::less<typename iterator_traits<RandomAccessIterator>::value_type>());
     }
 
     template<class RandomAccessIterator, class Compare>
@@ -151,7 +151,7 @@ namespace tinySTL {
 
     template<class RandomAccessIterator>
     bool is_heap_until(RandomAccessIterator first, RandomAccessIterator last) {
-        return is_heap_until(first, last, less<typename iterator_traits<RandomAccessIterator>::value_type>());
+        return is_heap_until(first, last, tinySTL::less<typename iterator_traits<RandomAccessIterator>::value_type>());
     }
 
     template<class RandomAccessIterator, class Compare>

@@ -25,7 +25,7 @@ namespace tinySTL {
     // 如果 a == b，则返回 a。
     template <class T>
     const T& max(const T &a, const T &b) {
-        return max(a, b, less<T>());
+        return max(a, b, tinySTL::less<T>());
     }
 
     template <class T, class Compare>
@@ -38,7 +38,7 @@ namespace tinySTL {
 
     template <class T>
     const T& max(std::initializer_list<T> ilist) {
-        return max(ilist, less<T>());
+        return max(ilist, tinySTL::less<T>());
     }
 
     template <class T, class Compare>
@@ -58,7 +58,7 @@ namespace tinySTL {
     template <class ForwardIt>
     ForwardIt max_element(ForwardIt first, ForwardIt last) {
         using value_type = typename iterator_traits<ForwardIt>::value_type;
-        return max_element(first, last, less<value_type>());
+        return max_element(first, last, tinySTL::less<value_type>());
     }
 
     template <class ForwardIt, class Compare>
@@ -87,7 +87,7 @@ namespace tinySTL {
     // 如果 a == b，则返回 a。
     template <class T>
     const T& min(const T &a, const T &b) {
-        return min(a, b, less<T>());
+        return min(a, b, tinySTL::less<T>());
     }
 
     template <class T, class Compare>
@@ -100,7 +100,7 @@ namespace tinySTL {
 
     template <class T>
     const T& min(std::initializer_list<T> ilist) {
-        return min(ilist, less<T>());
+        return min(ilist, tinySTL::less<T>());
     }
 
     template <class T, class Compare>
@@ -119,7 +119,7 @@ namespace tinySTL {
      template <class ForwardIt>
      ForwardIt min_element(ForwardIt first, ForwardIt last) {
         using value_type = typename iterator_traits<ForwardIt>::value_type;
-        return min_element(first, last, less<value_type>());
+        return min_element(first, last, tinySTL::less<value_type>());
      }
 
     template <class ForwardIt, class Compare>

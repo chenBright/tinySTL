@@ -9,7 +9,7 @@
 #include "functional.h"
 
 namespace tinySTL {
-    template <class T, class Container = vector<T>, class Compare = less<typename Container::value_type>>
+    template <class T, class Container = vector<T>, class Compare = tinySTL::less<typename Container::value_type>>
     class priority_queue {
     public:
         using container_type    = Container;
