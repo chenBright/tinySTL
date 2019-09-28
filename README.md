@@ -14,6 +14,7 @@ a subset of STL
 - [x] queue
 - [x] heap
 - [x] priority_queue
+- [x] set
 - [x] initializer_list
 - [x] 算法
     - [x] max
