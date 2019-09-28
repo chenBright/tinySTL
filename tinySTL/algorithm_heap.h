@@ -35,6 +35,8 @@ namespace tinySTL {
 
 
     namespace detail {
+        // T&&：引用折叠，接受的实参可以是右值，也可以是左值，所以需要对 value 做完美转发（forward）。
+        // 参考《C++ Primer》P609
         template<class RandomAccessIterator, class Distance, class T, class Compare>
         void pop_heap_aux(RandomAccessIterator first, Distance currentIndex, Distance maxIndex, T &&value, Compare comp) {
             while (true) {
@@ -46,7 +48,7 @@ namespace tinySTL {
                 }
                 if (rightIndex >= maxIndex) {
                     if (comp(value, first[leftIndex])) {
-                        first[currentIndex] = std::move(first[leftIndex]);
+                        first[currentIndex] = std::forward<T>(first[leftIndex]);
                         currentIndex = leftIndex;
                     }
                     break;
@@ -56,16 +58,16 @@ namespace tinySTL {
                     break;
                 } else if (comp(first[leftIndex], first[rightIndex])) { // 有且只有一个子结点比 value 大
                     // 右子结点大
-                    first[currentIndex] = std::move(first[rightIndex]);
+                    first[currentIndex] = std::forward<T>(first[rightIndex]);
                     currentIndex = rightIndex;
                 } else {
                     // 左子结点大
-                    first[currentIndex] = std::move(first[leftIndex]);
+                    first[currentIndex] = std::forward<T>(first[leftIndex]);
                     currentIndex = leftIndex;
                 }
             }
 
-            first[currentIndex] = std::move(value);
+            first[currentIndex] = std::forward<T>(value);
         }
     }
 

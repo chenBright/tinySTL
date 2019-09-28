@@ -276,31 +276,11 @@ namespace tinySTL {
         }
 
         iterator insert(const_iterator position, const_reference value) {
-            vector tmp(1, value);
-            return insert(position, tmp.cbegin(), tmp.cend());
+            return insert_aux(position, value);
         }
 
         iterator insert(const_iterator position, const T &&value) {
-            if (capacity() > size()) {
-                auto newPosition = const_cast<iterator>(position);
-                dataAllocator.construct(finish_++, value);
-                std::copy_backward(position, cend() - 1, end());
-                *newPosition = std::move(value);
-
-                return newPosition;
-            } else {
-                const size_type newSize = empty() ? 1 : 2 * size();
-                vector tmp;
-                tmp.start_ = dataAllocator.allocate(newSize);
-                auto newPosition = tmp.start_ + (position - cbegin());
-                tmp.finish_ = std::uninitialized_copy(cbegin(), position, tmp.start_);
-                dataAllocator.construct(tmp.finish_++, std::move(value));
-                tmp.finish_ = std::uninitialized_copy(position, cend(), tmp.finish_);
-                tmp.end_of_storage_ = tmp.start_ + newSize;
-                swap(tmp);
-
-                return newPosition;
-            }
+            return insert_aux(position, std::move(value));
         }
 
         iterator insert(const_iterator position, size_type count, const_reference value) {
@@ -528,6 +508,45 @@ namespace tinySTL {
             }
 
             return *(begin() + position);
+        }
+
+        /**
+         * 在 position 之前插入元素。
+         * 该函数用于辅助在 position 位置前插入一个元素。只提供给
+         * iterator insert(const_iterator position, const T &value) 和
+         * iterator insert(const_iterator position, const T &&value) 使用，
+         * 目的是为了避免代码冗余，所以实现了这个即可接受左值又可接受右值的函数。
+         *
+         * T&&：引用折叠，接受的实参可以是右值，也可以是左值，所以需要对 value 做完美转发（forward）。
+         * 参考《C++ Primer》P609。
+         *
+         * @tparam U 插入值的类型，一般 U == T
+         * @param position 插入到 position 之前
+         * @param value 值
+         * @return 插入元素的迭代器
+         */
+        template <class U>
+        iterator insert_aux(const_iterator position, U &&value) {
+            if (capacity() > size()) {
+                auto newPosition = begin() + (position - cbegin());
+                dataAllocator.construct(finish_++, value);
+                std::copy_backward(position, cend() - 1, end());
+                *newPosition = std::forward<U>(value);
+
+                return newPosition;
+            } else {
+                const size_type newSize = empty() ? 1 : 2 * size();
+                vector tmp;
+                tmp.start_ = dataAllocator.allocate(newSize);
+                auto newPosition = tmp.start_ + (position - cbegin());
+                tmp.finish_ = std::uninitialized_copy(cbegin(), position, tmp.start_);
+                dataAllocator.construct(tmp.finish_++, std::forward<U>(value));
+                tmp.finish_ = std::uninitialized_copy(position, cend(), tmp.finish_);
+                tmp.end_of_storage_ = tmp.start_ + newSize;
+                swap(tmp);
+
+                return newPosition;
+            }
         }
 
     }; // class vector
