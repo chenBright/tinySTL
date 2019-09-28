@@ -1100,43 +1100,28 @@ namespace tinySTL {
         }
 
         /**
-         * 在 position 前插入一个值为 value 的元素
+         * 在 position 前插入一个值为 value 的元素。
+         * 该函数用于辅助在 position 位置前插入一个元素。只提供给
+         * iterator insert(const_iterator position, const T &value) 和
+         * iterator insert(const_iterator position, const T &&value) 使用，
+         * 目的是为了避免代码冗余，所以实现了这个即可接受左值又可接受右值的函数。
+         *
+         * T&&：引用折叠，接受的实参可以是右值，也可以是左值，所以需要对 value 做完美转发（forward）。
+         * 参考《C++ Primer》P609。
+         *
+         * @tparam U 插入值的类型，一般 U == T
          * @param position 插入点
          * @param value 值
          * @return 插入的元素的迭代器
          */
-        iterator insert_aux(const_iterator position, const_reference value) {
+        template <class U>
+        iterator insert_aux(const_iterator position, U &&value) {
             move_elements_for_insert_aux(position);
 
             // 因为 position 是 const_iterator，需要转成 iterator 才能修改迭代器指向的内容。
             // 不能 const_cast，因为 const_iterator 不是 const iterator。
             iterator newPosition = begin() + (position - cbegin());
 
-            *newPosition = value;
-
-            return newPosition;
-        }
-
-        // 同上
-        iterator insert_aux(const_iterator position, const value_type &&value) {
-            move_elements_for_insert_aux(position);
-
-            // 因为 position 是 const_iterator，需要转成 iterator 才能修改迭代器指向的内容。
-            // 不能 const_cast，因为 const_iterator 不是 const iterator。
-            iterator newPosition = begin() + (position - cbegin());
-
-            *newPosition = std::move(value);
-
-            return newPosition;
-        }
-
-        /**
-         * 如果 position 靠前，则移动前面的元素；
-         * 如果 position 靠后，则移动后面的元素。
-         * @param position
-         */
-        void move_elements_for_insert_aux(iterator position) {
-            iterator newPosition = begin() + (position - cbegin());
             if (newPosition - begin() < size() / 2) {
                 auto oldFront = begin(); // 原第一个元素
                 auto copyFront = oldFront + 1; // 原第二个元素
@@ -1150,6 +1135,10 @@ namespace tinySTL {
                 // 将插入点位置起直到原倒数第二个元素的位置向后一个位置拷贝
                 std::copy_backward(newPosition, oldBack, end() - 1);
             }
+
+            *newPosition = std::forward<U>(value);
+
+            return newPosition;
         }
     }; // class deque
 
