@@ -67,6 +67,17 @@ namespace tinySTL {
             return lhs <= rhs;
         }
     };
+
+    // 证同，选择，投射
+    // 只将参数原封不动地返回，之所以有这般设计是为了增加间接性。
+    // C++ 20 引入 identity，而且还考虑了右值。
+    // 详情见 https://zh.cppreference.com/w/cpp/utility/functional/identity
+    template <class T>
+    struct identity : public unarg_function<T, T> {
+        const T& operator()(const T &x) {
+            return x;
+        }
+    };
 }
 
 #endif //TINYSTL_FUNCTIONAL_H
