@@ -14,7 +14,9 @@ a subset of STL
 - [x] queue
 - [x] heap
 - [x] priority_queue
+- [x] rb_tree（实现来自[GitHub](https://github.com/liuyunbin/tiny-STL/blob/1dd6633ccd25f2a58465a0d528fb6c1bbfe9c412/src/stl_rb_tree.h)）
 - [x] set
+- [x] map
 - [x] initializer_list
 - [x] 算法
     - [x] max
