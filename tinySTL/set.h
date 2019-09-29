@@ -1,11 +1,10 @@
 #ifndef TINYSTL_SET_H
 #define TINYSTL_SET_H
 
-#include <cstddef> // size_t、ptrdiff_t
-
 #include <functional>
 
 #include "alloc.h"
+#include "utility"
 #include "functional.h"
 #include "rb_tree.h"
 
