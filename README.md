@@ -18,6 +18,7 @@ a subset of STL
 - [x] set
 - [x] multiset
 - [x] map
+- [x] multimap
 - [x] initializer_list
 - [x] 算法
     - [x] max
