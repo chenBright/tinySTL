@@ -24,7 +24,8 @@ a subset of STL
     - [x] max
     - [x] max_element
     - [x] min
-    - [x] min_element 
+    - [x] min_element
+    - [x] equal
 - [x] functional
     - [x] equal_to
     - [x] not_equal_to
