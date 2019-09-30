@@ -82,15 +82,15 @@ namespace tinySTL {
             return *this;
         }
 
-        const T& at(const Key& key) {
-            return find(key)->second;
+        const T& at(const key_type& key) {
+            return lower_bound(key)->second;
         }
 
-        const T& at(const Key& key) const {
-            return find(key)->second;
+        const T& at(const key_type& key) const {
+            return lower_bound(key)->second;
         }
 
-        T& operator[](const Key& key) {
+        T& operator[](const key_type& key) {
             iterator it = lower_bound(key);
             if (it == end() || key_comp()(key, it->first)) {
                 it = insert(value_type(key, T()));
@@ -100,7 +100,7 @@ namespace tinySTL {
         }
 
         T& operator[](Key&& key) {
-
+            // rb_tree 未提供实现
         }
 
         iterator begin() {
@@ -223,7 +223,7 @@ namespace tinySTL {
             tree_.erase(first, last);
         }
 
-        size_type erase(const Key& key) {
+        size_type erase(const key_type& key) {
             return tree_.erase(key);
         }
 
@@ -231,39 +231,39 @@ namespace tinySTL {
             tree_.swap(other.tree_);
         }
 
-        size_type count(const Key& key) const {
+        size_type count(const key_type& key) const {
             return tree_.count(key);
         }
 
-        iterator find(const Key& key) {
+        iterator find(const key_type& key) {
             return tree_.find(key);
         }
 
-        const_iterator find(const Key& key) const {
+        const_iterator find(const key_type& key) const {
             return tree_.find(key);
         }
 
-        tinySTL::pair<iterator, iterator> equal_range(const Key& key) {
+        tinySTL::pair<iterator, iterator> equal_range(const key_type& key) {
             return tree_.equal_range(key);
         }
 
-        tinySTL::pair<const_iterator, const_iterator> equal_range(const Key& key) const {
+        tinySTL::pair<const_iterator, const_iterator> equal_range(const key_type& key) const {
             return tree_.equal_range(key);
         }
 
-        iterator lower_bound(const Key& key) {
+        iterator lower_bound(const key_type& key) {
             return tree_.lower_bound(key);
         }
 
-        const_iterator lower_bound(const Key& key) const {
+        const_iterator lower_bound(const key_type& key) const {
             return tree_.lower_bound(key);
         }
 
-        iterator upper_bound(const Key& key) {
+        iterator upper_bound(const key_type& key) {
             return tree_.upper_bound(key);
         }
 
-        const_iterator upper_bound(const Key& key) const {
+        const_iterator upper_bound(const key_type& key) const {
             return tree_.upper_bound(key);
         }
 
