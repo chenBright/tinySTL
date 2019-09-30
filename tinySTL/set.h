@@ -141,7 +141,7 @@ namespace tinySTL {
             tree_.clear();
         }
 
-        tinySTL::pair<iterator, bool> insert(const_reference value) {
+        tinySTL::pair<iterator, bool> insert(const value_type& value) {
             return tree_.insert_unique(value);
         }
 
@@ -149,7 +149,7 @@ namespace tinySTL {
             return tree_.insert_unique(std::move(value));
         }
 
-        iterator insert(const_iterator hint, const_reference value) {
+        iterator insert(const_iterator hint, const value_type& value) {
             return tree_.insert_unique(hint, value);
         }
 
@@ -167,14 +167,14 @@ namespace tinySTL {
         }
 
         template <class... Args>
-        std::pair<iterator, bool> emplace( Args&&... args ) {
+        std::pair<iterator, bool> emplace(Args&&... args) {
             return tree_.emplace_unique(std::forward<Args>(args)...);
         }
 
         // 插入新元素到容器中尽可能接近于恰在 hint 前的位置。
         template <class... Args>
-        iterator emplace_hint(const_iterator hint, const value_type&& value) {
-            // rb_tree 未实现相应的功能
+        iterator emplace_hint(const_iterator hint, Args&&... args) {
+            return insert(hint, std::forward<Args>(args)...);
         }
 
         iterator erase(const_iterator position) {
@@ -209,19 +209,19 @@ namespace tinySTL {
             return tree_.equal_range(value);
         }
 
-        iterator lower_bound(const_reference value) {
+        iterator lower_bound(const key_type& value) {
             return tree_.lower_bound(value);
         }
 
-        const_iterator lower_bound(const_reference value) const {
+        const_iterator lower_bound(const key_type& value) const {
             return tree_.lower_bound(value);
         }
 
-        iterator upper_bound(const_reference value) {
+        iterator upper_bound(const key_type& value) {
             return tree_.upper_bound(value);
         }
 
-        const_iterator upper_bound(const_reference value) const {
+        const_iterator upper_bound(const key_type& value) const {
             return tree_.upper_bound(value);
         }
 
