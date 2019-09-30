@@ -1,7 +1,9 @@
 #ifndef TINYSTL_MAP_H
 #define TINYSTL_MAP_H
 
+#include <initializer_list>
 #include <functional>
+#include <algorithm>
 
 #include "alloc.h"
 #include "utility"
@@ -9,6 +11,8 @@
 #include "rb_tree.h"
 
 namespace tinySTL {
+    // 有序键值对容器，它的元素的键是唯一的。
+    // 接口功能见：https://zh.cppreference.com/w/cpp/container/map
     template <class Key, class T, class Compare = tinySTL::less<Key>, class Allocator = tinySTL::allocator<tinySTL::pair<Key,T>>>
     class map {
     public:
@@ -52,13 +56,19 @@ namespace tinySTL {
         explicit map(const Compare& comp) : tree_(comp) {}
 
         template <class InputIterator>
-        map(InputIterator first, InputIterator last) : tree_(Compare()) {
+        map(InputIterator first, InputIterator last, const Compare& comp = Compare()) : tree_(comp) {
             tree_.insert_unique(first, last);
         }
 
-        map(const map &other) : tree_(other.tree_) {}
+        map(const map& other) : tree_(other.tree_) {}
 
-        map(map &&other) noexcept : tree_(std::move(other.tree_)) {}
+        map(map&& other) noexcept : tree_(std::move(other.tree_)) {}
+
+        map(std::initializer_list<value_type> ilist, const Compare& comp = Compare()) : tree_(comp) {
+            tree_.insert_unique(ilist.begin(), ilist.end());
+        }
+
+        ~map() = default;
 
         map& operator=(const map& other) {
             tree_ = other.tree_;
@@ -72,12 +82,25 @@ namespace tinySTL {
             return *this;
         }
 
-        key_compare key_comp() const {
-            return tree_.key_comp();
+        const T& at(const key_type& key) {
+            return lower_bound(key)->second;
         }
 
-        value_compare value_comp() const {
-            return value_compare(tree_.key_comp());
+        const T& at(const key_type& key) const {
+            return lower_bound(key)->second;
+        }
+
+        T& operator[](const key_type& key) {
+            iterator it = lower_bound(key);
+            if (it == end() || key_comp()(key, it->first)) {
+                it = insert(value_type(key, T()));
+            }
+
+            return it->second;
+        }
+
+        T& operator[](Key&& key) {
+            // rb_tree 未提供实现
         }
 
         iterator begin() {
@@ -88,57 +111,87 @@ namespace tinySTL {
             return tree_.begin();
         }
 
-        iterator end() {
+        const_iterator cbegin() const {
+            return tree_.begin();
+        }
+
+        iterator end() noexcept {
             return tree_.end();
         }
 
-        iterator end() const {
+        iterator end() const noexcept {
             return tree_.end();
         }
 
-        reverse_iterator rbegin() {
+        iterator cend() const noexcept {
+            return tree_.end();
+        }
+
+        reverse_iterator rbegin() noexcept {
             return tree_.rbegin();
         }
 
-        const_reverse_iterator rbegin() const {
+        const_reverse_iterator rbegin() const noexcept {
             return tree_.rbegin();
         }
 
-        reverse_iterator rend() {
+        const_reverse_iterator crbegin() const noexcept {
+            return tree_.rbegin();
+        }
+
+        reverse_iterator rend() noexcept {
             return tree_.rend();
         }
 
-        const_reverse_iterator rend() const {
+        const_reverse_iterator rend() const noexcept {
             return tree_.end();
         }
 
-        bool empty() const {
+        const_reverse_iterator crend() const noexcept {
+            return tree_.end();
+        }
+
+        bool empty() const noexcept {
             return tree_.empty();
         }
 
-        size_type size() const {
+        size_type size() const noexcept {
             return tree_.size();
         }
 
-        size_type max_size() const {
+        size_type max_size() const noexcept {
             return tree_.max_size();
         }
 
-        T& operator[](const key_type& key) {
-            auto itPair = insert(value_type(key, T()));
-            return ((*itPair.first)).second;
+        void clear() noexcept {
+            tree_.clear();
         }
 
-        void swap(map& other) {
-            tree_.swap(other.tree_);
-        }
-
-        tinySTL::pair<iterator, bool> insert(const_reference value) {
+        tinySTL::pair<iterator, bool> insert(const value_type& value) {
             return tree_.insert_unique(value);
         }
 
-        iterator insert(iterator position, const_reference value) {
-            return tree_.insert_unique(position, value);
+        template <class P>
+        tinySTL::pair<iterator, bool> insert(P&& value) {
+            return tree_.insert_unique(std::forward<P>(value));
+        }
+
+        tinySTL::pair<iterator, bool> insert(value_type&& value) {
+            return tree_.insert_unique(std::move(value));
+        }
+
+        // 插入 value 到尽可能接近，恰好前于(C++11 起) hint 的位置
+        iterator insert(const_iterator hint, const value_type& value) {
+            return tree_.insert_unique(hint, value);
+        }
+
+        template <class P>
+        tinySTL::pair<iterator, bool> insert(const_iterator hint, P&& value) {
+            return tree_.insert_unique(hint, std::forward<P>(value));
+        }
+
+        iterator insert(const_iterator hint, value_type&& value) {
+            return tree_.insert_unique(hint, std::move(value));
         }
 
         template <class InputIterator>
@@ -146,20 +199,40 @@ namespace tinySTL {
             tree_.insert_unique(first, last);
         }
 
-        void erase(iterator position) {
-            tree_.erase(position);
+        void insert(std::initializer_list<value_type> ilist) {
+            tree_.insert_unique(ilist.begin(), ilist.end());
         }
 
-        size_type erase(const_reference value) {
-            return tree_.erase(value);
+        // 若容器中无拥有该关键的元素，则插入以给定的 args 原位构造的新元素到容器。
+        template <class... Args>
+        tinySTL::pair<iterator, bool> emplace(Args&&... args) {
+            return tree_.emplace_unique(std::forward<Args>(args)...);
+        }
+
+        template <class... Args>
+        iterator emplace_hint( const_iterator hint, Args&&... args ) {
+            return insert(hint, std::forward<Args>(args)...);
+        }
+
+        // 迭代器 pos 必须合法且可解引用。从而 end() 迭代器（合法，但不可解引用）不能用作 position 所用的值。
+        void erase(const_iterator position) {
+            tree_.erase(position);
         }
 
         void erase(iterator first, iterator last) {
             tree_.erase(first, last);
         }
 
-        void clear() {
-            tree_.clear();
+        size_type erase(const key_type& key) {
+            return tree_.erase(key);
+        }
+
+        void swap(map& other) {
+            tree_.swap(other.tree_);
+        }
+
+        size_type count(const key_type& key) const {
+            return tree_.count(key);
         }
 
         iterator find(const key_type& key) {
@@ -170,15 +243,19 @@ namespace tinySTL {
             return tree_.find(key);
         }
 
-        size_type count(const key_type& key) {
-            return tree_.count(key);
+        tinySTL::pair<iterator, iterator> equal_range(const key_type& key) {
+            return tree_.equal_range(key);
+        }
+
+        tinySTL::pair<const_iterator, const_iterator> equal_range(const key_type& key) const {
+            return tree_.equal_range(key);
         }
 
         iterator lower_bound(const key_type& key) {
             return tree_.lower_bound(key);
         }
 
-        const_iterator lower_bound(const value_type& key) const {
+        const_iterator lower_bound(const key_type& key) const {
             return tree_.lower_bound(key);
         }
 
@@ -190,29 +267,49 @@ namespace tinySTL {
             return tree_.upper_bound(key);
         }
 
-        tinySTL::pair<iterator, iterator> equal_range(const key_type& key) {
-            return tree_.equal_range(key);
+        key_compare key_comp() const {
+            return tree_.key_comp();
         }
 
-        tinySTL::pair<const_iterator, const_iterator> equal_range(const key_type& key) const {
-            return tree_.equal_range(key);
+        value_compare value_comp() const {
+            return value_compare(tree_.key_comp());
         }
-
-        friend bool operator==(const map&, const map&);
-        friend bool operator<(const map&, const map&);
-
     }; // class map
 
     template <class Key, class T, class Compare, class Allocator>
     bool operator==(const map<Key, T, Compare, Allocator>& lhs, const map<Key, T, Compare, Allocator>& rhs) {
-        return lhs.tree_ == rhs.tree_;
+        return lhs.size() == rhs.size() && std::equal(rhs.cbegin(), lhs.cend(), rhs.cbegin());
+    }
+
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator!=(const map<Key, T, Compare, Allocator>& lhs, const map<Key, T, Compare, Allocator>& rhs) {
+        return !(lhs == rhs);
     }
 
     template <class Key, class T, class Compare, class Allocator>
     bool operator<(const map<Key, T, Compare, Allocator>& lhs, const map<Key, T, Compare, Allocator>& rhs) {
-        return lhs.tree_ < rhs.tree_;
+        return std::lexicographical_compare(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend());
     }
-}
 
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator<=(const map<Key, T, Compare, Allocator>& lhs, const map<Key, T, Compare, Allocator>& rhs) {
+        return !(rhs < lhs);
+    }
+
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator>(const map<Key, T, Compare, Allocator>& lhs, const map<Key, T, Compare, Allocator>& rhs) {
+        return rhs < lhs;
+    }
+
+    template <class Key, class T, class Compare, class Allocator>
+    bool operator>=(const map<Key, T, Compare, Allocator>& lhs, const map<Key, T, Compare, Allocator>& rhs) {
+        return !(rhs > lhs);
+    }
+
+    template <class Key, class T, class Compare, class Allocator>
+    void swap(const map<Key, T, Compare, Allocator>& lhs, const map<Key, T, Compare, Allocator>& rhs) {
+        lhs.swap(rhs);
+    }
+} // namespace tinySTL
 
 #endif //TINYSTL_MAP_H
