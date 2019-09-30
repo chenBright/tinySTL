@@ -52,7 +52,7 @@ namespace tinySTL {
 
         set(set&& other) noexcept : tree_(std::move(other.tree_)) {}
 
-        set(std::initializer_list<value_type> ilist, const Compare& comp) : tree_(comp) {
+        set(std::initializer_list<value_type> ilist, const Compare& comp = Compare()) : tree_(comp) {
             tree_.insert_unique(ilist.begin(), ilist.end());
         }
 
