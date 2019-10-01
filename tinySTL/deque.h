@@ -1144,7 +1144,7 @@ namespace tinySTL {
 
     template <class T, class Allocator>
     bool operator==(const deque<T, Allocator> &left, const deque<T, Allocator> &right) {
-        return left.size() == right.size() && std::equal(left.cbegin(), left.cend(), right.cbegin());
+        return left.size() == right.size() && tinySTL::equal(left.cbegin(), left.cend(), right.cbegin());
     }
 
     template <class T, class Allocator>
@@ -1154,7 +1154,7 @@ namespace tinySTL {
 
     template <class T, class Allocator>
     bool operator<(const deque<T, Allocator> &left, const deque<T, Allocator> &right) {
-        return std::lexicographical_compare(left.cbegin(), left.cend(), right.cbegin(), right.cend());
+        return tinySTL::lexicographical_compare(left.cbegin(), left.cend(), right.cbegin(), right.cend());
     }
 
     template <class T, class Allocator>

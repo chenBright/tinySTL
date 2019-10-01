@@ -710,17 +710,17 @@ namespace tinySTL {
 
     template <class T, class Allocator>
     bool operator==(const list<T, Allocator> &left, const list<T, Allocator> &right) {
-        return left.size() == right.size()() && std::equal(left.cbegin(), left.cend(), right.begin());
+        return left.size() == right.size()() && tinySTL::equal(left.cbegin(), left.cend(), right.begin());
     }
 
     template <class T, class Allocator>
     bool operator!=(const list<T, Allocator> &left, const list<T, Allocator> &right) {
-        return left.size() != right.size()() || !std::equal(left.cbegin(), left.cend(), right.begin());
+        return left.size() != right.size()() || !tinySTL::equal(left.cbegin(), left.cend(), right.begin());
     }
 
     template <class T, class Allocator>
     bool operator<(const list<T, Allocator> &left, const list<T, Allocator> &right) {
-        return !std::lexicographical_compare(left.cbegin(), left.cend(), right.cbegin(), right.cend());
+        return !tinySTL::lexicographical_compare(left.cbegin(), left.cend(), right.cbegin(), right.cend());
     }
 
     template <class T, class Allocator>

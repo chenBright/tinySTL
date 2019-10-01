@@ -556,19 +556,17 @@ namespace tinySTL {
 
     template <class T, class Allocator>
     bool operator==(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
-        // TODO tinySTL 版本的 equal
-        return left.size() == right.size() && std::equal(left.cbegin(), left.cend(), right.cbegin());
+        return left.size() == right.size() && tinySTL::equal(left.cbegin(), left.cend(), right.cbegin());
     }
 
     template <class T, class Allocator>
     bool operator!=(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
-        return left.size() != right.size() && !std::equal(left.cbegin(), left.cend(), right.cbegin());
+        return left.size() != right.size() && !tinySTL::equal(left.cbegin(), left.cend(), right.cbegin());
     }
 
     template <class T, class Allocator>
     bool operator<(const vector<T, Allocator> &left, const vector<T, Allocator> &right) {
-        // TODO tinySTL 版本的 lexicographical_compare
-        return std::lexicographical_compare(left.cbegin(), left.cend(), right.cbegin(), right.cend());
+        return tinySTL::lexicographical_compare(left.cbegin(), left.cend(), right.cbegin(), right.cend());
     }
 
     template <class T, class Allocator>
