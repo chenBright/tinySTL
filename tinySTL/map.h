@@ -82,6 +82,13 @@ namespace tinySTL {
             return *this;
         }
 
+        map& operator=(std::initializer_list<value_type> ilist) {
+            clear();
+            insert(ilist.begin(), ilist.end());
+
+            return *this;
+        }
+
         const T& at(const key_type& key) {
             return lower_bound(key)->second;
         }
