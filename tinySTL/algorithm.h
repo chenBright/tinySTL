@@ -33,6 +33,41 @@ namespace tinySTL {
     }
 
     /**
+     * find
+     * find_if
+     * find_if_not
+     */
+    // 在 [first, last) 范围内查找等于 value 的元素。
+    template <class InputIterator, class T>
+    InputIterator find(InputIterator first, InputIterator last, const T& value) {
+        while (first != last && *first != value) {
+            ++first;
+        }
+
+        return first;
+    }
+
+    // 在 [first, last) 范围内查找等于 op(*it) == true 的元素。
+    template <class InputIterator, class UnaryPredicate>
+    InputIterator find_if(InputIterator first, InputIterator last, UnaryPredicate op) {
+        while (first != last && !op(*first)) {
+            ++first;
+        }
+
+        return first;
+    }
+
+    // 在 [first, last) 范围内查找等于 op(*it) == false 的元素。
+    template <class InputIterator, class UnaryPredicate>
+    InputIterator find_if_not(InputIterator first, InputIterator last, UnaryPredicate op) {
+        while (first != last && op(*first)) {
+            ++first;
+        }
+
+        return first;
+    }
+
+    /**
      * max
      */
     // 返回最大值
