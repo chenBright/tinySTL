@@ -21,6 +21,9 @@ a subset of STL
 - [x] multimap
 - [x] initializer_list
 - [x] 算法
+    - [x] all_of
+    - [x] any_of
+    - [x] none_of
     - [x] max
     - [x] max_element
     - [x] min
