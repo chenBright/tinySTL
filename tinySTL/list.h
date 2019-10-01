@@ -444,7 +444,7 @@ namespace tinySTL {
         }
 
         void merge(list &other) {
-            merge(other, less<T>());
+            merge(other, tinySTL::less<T>());
         }
 
         void merge(list &&other) {
@@ -552,7 +552,7 @@ namespace tinySTL {
         // 移除数值相同的连续的元素。
         // 注意：只有"连续且相同"的元素才会被移除剩一个。
         size_type unique() {
-            return unique(equal_to<T>());
+            return unique(tinySTL::equal_to<T>());
         }
 
         // merge sort 迭代实现
@@ -595,7 +595,7 @@ namespace tinySTL {
             swap(counter[fill - 1]);
         }
         void sort() {
-            sort(less<T>());
+            sort(tinySTL::less<T>());
         }
 
     private:
@@ -710,17 +710,17 @@ namespace tinySTL {
 
     template <class T, class Allocator>
     bool operator==(const list<T, Allocator> &left, const list<T, Allocator> &right) {
-        return left.size() == right.size()() && std::equal(left.cbegin(), left.cend(), right.begin());
+        return left.size() == right.size()() && tinySTL::equal(left.cbegin(), left.cend(), right.begin());
     }
 
     template <class T, class Allocator>
     bool operator!=(const list<T, Allocator> &left, const list<T, Allocator> &right) {
-        return left.size() != right.size()() || !std::equal(left.cbegin(), left.cend(), right.begin());
+        return left.size() != right.size()() || !tinySTL::equal(left.cbegin(), left.cend(), right.begin());
     }
 
     template <class T, class Allocator>
     bool operator<(const list<T, Allocator> &left, const list<T, Allocator> &right) {
-        return !std::lexicographical_compare(left.cbegin(), left.cend(), right.cbegin(), right.cend());
+        return !tinySTL::lexicographical_compare(left.cbegin(), left.cend(), right.cbegin(), right.cend());
     }
 
     template <class T, class Allocator>
