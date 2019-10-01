@@ -71,8 +71,8 @@ namespace tinySTL {
         }
 
         set& operator=(std::initializer_list<value_type> ilist) {
-            tree_.clear();
-            tree_.insert_unique(ilist.begin(), ilist.end());
+            clear();
+            insert(ilist.begin(), ilist.end());
 
             return *this;
         }
