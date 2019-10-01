@@ -11,7 +11,7 @@
 #include "rb_tree.h"
 
 namespace tinySTL {
-    // mltiset 含有 Key 类型对象有序集的容器。不同于 set ，它允许多个关键拥有等价的值。
+    // mltiset 含有 Key 类型对象有序集的容器。不同于 set ，它允许多个关键拥有等价的值。通常其底层实现为红黑树。
     // 接口功能见：https://zh.cppreference.com/w/cpp/container/multiset
     template <class Key, class Compare = tinySTL::less<Key>, class Allocator = tinySTL::allocator<Key>>
     class multiset {
