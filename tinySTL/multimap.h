@@ -269,7 +269,7 @@ namespace tinySTL {
 
     template <class Key, class T, class Compare, class Allocator>
     bool operator==(const multimap<Key, T, Compare, Allocator>& lhs, const multimap<Key, T, Compare, Allocator>& rhs) {
-        return lhs.size() == rhs.size() && std::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin());
+        return lhs.size() == rhs.size() && tinySTL::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin());
     }
 
     template <class Key, class T, class Compare, class Allocator>
@@ -279,7 +279,7 @@ namespace tinySTL {
 
     template <class Key, class T, class Compare, class Allocator>
     bool operator<(const multimap<Key, T, Compare, Allocator>& lhs, const multimap<Key, T, Compare, Allocator>& rhs) {
-        return std::lexicographical_compare(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend());
+        return tinySTL::lexicographical_compare(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend());
     }
 
     template <class Key, class T, class Compare, class Allocator>
