@@ -15,7 +15,7 @@ namespace tinySTL {
     // 返回最大值
     //
     // 其中 comp 比较函数：
-    // 它的声明等价于 bool cmp(const Type1 &a, const Type2 &b);
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
     // 如果 a 小于 b，则返回 true。
     // （对于使用者来说，应该反过来想，返回 true，则表示 a 小于 b，再根据实际的类型来确定什么时候返回 true）
     // 虽然形参的声明不一定是 const&，但是函数不能修改传递给它的对象，
@@ -141,20 +141,20 @@ namespace tinySTL {
     /**
      * equal
      */
-     // 如果范围 [first1, last1) 和范围 [first2, first2 + (last1 - first1)) 相等，返回 true ，否则返回 false。
-     template <class InputIterator1, class InputIterator2>
-     bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator1 first2) {
-         while (first1 != last1 && *first1 == *first2) {
-             ++first1;
-             ++first2;
-         }
+    // 如果范围 [first1, last1) 和范围 [first2, first2 + (last1 - first1)) 相等，返回 true ，否则返回 false。
+    template <class InputIterator1, class InputIterator2>
+    bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator1 first2) {
+        while (first1 != last1 && *first1 == *first2) {
+            ++first1;
+            ++first2;
+        }
 
         return first1 == last1;
-     }
+    }
 
 
     // 其中 op 比较函数：
-    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
+    // 它的声明等价于 bool op(const Type1 &a, const Type2 &b);
     // 如果 a 等于 b，则返回 true。
     // 虽然形参的声明不一定是 const&，但是函数不能修改传递给它的对象，
     // 以及能接受各种形式的（包括 const）Type1 和 Type2 。
@@ -191,6 +191,51 @@ namespace tinySTL {
         return first1 == last1 && first2 == last2;
     }
 
+
+    /**
+     * lexicographical_compare
+     */
+    // 检查第范围 [first1, last1) 是否按字典序小于范围 [first2, last2)。
+    // 找到一个小于，就返回 true。
+    template <class InputIterator1, class InputIterator2>
+    bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1, InputIterator1 first2, InputIterator1 last2) {
+        while (first1 != last1 && first2 != last2) {
+            if (*first1 < *first2) {
+                return true;
+            } else if (*first2 > *first1) {
+                return false;
+            }
+
+            ++first1;
+            ++first2;
+        }
+
+        return first1 == last1 && first2 == last2;
+    }
+
+
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    // 虽然形参的声明不一定是 const&，但是函数不能修改传递给它的对象，
+    // 以及能接受各种形式的（包括 const）Type1 和 Type2 。
+    // 所以，Type1& 是不合法的。除非 Type1 的移动等价于拷贝，否则 Type1 也是不合法的。
+    // InputIterator1 与 InputIterator2 类型的对象在解引用后分别能隐式转换到 Type1 与 Type2
+    template <class InputIterator1, class InputIterator2, class Compare>
+    bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1, InputIterator1 first2, InputIterator1 last2, Compare comp) {
+        while (first1 != last1 && first2 != last2) {
+            if (comp(*first1, *first2)) {
+                return true;
+            } else if (comp(*first2, *first1)) {
+                return false;
+            }
+
+            ++first1;
+            ++first2;
+        }
+
+        return first1 == last1 && first2 == last2;
+    }
 }
 
 #endif //TINYSTL_ALGORITHM_H
