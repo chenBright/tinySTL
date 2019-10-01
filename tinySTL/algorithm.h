@@ -10,6 +10,29 @@
 namespace tinySTL {
 
     /**
+     * all_of
+     * any_of
+     * none_of
+     */
+    // 对于[first, last) 范围内所有的元素，op(*it) == true。
+    template <class InputIterator, class UnaryPredicate>
+    bool all_of(InputIterator first, InputIterator last, UnaryPredicate op) {
+        return std::find_if_not(first, last, op) == last;
+    }
+
+    // 对于[first, last) 范围内，存在元素，使得 op(*it) == true。
+    template <class InputIterator, class UnaryPredicate>
+    bool any_of(InputIterator first, InputIterator last, UnaryPredicate op) {
+        return std::find_if(first, last, op) != last;
+    }
+
+    // 对于[first, last) 范围内所有的元素，op(*it) != true，即 op(*it) == false。
+    template <class InputIterator, class UnaryPredicate>
+    bool none_of(InputIterator first, InputIterator last, UnaryPredicate op) {
+        return std::find_if(first, last, op) == last;
+    }
+
+    /**
      * max
      */
     // 返回最大值
