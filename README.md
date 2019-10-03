@@ -19,6 +19,7 @@ a subset of STL
 - [x] multiset
 - [x] map
 - [x] multimap
+- [x] hashtable
 - [x] initializer_list
 - [x] 算法
     - [x] all_of
