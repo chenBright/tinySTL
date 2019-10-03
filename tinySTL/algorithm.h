@@ -10,6 +10,19 @@
 namespace tinySTL {
 
     /**
+     * for_each
+     */
+    // 对 [first, last) 范围的元素调用 f，即 f(*it)
+    template <class InputIterator, class UnaryFunction>
+    UnaryFunction for_each(InputIterator first, InputIterator last, UnaryFunction f) {
+        while (first != last) {
+            f(*first++);
+        }
+
+        return f; // （C++11 起）隐式移动
+    }
+
+    /**
      * all_of
      * any_of
      * none_of
