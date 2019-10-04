@@ -1,5 +1,5 @@
-#ifndef TINYSTL_UNORDERED_SET_H
-#define TINYSTL_UNORDERED_SET_H
+#ifndef TINYSTL_UNORDERED_MAP_H
+#define TINYSTL_UNORDERED_MAP_H
 
 #include <initializer_list>
 #include <algorithm>
@@ -10,30 +10,32 @@
 #include "alloc.h"
 
 namespace tinySTL {
-    // 含有 Key 类型唯一对象集合的关联容器。
-    // 搜索、插入和移除拥有平均常数时间复杂度。
-    // 在内部，元素并不以任何特别顺序排序，而是组织进桶中。
-    // 元素被放进哪个桶完全依赖其值的哈希。
-    // 这允许对单独元素的快速访问，因为哈希一旦，就准确指代元素被放入的桶。
-    // 不可修改容器元素（即使通过非 const 迭代器），因为修改可能更改元素的哈希，并破坏容器。
-    // 接口功能见：https://zh.cppreference.com/w/cpp/container/unordered_set
+    // 关联容器，含有带唯一键的键-值 pair 。
+    // 搜索、插入和元素移除拥有平均常数时间复杂度。
+    // 元素在内部不以任何特定顺序排序，而是组织进桶中。
+    // 元素放进哪个桶完全依赖于其键的哈希。
+    // 这允许对单独元素的快速访问，因为一旦计算哈希，则它准确指代元素所放进的桶。
+    // 接口功能见：https://zh.cppreference.com/w/cpp/container/unordered_map
     //
     // 未实现的接口：
     // iterator insert(const_iterator hint, const value_type& value);
     // iterator insert(const_iterator hint, value_type&& value);
+    // template< class P > iterator insert( const_iterator hint, P&& value );
     // max_load_factor();
     // void rehash( size_type count );
     // void reserve( size_type count );
-    template <class Key, class Hash = tinySTL::hash<Key>, class KeyEqual = tinySTL::equal_to<Key>,
-              class Allocator = tinySTL::allocator<Key>>
-    class unordered_set {
+    template <class Key, class T, class Hash = tinySTL::hash<Key>, class KeyEqual = tinySTL::equal_to<Key>,
+            class Allocator = tinySTL::allocator<tinySTL::pair<Key, T>>>
+    class unordered_map {
     public:
         using allocator_type    = Allocator;
         using key_type          = Key;
-        using value_type        = Key;
+        using mapped_type       = T;
+        using value_type        = tinySTL::pair<const Key, T>;
 
     private:
-        using hash_table_type   = hashtable<key_type, value_type, Hash, tinySTL::identity<value_type>, KeyEqual, Allocator>;
+        using hash_table_type   = hashtable<key_type, value_type, Hash, tinySTL::select1st<value_type>, KeyEqual, Allocator>;
+
         hash_table_type hashtable_;
 
     public:
@@ -43,50 +45,51 @@ namespace tinySTL {
 
         using size_type         = typename hash_table_type::size_type;
         using difference_type   = typename hash_table_type::difference_type;
-        using reference         = typename hash_table_type::const_reference;
+        using reference         = typename hash_table_type::reference;
         using const_reference   = typename hash_table_type::const_reference;
-        using pointer           = typename hash_table_type::const_pointer;
+        using pointer           = typename hash_table_type::pointer;
         using const_pointer     = typename hash_table_type::const_pointer;
-        using iterator          = typename hash_table_type::const_iterator;
+        using iterator          = typename hash_table_type::iterator;
         using const_iterator    = typename hash_table_type::const_iterator;
 
     public:
-        unordered_set() = default;
-        explicit unordered_set(size_type bucketCount, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
+        unordered_map() = default;
+
+        explicit unordered_map(size_type bucketCount, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
             : hashtable_(bucketCount, hash, equal) {
 
         }
 
         template <class InputIterator>
-        unordered_set(InputIterator first, InputIterator last, size_type bucketCount = 100, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
-            : hashtable_(bucketCount, hash, equal) {
+        unordered_map(InputIterator first, InputIterator last, size_type bucketCount = 100, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
+        : hashtable_(bucketCount, hash, equal) {
             hashtable_.insert_unique(first, last);
         }
 
-        unordered_set(const unordered_set& other) : hashtable_(other.hashtable_) {}
+        unordered_map(const unordered_map& other) : hashtable_(other.hashtable_) {}
 
-        unordered_set(unordered_set&& other) noexcept : hashtable_(std::move(other.hashtable_)) {}
+        unordered_map(unordered_map&& other) noexcept : hashtable_(std::move(other.hashtable_)) {}
 
-        unordered_set(std::initializer_list<value_type> ilist, size_type bucketCount = 100, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
-            : hashtable_(bucketCount, hash, equal) {
+        unordered_map(std::initializer_list<value_type> ilist, size_type bucketCount = 100, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
+        : hashtable_(bucketCount, hash, equal) {
             hashtable_.insert_unique(ilist.begin(), ilist.end());
         }
 
-        ~unordered_set() = default;
+        ~unordered_map() = default;
 
-        unordered_set& operator=(const unordered_set& other) {
+        unordered_map& operator=(const unordered_map& other) {
             hashtable_ = other.hashtable_;
 
             return *this;
         }
 
-        unordered_set& operator=(unordered_set&& other) noexcept {
+        unordered_map& operator=(unordered_map&& other) noexcept {
             hashtable_ = std::move(other.hashtable_);
 
             return *this;
         }
 
-        unordered_set& operator=(std::initializer_list<value_type> ilist) {
+        unordered_map& operator=(std::initializer_list<value_type> ilist) {
             clear();
             hashtable_.insert_unique(ilist.begin(), ilist.end());
 
@@ -141,6 +144,11 @@ namespace tinySTL {
             return hashtable_.insert_unique(std::move(value));
         }
 
+        template <class P>
+        tinySTL::pair<iterator, bool> insert(P&& value) {
+            return hashtable_.insert_unique(std::forward<P>(value));
+        }
+
         template <class InputIterator>
         void insert(InputIterator first, InputIterator last) {
             hashtable_.insert_unique(first, last);
@@ -160,6 +168,10 @@ namespace tinySTL {
             return insert(hint, std::forward<Args>(args)...);
         }
 
+        void swap(unordered_map& other) {
+            hashtable_.swap(other.hashtable_);
+        }
+
         iterator erase(const_iterator position) {
             return hashtable_.erase(position);
         }
@@ -172,8 +184,22 @@ namespace tinySTL {
             return hashtable_.erase(key);
         }
 
-        void swap(unordered_set& other) {
-            hashtable_.swap(other.hashtable_);
+        T& at(const key_type& key) {
+            return find(key)->second;
+        }
+
+        const T& at(const key_type& key) const {
+            return find(key)->second;
+        }
+
+        T& operator[](const key_type& key) {
+            auto it = emplace(key, T()).first;
+
+            return it->second;
+        }
+
+        T& operator[](key_type&& key) {
+            return operator=(key);
         }
 
         size_type count(const key_type& key) const {
@@ -223,22 +249,22 @@ namespace tinySTL {
         key_equal key_eq() const {
             return hashtable_.key_eq();
         }
-    }; // class unordered_set
+    }; // class unordered_map
     template <class Key, class Hash, class KeyEqual, class Allocator>
-    bool operator==(const unordered_set<Key, Hash, KeyEqual, Allocator>& left, const unordered_set<Key, Hash, KeyEqual, Allocator>& right) {
+    bool operator==(const unordered_map<Key, Hash, KeyEqual, Allocator>& left, const unordered_map<Key, Hash, KeyEqual, Allocator>& right) {
         return left.size() == right.size() && tinySTL::equal(left.cbegin(), left.cend(), right.cbegin());
     }
 
     template <class Key, class Hash, class KeyEqual, class Allocator>
-    bool operator!=(const unordered_set<Key, Hash, KeyEqual, Allocator>& left, const unordered_set<Key, Hash, KeyEqual, Allocator>& right) {
+    bool operator!=(const unordered_map<Key, Hash, KeyEqual, Allocator>& left, const unordered_map<Key, Hash, KeyEqual, Allocator>& right) {
         return left.size() != right.size() || !tinySTL::equal(left.cbegin(), left.cend(), right.cbegin());
     }
 
     template <class Key, class Hash, class KeyEqual, class Allocator>
-    void swap(const unordered_set<Key, Hash, KeyEqual, Allocator>& left, const unordered_set<Key, Hash, KeyEqual, Allocator>& right) {
+    void swap(const unordered_map<Key, Hash, KeyEqual, Allocator>& left, const unordered_map<Key, Hash, KeyEqual, Allocator>& right) {
         left.swap(right);
     }
 } // namespace tinySTL
 
 
-#endif //TINYSTL_UNORDERED_SET_H
+#endif //TINYSTL_UNORDERED_MAP_H
