@@ -52,8 +52,9 @@ a subset of STL
 
 - 单元测试
 - std::get(std::pair)
-- std::tuple_size<std::pair>
-- std::tuple_element<std::pair>
+- std::tuple_size\<std::pair\>
+- std::tuple_element\<std::pair\>
+- [补充 hash 函数](https://zh.cppreference.com/w/cpp/utility/hash)
 - 异常保证
 - [allocator static成员函数问题](https://www.zhihu.com/question/53085291/answer/133516400)
 - dynamic_bitset
