@@ -20,6 +20,7 @@ a subset of STL
 - [x] map
 - [x] multimap
 - [x] hashtable
+- [x] unordered_set
 - [x] initializer_list
 - [x] 算法
     - [x] all_of

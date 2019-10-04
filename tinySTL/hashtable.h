@@ -17,11 +17,11 @@ namespace tinySTL {
         hashtable_node* next_;
     };
 
-    template <class Key, class Value, class HashFunction, class KeyOfValue, class KeyEqual,
+    template <class Key, class Value, class Hash, class KeyOfValue, class KeyEqual,
             class Allocator = tinySTL::allocator<Value>>
     class hashtable;
 
-    template <class Key, class Value, class Reference, class Pointer, class HashFunction, class KeyOfValue, class KeyEqual, class Allocator>
+    template <class Key, class Value, class Reference, class Pointer, class Hash, class KeyOfValue, class KeyEqual, class Allocator>
     struct hashtable_iterator {
         using value_type = Value;
         using reference = Reference;
@@ -29,11 +29,11 @@ namespace tinySTL {
         using difference_type = std::ptrdiff_t;
         using iterator_category = forward_iterator_tag;
 
-        using iterator = hashtable_iterator<Key, Value, Value&, Value*, HashFunction, KeyOfValue, KeyEqual, Allocator>;
-        using const_iterator = hashtable_iterator<Key, Value, const Value&, const Value*, HashFunction, KeyOfValue, KeyEqual, Allocator>;
-        using self = hashtable_iterator<Key, Value, Reference, Pointer, HashFunction, KeyOfValue, KeyEqual, Allocator>;
+        using iterator = hashtable_iterator<Key, Value, Value&, Value*, Hash, KeyOfValue, KeyEqual, Allocator>;
+        using const_iterator = hashtable_iterator<Key, Value, const Value&, const Value*, Hash, KeyOfValue, KeyEqual, Allocator>;
+        using self = hashtable_iterator<Key, Value, Reference, Pointer, Hash, KeyOfValue, KeyEqual, Allocator>;
 
-        using hashtable_type = hashtable<Key, Value, HashFunction, KeyOfValue, KeyEqual, Allocator>;
+        using hashtable_type = hashtable<Key, Value, Hash, KeyOfValue, KeyEqual, Allocator>;
 
         hashtable_node<value_type>* node_;
         const hashtable_type* hashtable_;
@@ -307,7 +307,7 @@ namespace tinySTL {
                 return resultIterator;
             }
 
-            for (auto current = buckets_[index]; current->next_ != nullptr, current = current->next_) {
+            for (auto current = buckets_[index]; current->next_ != nullptr; current = current->next_) {
                 if (current->next_ == position.node_) {
                     current->next_ = position.node_->next_;
                     destory_node(position.node_);
