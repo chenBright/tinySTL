@@ -10,7 +10,20 @@
 #include "alloc.h"
 
 namespace tinySTL {
-
+    // 关联容器，含有可能非唯一 Key 类型对象的集合。
+    // 搜索、插入和移除拥有平均常数时间复杂度。
+    // 元素在内部并不以任何顺序排序，只是被组织到桶中。
+    // 元素被放入哪个桶完全依赖其值的哈希。这允许快速访问单独的元素，因为一旦计算哈希，它就指代放置该元素的准确的桶。
+    // 不要求此容器的迭代顺序稳定（故例如 std::equal 不能用于比较二个 std::unordered_multiset ），
+    // 除了关键比较等价（以 key_eq() 为比较器比较相等）的每组元素组成迭代顺序中的相接子范围，它可用 equal_range() 访问。
+    // 接口功能见：https://zh.cppreference.com/w/cpp/container/unordered_multiset
+    //
+    // 未实现的接口：
+    // iterator insert(const_iterator hint, const value_type& value);
+    // iterator insert(const_iterator hint, value_type&& value);
+    // max_load_factor();
+    // void rehash( size_type count );
+    // void reserve( size_type count );
     template <class Key, class Hash = tinySTL::hash<Key>, class KeyEqual = tinySTL::equal_to<Key>,
             class Allocator = tinySTL::allocator<Key>>
     class unordered_multiset {
