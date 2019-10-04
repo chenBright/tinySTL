@@ -23,6 +23,7 @@ a subset of STL
 - [x] unordered_set
 - [x] unordered_map
 - [x] unordered_multiset
+- [x] unordered_multimap
 - [x] initializer_list
 - [x] 算法
     - [x] all_of
