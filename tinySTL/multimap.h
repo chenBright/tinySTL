@@ -88,24 +88,16 @@ namespace tinySTL {
             return *this;
         }
 
-        iterator begin() {
+        iterator begin() noexcept {
             return tree_.begin();
         }
 
-        const_iterator begin() const {
+        const_iterator begin() const noexcept {
             return tree_.begin();
         }
 
-        iterator begin() {
-            return tree_.begin();
-        }
-
-        const_iterator begin() const {
-            return tree_.begin();
-        }
-
-        const_iterator cbegin() const {
-            return tree_.begin();
+        const_iterator cbegin() const noexcept {
+            return tree_.cbegin();
         }
 
         iterator end() noexcept {
@@ -117,7 +109,7 @@ namespace tinySTL {
         }
 
         iterator cend() const noexcept {
-            return tree_.end();
+            return tree_.cend();
         }
 
         reverse_iterator rbegin() noexcept {
@@ -129,7 +121,7 @@ namespace tinySTL {
         }
 
         const_reverse_iterator crbegin() const noexcept {
-            return tree_.rbegin();
+            return tree_.crbegin();
         }
 
         reverse_iterator rend() noexcept {
@@ -137,11 +129,11 @@ namespace tinySTL {
         }
 
         const_reverse_iterator rend() const noexcept {
-            return tree_.end();
+            return tree_.rend();
         }
 
         const_reverse_iterator crend() const noexcept {
-            return tree_.end();
+            return tree_.crend();
         }
 
         bool empty() const noexcept {
