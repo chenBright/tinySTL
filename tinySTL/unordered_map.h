@@ -261,7 +261,7 @@ namespace tinySTL {
     }
 
     template <class Key, class Hash, class KeyEqual, class Allocator>
-    void swap(const unordered_map<Key, Hash, KeyEqual, Allocator>& left, const unordered_map<Key, Hash, KeyEqual, Allocator>& right) {
+    void swap(unordered_map<Key, Hash, KeyEqual, Allocator>& left, unordered_map<Key, Hash, KeyEqual, Allocator>& right) {
         left.swap(right);
     }
 } // namespace tinySTL
