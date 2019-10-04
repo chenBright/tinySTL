@@ -101,11 +101,11 @@ namespace tinySTL {
         }
 
         const_iterator begin() const noexcept {
-            return hashtable_.cbegin();
+            return hashtable_.begin();
         }
 
         const_iterator cbegin() const noexcept {
-            return hashtable_.begin();
+            return hashtable_.cbegin();
         }
 
         iterator end() noexcept {
@@ -113,7 +113,7 @@ namespace tinySTL {
         }
 
         const_iterator end() const noexcept {
-            return hashtable_.cend();
+            return hashtable_.end();
         }
 
         const_iterator cend() const noexcept {
