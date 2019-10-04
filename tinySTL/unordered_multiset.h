@@ -1,5 +1,5 @@
-#ifndef TINYSTL_UNORDERED_MAP_H
-#define TINYSTL_UNORDERED_MAP_H
+#ifndef TINYSTL_UNORDERED_MULTISET_H
+#define TINYSTL_UNORDERED_MULTISET_H
 
 #include <initializer_list>
 #include <algorithm>
@@ -10,31 +10,30 @@
 #include "alloc.h"
 
 namespace tinySTL {
-    // 关联容器，含有带唯一键的键-值 pair 。
-    // 搜索、插入和元素移除拥有平均常数时间复杂度。
-    // 元素在内部不以任何特定顺序排序，而是组织进桶中。
-    // 元素放进哪个桶完全依赖于其键的哈希。
-    // 这允许对单独元素的快速访问，因为一旦计算哈希，则它准确指代元素所放进的桶。
-    // 接口功能见：https://zh.cppreference.com/w/cpp/container/unordered_map
+    // 关联容器，含有可能非唯一 Key 类型对象的集合。
+    // 搜索、插入和移除拥有平均常数时间复杂度。
+    // 元素在内部并不以任何顺序排序，只是被组织到桶中。
+    // 元素被放入哪个桶完全依赖其值的哈希。这允许快速访问单独的元素，因为一旦计算哈希，它就指代放置该元素的准确的桶。
+    // 不要求此容器的迭代顺序稳定（故例如 std::equal 不能用于比较二个 std::unordered_multiset ），
+    // 除了关键比较等价（以 key_eq() 为比较器比较相等）的每组元素组成迭代顺序中的相接子范围，它可用 equal_range() 访问。
+    // 接口功能见：https://zh.cppreference.com/w/cpp/container/unordered_multiset
     //
     // 未实现的接口：
     // iterator insert(const_iterator hint, const value_type& value);
     // iterator insert(const_iterator hint, value_type&& value);
-    // template< class P > iterator insert( const_iterator hint, P&& value );
     // max_load_factor();
     // void rehash( size_type count );
     // void reserve( size_type count );
-    template <class Key, class T, class Hash = tinySTL::hash<Key>, class KeyEqual = tinySTL::equal_to<Key>,
-            class Allocator = tinySTL::allocator<tinySTL::pair<const Key, T>>>
-    class unordered_map {
+    template <class Key, class Hash = tinySTL::hash<Key>, class KeyEqual = tinySTL::equal_to<Key>,
+            class Allocator = tinySTL::allocator<Key>>
+    class unordered_multiset {
     public:
         using allocator_type    = Allocator;
         using key_type          = Key;
-        using mapped_type       = T;
-        using value_type        = tinySTL::pair<const Key, T>;
+        using value_type        = Key;
 
     private:
-        using hash_table_type   = hashtable<key_type, value_type, Hash, tinySTL::select1st<value_type>, KeyEqual, Allocator>;
+        using hash_table_type   = hashtable<key_type, value_type, Hash, tinySTL::identity<value_type>, KeyEqual, Allocator>;
 
         hash_table_type hashtable_;
 
@@ -45,51 +44,50 @@ namespace tinySTL {
 
         using size_type         = typename hash_table_type::size_type;
         using difference_type   = typename hash_table_type::difference_type;
-        using reference         = typename hash_table_type::reference;
+        using reference         = typename hash_table_type::const_reference;
         using const_reference   = typename hash_table_type::const_reference;
-        using pointer           = typename hash_table_type::pointer;
+        using pointer           = typename hash_table_type::const_pointer;
         using const_pointer     = typename hash_table_type::const_pointer;
-        using iterator          = typename hash_table_type::iterator;
+        using iterator          = typename hash_table_type::const_iterator;
         using const_iterator    = typename hash_table_type::const_iterator;
 
     public:
-        unordered_map() = default;
-
-        explicit unordered_map(size_type bucketCount, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
+        unordered_multiset() = default;
+        explicit unordered_multiset(size_type bucketCount, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
             : hashtable_(bucketCount, hash, equal) {
 
         }
 
         template <class InputIterator>
-        unordered_map(InputIterator first, InputIterator last, size_type bucketCount = 100, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
-        : hashtable_(bucketCount, hash, equal) {
+        unordered_multiset(InputIterator first, InputIterator last, size_type bucketCount = 100, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
+            : hashtable_(bucketCount, hash, equal) {
             hashtable_.insert_unique(first, last);
         }
 
-        unordered_map(const unordered_map& other) : hashtable_(other.hashtable_) {}
+        unordered_multiset(const unordered_multiset& other) : hashtable_(other.hashtable_) {}
 
-        unordered_map(unordered_map&& other) noexcept : hashtable_(std::move(other.hashtable_)) {}
+        unordered_multiset(unordered_multiset&& other) noexcept : hashtable_(std::move(other.hashtable_)) {}
 
-        unordered_map(std::initializer_list<value_type> ilist, size_type bucketCount = 100, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
-        : hashtable_(bucketCount, hash, equal) {
+        unordered_multiset(std::initializer_list<value_type> ilist, size_type bucketCount = 100, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
+            : hashtable_(bucketCount, hash, equal) {
             hashtable_.insert_unique(ilist.begin(), ilist.end());
         }
 
-        ~unordered_map() = default;
+        ~unordered_multiset() = default;
 
-        unordered_map& operator=(const unordered_map& other) {
+        unordered_multiset& operator=(const unordered_multiset& other) {
             hashtable_ = other.hashtable_;
 
             return *this;
         }
 
-        unordered_map& operator=(unordered_map&& other) noexcept {
+        unordered_multiset& operator=(unordered_multiset&& other) noexcept {
             hashtable_ = std::move(other.hashtable_);
 
             return *this;
         }
 
-        unordered_map& operator=(std::initializer_list<value_type> ilist) {
+        unordered_multiset& operator=(std::initializer_list<value_type> ilist) {
             clear();
             hashtable_.insert_unique(ilist.begin(), ilist.end());
 
@@ -136,40 +134,31 @@ namespace tinySTL {
             hashtable_.clear();
         }
 
-        tinySTL::pair<iterator, bool> insert(const value_type& value) {
-            return hashtable_.insert_unique(value);
+        iterator insert(const value_type& value) {
+            return hashtable_.insert_equal(value);
         }
 
-        tinySTL::pair<iterator, bool> insert(value_type&& value) noexcept {
-            return hashtable_.insert_unique(std::move(value));
-        }
-
-        template <class P>
-        tinySTL::pair<iterator, bool> insert(P&& value) {
-            return hashtable_.insert_unique(std::forward<P>(value));
+        iterator insert(value_type&& value) noexcept {
+            return hashtable_.insert_equal(std::move(value));
         }
 
         template <class InputIterator>
         void insert(InputIterator first, InputIterator last) {
-            hashtable_.insert_unique(first, last);
+            hashtable_.insert_equal(first, last);
         }
 
         void insert(std::initializer_list<value_type> ilist) {
-            hashtable_.insert_unique(ilist);
+            hashtable_.insert_equal(ilist);
         }
 
         template <class... Args>
         tinySTL::pair<iterator, bool> emplace(Args&&... args) {
-            return hashtable_.emplace_unique(std::forward<Args>(args)...);
+            return hashtable_.emplace_equal(std::forward<Args>(args)...);
         }
 
         template <class... Args>
         iterator emplace_hint(const_iterator hint, Args&&... args) {
             return insert(hint, std::forward<Args>(args)...);
-        }
-
-        void swap(unordered_map& other) {
-            hashtable_.swap(other.hashtable_);
         }
 
         iterator erase(const_iterator position) {
@@ -184,22 +173,8 @@ namespace tinySTL {
             return hashtable_.erase(key);
         }
 
-        T& at(const key_type& key) {
-            return find(key)->second;
-        }
-
-        const T& at(const key_type& key) const {
-            return find(key)->second;
-        }
-
-        T& operator[](const key_type& key) {
-            auto it = emplace(key, T()).first;
-
-            return it->second;
-        }
-
-        T& operator[](key_type&& key) {
-            return operator=(key);
+        void swap(unordered_multiset& other) {
+            hashtable_.swap(other.hashtable_);
         }
 
         size_type count(const key_type& key) const {
@@ -249,22 +224,22 @@ namespace tinySTL {
         key_equal key_eq() const {
             return hashtable_.key_eq();
         }
-    }; // class unordered_map
+    }; // class unordered_multiset
     template <class Key, class Hash, class KeyEqual, class Allocator>
-    bool operator==(const unordered_map<Key, Hash, KeyEqual, Allocator>& left, const unordered_map<Key, Hash, KeyEqual, Allocator>& right) {
+    bool operator==(const unordered_multiset<Key, Hash, KeyEqual, Allocator>& left, const unordered_multiset<Key, Hash, KeyEqual, Allocator>& right) {
         return left.size() == right.size() && tinySTL::equal(left.cbegin(), left.cend(), right.cbegin());
     }
 
     template <class Key, class Hash, class KeyEqual, class Allocator>
-    bool operator!=(const unordered_map<Key, Hash, KeyEqual, Allocator>& left, const unordered_map<Key, Hash, KeyEqual, Allocator>& right) {
+    bool operator!=(const unordered_multiset<Key, Hash, KeyEqual, Allocator>& left, const unordered_multiset<Key, Hash, KeyEqual, Allocator>& right) {
         return left.size() != right.size() || !tinySTL::equal(left.cbegin(), left.cend(), right.cbegin());
     }
 
     template <class Key, class Hash, class KeyEqual, class Allocator>
-    void swap(unordered_map<Key, Hash, KeyEqual, Allocator>& left, unordered_map<Key, Hash, KeyEqual, Allocator>& right) {
+    void swap(unordered_multiset<Key, Hash, KeyEqual, Allocator>& left, unordered_multiset<Key, Hash, KeyEqual, Allocator>& right) {
         left.swap(right);
     }
-} // namespace tinySTL
+}
 
 
-#endif //TINYSTL_UNORDERED_MAP_H
+#endif //TINYSTL_UNORDERED_MULTISET_H

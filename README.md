@@ -22,6 +22,7 @@ a subset of STL
 - [x] hashtable
 - [x] unordered_set
 - [x] unordered_map
+- [x] unordered_multiset
 - [x] initializer_list
 - [x] 算法
     - [x] all_of
