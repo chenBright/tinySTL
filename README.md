@@ -26,6 +26,8 @@ a subset of STL
     - [x] any_of
     - [x] none_of
     - [x] for_each
+    - [x] count
+    - [x] count_if
     - [x] find
     - [x] find_if
     - [x] find_if_not

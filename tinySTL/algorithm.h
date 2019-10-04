@@ -23,6 +23,39 @@ namespace tinySTL {
     }
 
     /**
+     * count
+     * count_if
+     */
+    // 统计 [first, last) 范围内等于 value 的元素的个数。
+    template <class InputIterator, class T>
+    typename iterator_traits<InputIterator>::difference_type
+    count(InputIterator first, InputIterator last, const T& value) {
+        typename iterator_traits<InputIterator>::difference_type result = 0;
+        while (first != last) {
+            if (*first == last) {
+                ++result;
+            }
+            ++first;
+        }
+
+        return result;
+    }
+    // 统计 [first, last) 范围内 op(*it) == true 的元素的个数。
+    template <class InputIterator, class UnaryPredicate>
+    typename iterator_traits<InputIterator>::difference_type
+    count(InputIterator first, InputIterator last, UnaryPredicate op) {
+        typename iterator_traits<InputIterator>::difference_type result = 0;
+        while (first != last) {
+            if (op(*first)) {
+                ++result;
+            }
+            ++first;
+        }
+
+        return result;
+    }
+
+    /**
      * all_of
      * any_of
      * none_of
