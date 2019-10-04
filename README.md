@@ -38,6 +38,7 @@ a subset of STL
     - [x] equal
     - [x] lexicographical_compare
 - [x] functional
+    - [x] hash
     - [x] equal_to
     - [x] not_equal_to
     - [x] greater
