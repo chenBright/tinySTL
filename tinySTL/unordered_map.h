@@ -25,7 +25,7 @@ namespace tinySTL {
     // void rehash( size_type count );
     // void reserve( size_type count );
     template <class Key, class T, class Hash = tinySTL::hash<Key>, class KeyEqual = tinySTL::equal_to<Key>,
-            class Allocator = tinySTL::allocator<tinySTL::pair<Key, T>>>
+            class Allocator = tinySTL::allocator<tinySTL::pair<const Key, T>>>
     class unordered_map {
     public:
         using allocator_type    = Allocator;
