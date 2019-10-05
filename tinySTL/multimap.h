@@ -9,6 +9,7 @@
 #include "utility"
 #include "functional.h"
 #include "rb_tree.h"
+#include "algorithm_base.h"
 
 namespace tinySTL {
     // 关联容器，含有关键-值 pair 的已排序列表，同时容许多个入口拥有同一关键。通常其底层实现为红黑树。

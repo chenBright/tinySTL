@@ -9,6 +9,7 @@
 #include "utility"
 #include "functional.h"
 #include "rb_tree.h"
+#include "algorithm_base.h"
 
 namespace tinySTL {
     // 关联容器，含有 Key 类型对象的已排序集。通常其底层实现为红黑树。

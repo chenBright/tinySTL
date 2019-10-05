@@ -9,6 +9,7 @@
 #include "vector.h"
 #include "utility.h"
 #include "iterator_base.h"
+#include "algorithm_base.h"
 
 namespace tinySTL {
     template <class T>

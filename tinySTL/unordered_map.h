@@ -8,6 +8,8 @@
 #include "functional_hash.h"
 #include "hashtable.h"
 #include "alloc.h"
+#include "algorithm_base.h"
+#include "algorithm_base.h"
 
 namespace tinySTL {
     // 关联容器，含有带唯一键的键-值 pair 。

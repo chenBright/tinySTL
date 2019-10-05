@@ -8,6 +8,7 @@
 #include "functional_hash.h"
 #include "hashtable.h"
 #include "alloc.h"
+#include "algorithm_base.h"
 
 namespace tinySTL {
     // 无序关联容器，支持等价的关键（一个 unordered_multimap 可含有每个关键值的多个副本）和将关键与另一类型的值关联。

@@ -9,6 +9,7 @@
 #include "utility"
 #include "functional.h"
 #include "rb_tree.h"
+#include "algorithm_base.h"
 
 namespace tinySTL {
     // mltiset 含有 Key 类型对象有序集的容器。不同于 set ，它允许多个关键拥有等价的值。通常其底层实现为红黑树。
