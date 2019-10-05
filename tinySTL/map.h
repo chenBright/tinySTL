@@ -9,6 +9,7 @@
 #include "utility"
 #include "functional.h"
 #include "rb_tree.h"
+#include "algorithm_base.h"
 
 namespace tinySTL {
     // 有序键值对容器，它的元素的键是唯一的。

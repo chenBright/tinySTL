@@ -35,6 +35,7 @@ a subset of STL
     - [x] find
     - [x] find_if
     - [x] find_if_not
+    - [x] find_end
     - [x] max
     - [x] max_element
     - [x] min
@@ -55,10 +56,11 @@ a subset of STL
 
 ## TODO
 
-- 单元测试
 - std::get(std::pair)
-- std::tuple_size\<std::pair\>
-- std::tuple_element\<std::pair\>
+- move
+- copy 系列
+- 智能指针
+- bind、function
 - [补充 hash 函数](https://zh.cppreference.com/w/cpp/utility/hash)
 - 异常保证
 - [allocator static成员函数问题](https://www.zhihu.com/question/53085291/answer/133516400)

@@ -8,6 +8,7 @@
 #include "functional_hash.h"
 #include "hashtable.h"
 #include "alloc.h"
+#include "algorithm_base.h"
 
 namespace tinySTL {
     // 含有 Key 类型唯一对象集合的关联容器。

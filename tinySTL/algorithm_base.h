@@ -1,5 +1,5 @@
-#ifndef TINYSTL_ALGORITHM_H
-#define TINYSTL_ALGORITHM_H
+#ifndef TINYSTL_ALGORITHM_BASE_H
+#define TINYSTL_ALGORITHM_BASE_H
 
 #include <initializer_list>
 #include <algorithm>
@@ -111,6 +111,58 @@ namespace tinySTL {
         }
 
         return first;
+    }
+
+    /**
+     * find_end
+     */
+    // 在 [first1, last1) 中搜索序列 [first2, last2)，返回最后一次出现的迭代器。
+    //
+    // 其中 op 函数：
+    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
+    // 若元素应被当做相等则返回，则返回 true。
+    template <class ForwardIterator1, class ForwardIterator2>
+    ForwardIterator1 find_end(ForwardIterator1 first1, ForwardIterator1 last1,
+                              ForwardIterator2 first2, ForwardIterator2 last2) {
+        // 若 [first1, last1) 为空或若找不到这种序列，则返回 last1 。(C++11 起)
+        if (first2 == last2) {
+            return last1;
+        }
+
+        ForwardIterator1 result = last1;
+        while (true) {
+            auto tmpResult = std::search(first1, last1, first2, last2);
+            if (tmpResult == last1) {
+                break;
+            } else {
+                first1 = result = tmpResult;
+                ++first1;
+            }
+        }
+
+        return result;
+    }
+
+    template <class ForwardIterator1, class ForwardIterator2, class BinaryPredicate>
+    ForwardIterator1 find_end(ForwardIterator1 first1, ForwardIterator1 last1,
+                              ForwardIterator2 first2, ForwardIterator2 last2, BinaryPredicate op) {
+        // 若 [first1, last1) 为空或若找不到这种序列，则返回 last1 。(C++11 起)
+        if (first2 == last2) {
+            return last1;
+        }
+
+        ForwardIterator1 result = last1;
+        while (true) {
+            auto tmpResult = std::search(first1, last1, first2, last2, op);
+            if (tmpResult == last1) {
+                break;
+            } else {
+                first1 = result = tmpResult;
+                ++first1;
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -342,4 +394,4 @@ namespace tinySTL {
     }
 }
 
-#endif //TINYSTL_ALGORITHM_H
+#endif //TINYSTL_ALGORITHM_BASE_H

@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "constrcut.h"
-#include "algorithm.h"
+#include "algorithm_base.h"
 
 namespace tinySTL {
     // SGI STL Allocator Design

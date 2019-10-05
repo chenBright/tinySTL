@@ -14,6 +14,7 @@
 #include "iterator_base.h"
 #include "iterator_reverse_iterator.h"
 #include "type_traits.h"
+#include "algorithm_base.h"
 
 namespace tinySTL {
     namespace detail {
