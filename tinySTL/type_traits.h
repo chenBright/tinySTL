@@ -15,7 +15,6 @@ namespace tinySTL {
     // 如果 InputIterator 为迭代器类型，才调用迭代器版本的重载函数。
     // 所以引入 is_integral，借助模板函数的类型推到功能，用来区分整数类型和迭代器类型。
     // 详细使用见 vector 实现。
-
     template <class T>
     struct is_integral                      : public __false_type {};
 
@@ -57,6 +56,22 @@ namespace tinySTL {
     template <>
     struct is_integral<unsigned long long > : public __true_type {};
 
+    // remove_reference 取出引用，得到类型 T
+    template <class T>
+    struct remove_reference {
+        using type = T;
+    };
+
+    template <class T>
+    struct remove_reference<T&> {
+        using type = T;
+    };
+
+    template <class T>
+    struct remove_reference<T&&> {
+        using type = T;
+    };
+
 
     // has_trivial_default_constructor  -> 不重要的构造函数
     // has_trivial_copy_constructor     -> 不重要的拷贝构造函数
@@ -68,7 +83,6 @@ namespace tinySTL {
     // 决定以上成员为 __true_type 还是 __false_type 的标准：
     // 如果 class 内含指针成员，并且对它进行内存动态配置，
     // 则该 class 就需要实现自己的 non-trivial-xxx。所以以上成员为 __false_type。
-
     /**
      * type traits
      * SGI 使用了保守的策略：将所有成员定义为 __false_type。
