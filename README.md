@@ -41,6 +41,7 @@ a subset of STL
     - [x] min_element
     - [x] equal
     - [x] lexicographical_compare
+    - [x] move
 - [x] functional
     - [x] hash
     - [x] equal_to
