@@ -14,6 +14,7 @@
 #include "iterator_reverse_iterator.h"
 #include "type_traits.h"
 #include "algorithm_base.h"
+#include "utility_move.h"
 
 namespace tinySTL {
     // 封装动态数组的顺序容器
@@ -281,7 +282,7 @@ namespace tinySTL {
         }
 
         iterator insert(const_iterator position, const T &&value) {
-            return insert_aux(position, std::move(value));
+            return insert_aux(position, tinySTL::move(value));
         }
 
         iterator insert(const_iterator position, size_type count, const_reference value) {
@@ -395,7 +396,7 @@ namespace tinySTL {
 
         void push_back(const T &&value) {
             // TODO tinySTL 版本的 move
-            insert(cend(), std::move(value));
+            insert(cend(), tinySTL::move(value));
         }
 
         // 在容器末尾就地构造元素

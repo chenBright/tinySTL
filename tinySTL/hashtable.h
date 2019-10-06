@@ -10,6 +10,7 @@
 #include "utility_pair.h"
 #include "iterator_base.h"
 #include "algorithm_base.h"
+#include "utility_move.h"
 
 namespace tinySTL {
     template <class T>
@@ -137,7 +138,7 @@ namespace tinySTL {
         }
 
         hashtable(hashtable&& other) noexcept {
-            move_from(std::move(other));
+            move_from(tinySTL::move(other));
         }
 
         ~hashtable() {
@@ -154,7 +155,7 @@ namespace tinySTL {
 
         hashtable& operator=(hashtable&& other) noexcept {
             if (this != &other) {
-                move_from(std::move(other));
+                move_from(tinySTL::move(other));
             }
 
             return *this;
@@ -255,7 +256,7 @@ namespace tinySTL {
         }
 
         iterator insert_equal(value_type&& value) {
-            return insert_equal_aux(std::move(value));
+            return insert_equal_aux(tinySTL::move(value));
         }
 
         template <class InputIterator>
@@ -281,7 +282,7 @@ namespace tinySTL {
         }
 
         tinySTL::pair<iterator, bool> insert_unique(value_type&& value) {
-            return insert_unique_aux(std::move(value));
+            return insert_unique_aux(tinySTL::move(value));
         }
 
         void insert_unique(std::initializer_list<value_type> ilist) {
@@ -395,7 +396,7 @@ namespace tinySTL {
 
         hashtable_node<value_type>* create_node(value_type&& value) {
             auto newNode = allocate_node();
-            nodeAllocator.constrcut(&newNode->data_, std::move(value));
+            nodeAllocator.constrcut(&newNode->data_, tinySTL::move(value));
 
             return newNode;
         }
@@ -476,7 +477,7 @@ namespace tinySTL {
 
             hash_ = other.hash_;
             equals_ = other.equals_;
-            buckets_ = std::move(other.buckets_);
+            buckets_ = tinySTL::move(other.buckets_);
             numElements_ = other.numElements_;
         }
 

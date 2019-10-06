@@ -19,6 +19,7 @@
 #include "iterator_reverse_iterator.h"
 #include "functional.h"
 #include "algorithm_base.h"
+#include "utility_move.h"
 
 namespace tinySTL {
     namespace detail {
@@ -300,7 +301,7 @@ namespace tinySTL {
         }
 
         iterator insert(const_iterator position, T &&value) {
-            return insert_aux(position, std::move(value));
+            return insert_aux(position, tinySTL::move(value));
         }
 
         iterator insert(const_iterator position, size_type count, const_reference value) {
@@ -361,7 +362,7 @@ namespace tinySTL {
         }
 
         void push_back(T &&value) {
-            insert(end(), std::move(value));
+            insert(end(), tinySTL::move(value));
         }
 
         template <class... Args>
@@ -378,7 +379,7 @@ namespace tinySTL {
         }
 
         void push_front(T &&value) {
-            insert(begin(), std::move(value));
+            insert(begin(), tinySTL::move(value));
         }
 
         template <class... Args>

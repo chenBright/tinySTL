@@ -15,6 +15,7 @@
 #include "iterator_reverse_iterator.h"
 #include "type_traits.h"
 #include "algorithm_base.h"
+#include "utility_move.h"
 
 namespace tinySTL {
     namespace detail {
@@ -311,8 +312,8 @@ namespace tinySTL {
         }
 
         deque(deque &&other) noexcept
-            : start_(std::move(other.start_)),
-              finish_(std::move(other.finish_)),
+            : start_(tinySTL::move(other.start_)),
+              finish_(tinySTL::move(other.finish_)),
               map_(other.map_),
               mapSize_(other.mapSize_) {
 
@@ -353,8 +354,8 @@ namespace tinySTL {
         deque& operator=(deque &&other) noexcept {
             if (this != &other) {
                 clear();
-                start_ = std::move(other.start_);
-                finish_ = std::move(other.finish_);
+                start_ = tinySTL::move(other.start_);
+                finish_ = tinySTL::move(other.finish_);
                 map_ = other.map_;
                 mapSize_ = other.mapSize_;
 
@@ -548,13 +549,13 @@ namespace tinySTL {
 
         iterator insert(iterator position, const value_type &&value) {
             if (position.current_ == cbegin().current_) {
-                push_front(std::move(value));
+                push_front(tinySTL::move(value));
                 return begin();
             } else if (position.current_ == cend().current_) {
-                push_back(std::move(value));
+                push_back(tinySTL::move(value));
                 return end() - 1;
             } else {
-                return insert_aux(position, std::move(value));
+                return insert_aux(position, tinySTL::move(value));
             }
         }
 
@@ -714,7 +715,7 @@ namespace tinySTL {
         }
 
         void push_back(const T &&value) {
-            emplace_back(std::move(value));
+            emplace_back(tinySTL::move(value));
         }
 
         template <class... Args>
@@ -765,7 +766,7 @@ namespace tinySTL {
         }
 
         void push_front(const T &&value) {
-            emplace_front(std::move(value));
+            emplace_front(tinySTL::move(value));
         }
 
         template <class... Args>

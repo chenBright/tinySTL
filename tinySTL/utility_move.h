@@ -1,5 +1,5 @@
-#ifndef TINYSTL_UTILITY_H
-#define TINYSTL_UTILITY_H
+#ifndef TINYSTL_UTILITY_MOVE_H
+#define TINYSTL_UTILITY_MOVE_H
 
 #include "type_traits.h"
 
@@ -27,4 +27,4 @@ namespace tinySTL {
     }
 }
 
-#endif //TINYSTL_UTILITY_H
+#endif //TINYSTL_UTILITY_MOVE_H

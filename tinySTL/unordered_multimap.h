@@ -70,7 +70,7 @@ namespace tinySTL {
 
         unordered_multimap(const unordered_multimap& other) : hashtable_(other.hashtable_) {}
 
-        unordered_multimap(unordered_multimap&& other) noexcept : hashtable_(std::move(other.hashtable_)) {}
+        unordered_multimap(unordered_multimap&& other) noexcept : hashtable_(tinySTL::move(other.hashtable_)) {}
 
         unordered_multimap(std::initializer_list<value_type> ilist, size_type bucketCount = 100, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
         : hashtable_(bucketCount, hash, equal) {
@@ -86,7 +86,7 @@ namespace tinySTL {
         }
 
         unordered_multimap& operator=(unordered_multimap&& other) noexcept {
-            hashtable_ = std::move(other.hashtable_);
+            hashtable_ = tinySTL::move(other.hashtable_);
 
             return *this;
         }
@@ -143,7 +143,7 @@ namespace tinySTL {
         }
 
         tinySTL::pair<iterator, bool> insert(value_type&& value) noexcept {
-            return hashtable_.insert_equal(std::move(value));
+            return hashtable_.insert_equal(tinySTL::move(value));
         }
 
         template <class P>

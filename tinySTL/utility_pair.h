@@ -4,6 +4,8 @@
 #include <utility>
 #include <algorithm>
 
+#include "utility_move.h"
+
 namespace tinySTL {
     template <class T1, class T2>
     struct pair {
@@ -31,7 +33,7 @@ namespace tinySTL {
         explicit pair(const pair& p) : first(p.first), second(p.second) {}
 
         template <class U1, class U2>
-        explicit pair(pair&& p) : first(std::move(p.first)), second(std::move(p.second)) {}
+        explicit pair(pair&& p) : first(tinySTL::move(p.first)), second(tinySTL::move(p.second)) {}
 
         pair& operator=(const pair& other) {
             first = other.first;
@@ -49,8 +51,8 @@ namespace tinySTL {
         }
 
         pair& operator=(pair&& other) noexcept {
-            first = std::move(other.first);
-            second = std::move(other.second);
+            first = tinySTL::move(other.first);
+            second = tinySTL::move(other.second);
 
             return *this;
         }

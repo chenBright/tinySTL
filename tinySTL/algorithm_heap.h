@@ -8,6 +8,7 @@
 #include "functional.h"
 
 #include "algorithm_heap.h" // heap 算法
+#include "utility_move.h"
 
 namespace tinySTL {
     template<class RandomAccessIterator, class Compare>
@@ -21,16 +22,16 @@ namespace tinySTL {
             return;
         }
 
-        auto value = std::move(*--last);
+        auto value = tinySTL::move(*--last);
         auto currentIndex = distance(first, last);
         auto parentIndex = (currentIndex - 1) / 2;
         while (currentIndex > 0 && comp(first[parentIndex], value)) {
-            first[currentIndex] = std::move(first[parentIndex]);
+            first[currentIndex] = tinySTL::move(first[parentIndex]);
             currentIndex = parentIndex;
             parentIndex = (currentIndex - 1) / 2;
         }
 
-        first[currentIndex] = std::move(value);
+        first[currentIndex] = tinySTL::move(value);
     }
 
 
@@ -82,12 +83,12 @@ namespace tinySTL {
             return;
         }
 
-        auto value = std::move(*(last - 1));
-        *(last - 1) = std::move(first); // 将要弹出的元素放到末尾
+        auto value = tinySTL::move(*(last - 1));
+        *(last - 1) = tinySTL::move(first); // 将要弹出的元素放到末尾
 
         auto maxIndex = distance(first, last);
         decltype(maxIndex) currentIndex = 0;
-        detail::pop_heap_aux(first, currentIndex, maxIndex, std::move(value), comp);
+        detail::pop_heap_aux(first, currentIndex, maxIndex, tinySTL::move(value), comp);
     }
 
     template<class RandomAccessIterator>
@@ -118,7 +119,7 @@ namespace tinySTL {
         // 只需要处理一般元素，即跳过大小为 1 的堆（叶子结点）。
         // 对大小为 1 的堆进行"下沉"操作，实际为空操作。
         for (auto currentIndex = (maxIndex - 2) / 2; currentIndex >= 0; -- currentIndex) {
-            detail::pop_heap_aux(first, currentIndex, maxIndex, std::move(first[currentIndex]), comp);
+            detail::pop_heap_aux(first, currentIndex, maxIndex, tinySTL::move(first[currentIndex]), comp);
         }
     }
 

@@ -7,6 +7,7 @@
 #include "vector.h"
 #include "algorithm_heap.h"
 #include "functional.h"
+#include "utility_move.h"
 
 namespace tinySTL {
     template <class T, class Container = vector<T>, class Compare = tinySTL::less<typename Container::value_type>>
@@ -31,14 +32,14 @@ namespace tinySTL {
             make_heap(c_.begin(), c_.end(), comp_);
         }
 
-        priority_queue(const Compare &compare, const Container &&cont) : comp_(compare), c_(std::move(cont)) {
+        priority_queue(const Compare &compare, const Container &&cont) : comp_(compare), c_(tinySTL::move(cont)) {
             make_heap(c_.begin(), c_.end(), comp_);
         }
 
         priority_queue(const priority_queue &other) : comp_(other.comp_), c_(other.c_) {}
 
         // comp_ 是比较函数对象，可以 move
-        priority_queue(priority_queue &&other) noexcept : comp_(std::move(other.comp_)), c_(std::move(other.c_))  {}
+        priority_queue(priority_queue &&other) noexcept : comp_(tinySTL::move(other.comp_)), c_(tinySTL::move(other.c_))  {}
 
         template <class InputIterator>
         priority_queue(InputIterator first, InputIterator last) : c_(first, last) {
@@ -63,8 +64,8 @@ namespace tinySTL {
 
         priority_queue& operator=(priority_queue &&other) noexcept {
             if (this != &other) {
-                comp_ = std::move(other.comp_);
-                c_ = std::move(other.c_);
+                comp_ = tinySTL::move(other.comp_);
+                c_ = tinySTL::move(other.c_);
             }
 
             return *this;
@@ -88,7 +89,7 @@ namespace tinySTL {
         }
 
         void push(value_type &&value) {
-            c_.push_back(std::move(value));
+            c_.push_back(tinySTL::move(value));
             push_heap(c_.begin(), c_.end(), comp_);
         }
 

@@ -4,9 +4,10 @@
 #include <functional>
 #include <initializer_list>
 #include <algorithm>
+#include <utility>
 
 #include "alloc.h"
-#include "utility"
+#include "utility_move.h"
 #include "functional.h"
 #include "rb_tree.h"
 #include "algorithm_base.h"
@@ -64,7 +65,7 @@ namespace tinySTL {
 
         multimap(const multimap &other) : tree_(other.tree_) {}
 
-        multimap(multimap &&other) noexcept : tree_(std::move(other.tree_)) {}
+        multimap(multimap &&other) noexcept : tree_(tinySTL::move(other.tree_)) {}
 
         multimap(std::initializer_list<value_type> ilist, const Compare& comp = Compare()) : tree_(comp) {
             tree_.insert_equal(ilist.begin(), ilist.end());
@@ -77,7 +78,7 @@ namespace tinySTL {
         }
 
         multimap& operator=(multimap&& other) noexcept {
-            tree_ = std::move(other.tree_);
+            tree_ = tinySTL::move(other.tree_);
 
             return *this;
         }
@@ -158,7 +159,7 @@ namespace tinySTL {
         }
 
         iterator insert(value_type&& value) {
-            return tree_.insert_equal(std::move(value));
+            return tree_.insert_equal(tinySTL::move(value));
         }
 
         template <class P>

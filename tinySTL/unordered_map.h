@@ -3,13 +3,14 @@
 
 #include <initializer_list>
 #include <algorithm>
+#include <utility>
 
 #include "functional.h"
 #include "functional_hash.h"
 #include "hashtable.h"
 #include "alloc.h"
 #include "algorithm_base.h"
-#include "algorithm_base.h"
+#include "utility_move.h"
 
 namespace tinySTL {
     // 关联容器，含有带唯一键的键-值 pair 。
@@ -70,7 +71,7 @@ namespace tinySTL {
 
         unordered_map(const unordered_map& other) : hashtable_(other.hashtable_) {}
 
-        unordered_map(unordered_map&& other) noexcept : hashtable_(std::move(other.hashtable_)) {}
+        unordered_map(unordered_map&& other) noexcept : hashtable_(tinySTL::move(other.hashtable_)) {}
 
         unordered_map(std::initializer_list<value_type> ilist, size_type bucketCount = 100, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
         : hashtable_(bucketCount, hash, equal) {
@@ -86,7 +87,7 @@ namespace tinySTL {
         }
 
         unordered_map& operator=(unordered_map&& other) noexcept {
-            hashtable_ = std::move(other.hashtable_);
+            hashtable_ = tinySTL::move(other.hashtable_);
 
             return *this;
         }
@@ -143,7 +144,7 @@ namespace tinySTL {
         }
 
         tinySTL::pair<iterator, bool> insert(value_type&& value) noexcept {
-            return hashtable_.insert_unique(std::move(value));
+            return hashtable_.insert_unique(tinySTL::move(value));
         }
 
         template <class P>

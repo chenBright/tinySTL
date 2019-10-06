@@ -11,6 +11,7 @@
 
 #include "constrcut.h"
 #include "algorithm_base.h"
+#include "utility_move.h"
 
 namespace tinySTL {
     // SGI STL Allocator Design
@@ -481,7 +482,7 @@ namespace tinySTL {
         }
 
         static void construct(pointer ptr, T &&value) {
-            tinySTL::construct(ptr, std::move(value));
+            tinySTL::construct(ptr, tinySTL::move(value));
         }
 
         // 可以接受多个 value 参数，支持右值（前提为 Args 类型定义了移动构造函数）。
