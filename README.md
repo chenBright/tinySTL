@@ -24,7 +24,6 @@ a subset of STL
 - [x] unordered_map
 - [x] unordered_multiset
 - [x] unordered_multimap
-- [x] initializer_list
 - [x] 算法
     - [x] all_of
     - [x] any_of
@@ -51,6 +50,8 @@ a subset of STL
     - [x] greater_equal
     - [x] less_equal
 - [x] utility
+    - [x] initializer_list
+    - [x] move
     - [x] pair
     - [x] make_pair
 
