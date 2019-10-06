@@ -51,6 +51,7 @@ a subset of STL
     - [x] less_equal
 - [x] utility
     - [x] initializer_list
+    - [x] forward
     - [x] move
     - [x] pair
     - [x] make_pair
