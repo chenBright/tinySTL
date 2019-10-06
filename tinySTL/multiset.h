@@ -4,9 +4,10 @@
 #include <functional>
 #include <initializer_list>
 #include <algorithm>
+#include <utility>
 
 #include "alloc.h"
-#include "utility"
+#include "utility_move.h"
 #include "functional.h"
 #include "rb_tree.h"
 #include "algorithm_base.h"
@@ -51,7 +52,7 @@ namespace tinySTL {
 
         multiset(const multiset& other) : tree_(other.tree_) {}
 
-        multiset(multiset&& other) noexcept : tree_(std::move(other.tree_)) {}
+        multiset(multiset&& other) noexcept : tree_(tinySTL::move(other.tree_)) {}
 
         multiset(std::initializer_list<value_type> ilist, const Compare& comp = Compare()) : tree_(comp) {
             tree_.insert_equal(ilist.begin(), ilist.end());
@@ -66,7 +67,7 @@ namespace tinySTL {
         }
 
         multiset& operator=(multiset&& other) noexcept {
-            tree_ = std::move(other.tree_);
+            tree_ = tinySTL::move(other.tree_);
 
             return *this;
         }
@@ -147,7 +148,7 @@ namespace tinySTL {
         }
 
         iterator insert(const value_type&& value) {
-            return tree_.insert_equal(std::move(value));
+            return tree_.insert_equal(tinySTL::move(value));
         }
 
         // 插入 value 到尽可能接近、正好前于 hint 的位置。
@@ -156,7 +157,7 @@ namespace tinySTL {
         }
 
         iterator insert(const_iterator hint, const value_type&& value) {
-            return tree_.insert_equal(hint, std::move(value));
+            return tree_.insert_equal(hint, tinySTL::move(value));
         }
 
         template <class InputIterator>

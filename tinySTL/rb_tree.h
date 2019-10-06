@@ -13,6 +13,7 @@
 #include "alloc.h"
 #include "constrcut.h"
 #include "utility_pair.h"
+#include "utility_move.h"
 
 // rb_tree 红黑树
 // 实现来自：https://github.com/liuyunbin/tiny-STL/blob/1dd6633ccd25f2a58465a0d528fb6c1bbfe9c412/src/stl_rb_tree.h
@@ -593,7 +594,7 @@ namespace tinySTL {
          *************************************/
 
         iterator insert_equal(const value_type&  value) { return insert_equal_aux(value);                }
-        iterator insert_equal(      value_type&& value) { return insert_equal_aux(std::move(value)); }
+        iterator insert_equal(      value_type&& value) { return insert_equal_aux(tinySTL::move(value)); }
 
         template <typename InputIt>
         void insert_equal(InputIt first, InputIt last) {
@@ -610,7 +611,7 @@ namespace tinySTL {
         iterator emplace_equal(Args&&... args) { return insert_equal(value_type(std::forward<Args>(args)...)); }
 
         tinySTL::pair<iterator, bool> insert_unique(const value_type&  value) { return insert_unique_aux(value);                 }
-        tinySTL::pair<iterator, bool> insert_unique(      value_type&& value) { return insert_unique_aux(std::move(value));  }
+        tinySTL::pair<iterator, bool> insert_unique(      value_type&& value) { return insert_unique_aux(tinySTL::move(value));  }
 
         template <typename InputIt>
         void insert_unique(InputIt first, InputIt last) {
@@ -710,7 +711,7 @@ namespace tinySTL {
 
         rb_tree_node<value_type>* create_node(value_type&& value) {
             auto new_node = allocate_node();
-            tinySTL::construct(&new_node->data_, std::move(value));
+            tinySTL::construct(&new_node->data_, tinySTL::move(value));
             return new_node;
         }
 

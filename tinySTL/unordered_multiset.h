@@ -67,7 +67,7 @@ namespace tinySTL {
 
         unordered_multiset(const unordered_multiset& other) : hashtable_(other.hashtable_) {}
 
-        unordered_multiset(unordered_multiset&& other) noexcept : hashtable_(std::move(other.hashtable_)) {}
+        unordered_multiset(unordered_multiset&& other) noexcept : hashtable_(tinySTL::move(other.hashtable_)) {}
 
         unordered_multiset(std::initializer_list<value_type> ilist, size_type bucketCount = 100, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
             : hashtable_(bucketCount, hash, equal) {
@@ -83,7 +83,7 @@ namespace tinySTL {
         }
 
         unordered_multiset& operator=(unordered_multiset&& other) noexcept {
-            hashtable_ = std::move(other.hashtable_);
+            hashtable_ = tinySTL::move(other.hashtable_);
 
             return *this;
         }
@@ -140,7 +140,7 @@ namespace tinySTL {
         }
 
         iterator insert(value_type&& value) noexcept {
-            return hashtable_.insert_equal(std::move(value));
+            return hashtable_.insert_equal(tinySTL::move(value));
         }
 
         template <class InputIterator>

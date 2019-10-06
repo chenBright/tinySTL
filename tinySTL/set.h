@@ -4,9 +4,10 @@
 #include <functional>
 #include <initializer_list>
 #include <algorithm>
+#include <utility>
 
 #include "alloc.h"
-#include "utility"
+#include "utility_move.h"
 #include "functional.h"
 #include "rb_tree.h"
 #include "algorithm_base.h"
@@ -51,7 +52,7 @@ namespace tinySTL {
 
         set(const set& other) : tree_(other.tree_) {}
 
-        set(set&& other) noexcept : tree_(std::move(other.tree_)) {}
+        set(set&& other) noexcept : tree_(tinySTL::move(other.tree_)) {}
 
         set(std::initializer_list<value_type> ilist, const Compare& comp = Compare()) : tree_(comp) {
             tree_.insert_unique(ilist.begin(), ilist.end());
@@ -66,7 +67,7 @@ namespace tinySTL {
         }
 
         set& operator=(set&& other) noexcept {
-            tree_ = std::move(other.tree_);
+            tree_ = tinySTL::move(other.tree_);
 
             return *this;
         }
@@ -147,7 +148,7 @@ namespace tinySTL {
         }
 
         tinySTL::pair<iterator, bool> insert(value_type&& value) {
-            return tree_.insert_unique(std::move(value));
+            return tree_.insert_unique(tinySTL::move(value));
         }
 
         iterator insert(const_iterator hint, const value_type& value) {
@@ -155,7 +156,7 @@ namespace tinySTL {
         }
 
         iterator insert(const_iterator hint, value_type&& value) {
-            return tree_.insert_unique(hint, std::move(value));
+            return tree_.insert_unique(hint, tinySTL::move(value));
         }
 
         template <class InputIterator>

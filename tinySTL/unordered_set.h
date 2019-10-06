@@ -3,12 +3,14 @@
 
 #include <initializer_list>
 #include <algorithm>
+#include <utility>
 
 #include "functional.h"
 #include "functional_hash.h"
 #include "hashtable.h"
 #include "alloc.h"
 #include "algorithm_base.h"
+#include "utility_move.h"
 
 namespace tinySTL {
     // 含有 Key 类型唯一对象集合的关联容器。
@@ -66,7 +68,7 @@ namespace tinySTL {
 
         unordered_set(const unordered_set& other) : hashtable_(other.hashtable_) {}
 
-        unordered_set(unordered_set&& other) noexcept : hashtable_(std::move(other.hashtable_)) {}
+        unordered_set(unordered_set&& other) noexcept : hashtable_(tinySTL::move(other.hashtable_)) {}
 
         unordered_set(std::initializer_list<value_type> ilist, size_type bucketCount = 100, const Hash& hash = Hash(), const KeyEqual& equal = KeyEqual())
             : hashtable_(bucketCount, hash, equal) {
@@ -82,7 +84,7 @@ namespace tinySTL {
         }
 
         unordered_set& operator=(unordered_set&& other) noexcept {
-            hashtable_ = std::move(other.hashtable_);
+            hashtable_ = tinySTL::move(other.hashtable_);
 
             return *this;
         }
@@ -139,7 +141,7 @@ namespace tinySTL {
         }
 
         tinySTL::pair<iterator, bool> insert(value_type&& value) noexcept {
-            return hashtable_.insert_unique(std::move(value));
+            return hashtable_.insert_unique(tinySTL::move(value));
         }
 
         template <class InputIterator>

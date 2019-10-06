@@ -6,6 +6,7 @@
 
 #include "functional.h"
 #include "iterator_base.h"
+#include "utility_move.h"
 
 namespace tinySTL {
 
@@ -203,16 +204,31 @@ namespace tinySTL {
 
         return last1;
     }
-  
-    /**  
+
+    /**
      * move
      */
-    // 将 [first, last) 范围的元素移动到 以 d_first 为起点的范围内
+    // 将 [first, last) 范围的元素移动到以 d_first 为起点的范围内。
     template <class InputIterator, class OutputIterator>
     OutputIterator move(InputIterator first, InputIterator last, OutputIterator d_first) {
         while (first != last) {
             *d_first++ = tinySTL::move(*first++);
         }
+    }
+
+    /**
+     * move_backward
+     */
+    // 将 [first, last) 范围的元素移动到以 d_first 为终点（不包括 d_last）的范围内。
+    // 以逆序移动元素（首先复制末元素），但保持其相对顺序。
+    // 若 d_last 在 (first, last] 内则行为未定义。该情况下必须用 std::move 代替 std::move_backward 。
+    template <class BindirIterator1, class BindirIterator2>
+    BindirIterator2 move_backward(BindirIterator1 first, BindirIterator1 last, BindirIterator2 d_last) {
+        while (first != last) {
+            *--d_last = tinySTL::move(*--last);
+        }
+
+        return d_last;
     }
 
     /**

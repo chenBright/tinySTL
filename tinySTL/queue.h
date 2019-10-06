@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "deque.h"
+#include "utility_move.h"
 
 namespace tinySTL {
     // 队列
@@ -35,11 +36,11 @@ namespace tinySTL {
 
         explicit queue(const Container &cont) : c(cont) {}
 
-        explicit queue(Container &&cont) : c(std::move(cont)) {}
+        explicit queue(Container &&cont) : c(tinySTL::move(cont)) {}
 
         queue(const queue &other) : c(other.c) {}
 
-        queue(queue &&other) noexcept : c(std::move(other.c)) {}
+        queue(queue &&other) noexcept : c(tinySTL::move(other.c)) {}
 
         ~queue() = default;
 
@@ -53,7 +54,7 @@ namespace tinySTL {
 
         queue& operator=(queue &&other) noexcept {
             if (this != &other) {
-                c = std::move(other.c);
+                c = tinySTL::move(other.c);
             }
 
             return *this;
@@ -88,7 +89,7 @@ namespace tinySTL {
         }
 
         void push(value_type &&value) {
-            c.push(std::move(value));
+            c.push(tinySTL::move(value));
         }
 
         template <class... Args>
