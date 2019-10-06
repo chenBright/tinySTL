@@ -35,6 +35,7 @@ a subset of STL
     - [x] find_if
     - [x] find_if_not
     - [x] find_end
+    - [x] find_first_of
     - [x] move
     - [x] move_backward
     - [x] max
@@ -43,6 +44,7 @@ a subset of STL
     - [x] min_element
     - [x] equal
     - [x] lexicographical_compare
+    - [x] move
 - [x] functional
     - [x] hash
     - [x] equal_to

@@ -1,9 +1,10 @@
 #ifndef TINYSTL_UTILITY_PAIR_H
 #define TINYSTL_UTILITY_PAIR_H
 
-#include <utility>
 #include <algorithm>
+#include <utility>
 
+#include "type_traits.h"
 #include "utility_move.h"
 
 namespace tinySTL {
