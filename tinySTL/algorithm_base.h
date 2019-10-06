@@ -169,6 +169,7 @@ namespace tinySTL {
      * find_first_of
      */
     // 在 [first, last) 范围内搜索 [s_first, s_last) 范围内的任何元素。
+    // 返回找到的第一个元素的迭代器。
     //
     // 其中 p 函数：
     // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
