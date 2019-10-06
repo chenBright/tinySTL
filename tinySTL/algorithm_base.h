@@ -166,6 +166,17 @@ namespace tinySTL {
     }
 
     /**
+     * move
+     */
+    // 将 [first, last) 范围的元素移动到 以 d_first 为起点的范围内
+    template <class InputIterator, class OutputIterator>
+    OutputIterator move(InputIterator first, InputIterator last, OutputIterator d_first) {
+        while (first != last) {
+            *d_first++ = tinySTL::move(*first++);
+        }
+    }
+
+    /**
      * max
      */
     // 返回最大值
