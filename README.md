@@ -36,6 +36,7 @@ a subset of STL
     - [x] find_if
     - [x] find_if_not
     - [x] find_end
+    - [x] find_first_of
     - [x] max
     - [x] max_element
     - [x] min
