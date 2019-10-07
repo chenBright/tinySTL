@@ -36,6 +36,7 @@ a subset of STL
     - [x] find_if_not
     - [x] find_end
     - [x] find_first_of
+    - [x] search
     - [x] move
     - [x] move_backward
     - [x] max
@@ -63,8 +64,7 @@ a subset of STL
 ## TODO
 
 - std::get(std::pair)
-- move
-- copy 系列
+- copy（uninitialized_copy） 系列
 - 智能指针
 - bind、function
 - [补充 hash 函数](https://zh.cppreference.com/w/cpp/utility/hash)
