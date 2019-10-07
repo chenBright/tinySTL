@@ -118,6 +118,7 @@ namespace tinySTL {
      * find_end
      */
     // 在 [first1, last1) 中搜索序列 [first2, last2)，返回最后一次出现的迭代器。
+    // 若 [first1, last1) 为空或若找不到这种序列，则返回 last1 。(C++11 起)
     //
     // 其中 p 函数：
     // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
@@ -147,7 +148,6 @@ namespace tinySTL {
     template <class ForwardIterator1, class ForwardIterator2, class BinaryPredicate>
     ForwardIterator1 find_end(ForwardIterator1 first1, ForwardIterator1 last1,
                               ForwardIterator2 first2, ForwardIterator2 last2, BinaryPredicate p) {
-        // 若 [first1, last1) 为空或若找不到这种序列，则返回 last1 。(C++11 起)
         if (first2 == last2) {
             return last1;
         }
@@ -203,6 +203,59 @@ namespace tinySTL {
         }
 
         return last1;
+    }
+
+    /**
+     * search
+     */
+    // 在 [first1, last1 - (last2 - first2))（确保最后一次搜索的长度等于 last2  - first2） 中搜索序列 [first2, last2)，返回第一次出现的迭代器。
+    // 若 [last2, first2) 为空，则返回 first1 。(C++11 起)
+    //
+    // 其中 p 函数：
+    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
+    // 若元素应被当做相等则返回，则返回 true。
+    template <class ForwardIterator1, class ForwardIterator2>
+    ForwardIterator1 search(ForwardIterator1 first1, ForwardIterator1 last1,
+                            ForwardIterator2 first2, ForwardIterator2 last2) {
+        while (true) {
+            auto tmp = first1;
+            for (auto it = first2;; ++it, ++tmp) {
+                if (it == last2) {
+                    return first1;
+                }
+                if (tmp == last1) {
+                    return first1;
+                }
+                if (*tmp != *it) {
+                    break;
+                }
+            }
+            ++first1;
+
+            return first1;
+        }
+    }
+
+    template <class ForwardIterator1, class ForwardIterator2, class BinaryPredicate>
+    ForwardIterator1 search(ForwardIterator1 first1, ForwardIterator1 last1,
+                            ForwardIterator2 first2, ForwardIterator2 last2, BinaryPredicate p) {
+        while (true) {
+            auto tmp = first1;
+            for (auto it = first2;; ++it, ++tmp) {
+                if (it == last2) {
+                    return first1;
+                }
+                if (tmp == last1) {
+                    return first1;
+                }
+                if (!p(*tmp, *it)) {
+                    break;
+                }
+            }
+            ++first1;
+
+            return first1;
+        }
     }
 
     /**
