@@ -64,8 +64,7 @@ a subset of STL
 ## TODO
 
 - std::get(std::pair)
-- move
-- copy 系列
+- copy（uninitialized_copy） 系列
 - 智能指针
 - bind、function
 - [补充 hash 函数](https://zh.cppreference.com/w/cpp/utility/hash)
