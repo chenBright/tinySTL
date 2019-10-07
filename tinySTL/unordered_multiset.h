@@ -4,7 +4,7 @@
 #include <initializer_list>
 #include <algorithm>
 
-#include "functional.h"
+#include "functional_base.h"
 #include "functional_hash.h"
 #include "hashtable.h"
 #include "alloc.h"

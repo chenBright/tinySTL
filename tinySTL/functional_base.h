@@ -1,8 +1,8 @@
-#ifndef TINYSTL_FUNCTIONAL_H
-#define TINYSTL_FUNCTIONAL_H
+#ifndef TINYSTL_FUNCTIONAL_BASE_H
+#define TINYSTL_FUNCTIONAL_BASE_H
 
 namespace tinySTL {
-    // unarg_function、binary_finction 在 C++11 中一杯弃用。
+    // unarg_function、binary_finction 在 C++11 中已被弃用。
     // 参考 https://www.zhihu.com/question/30558389/answer/77515048
 
     // 定义一元函数的参数型别和返回值型别
@@ -18,6 +18,14 @@ namespace tinySTL {
         using first_argument_type   = Arg1;
         using second_argument_type  = Arg2;
         using result_type           = Result;
+    };
+
+    // 类型 T 必须支持 + 操作符
+    template <class T>
+    struct plus : public binary_finction<T, T, T> {
+        T operator()(const T& lhs, const T& rhs) {
+            return lhs + rhs;
+        }
     };
 
     // 类型 T 必须支持 == 操作符
@@ -95,4 +103,4 @@ namespace tinySTL {
     };
 }
 
-#endif //TINYSTL_FUNCTIONAL_H
+#endif //TINYSTL_FUNCTIONAL_BASE_H

@@ -48,6 +48,7 @@ a subset of STL
     - [x] move
 - [x] functional
     - [x] hash
+    - [x] plus
     - [x] equal_to
     - [x] not_equal_to
     - [x] greater
