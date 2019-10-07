@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <functional>
 
-#include "functional.h"
+#include "functional_base.h"
 
 namespace tinySTL {
     // hashtable 无法处理下面所述类型以外的类型，需要用户提供随影类型的特化版本 hash。
