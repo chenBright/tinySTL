@@ -226,7 +226,8 @@ namespace tinySTL {
                 if (tmp == last1) {
                     return first1;
                 }
-                if (*tmp != *it) {
+                // 不能用 operator!= 比较元素，STL 中只假设用 opeator== 来比较元素。
+                if (!(*tmp == *it)) {
                     break;
                 }
             }
@@ -269,9 +270,7 @@ namespace tinySTL {
     // 若元素应被当做相等则返回，则返回 true。
     template <class ForwardIterator, class Size, class T>
     ForwardIterator search_n(ForwardIterator first, ForwardIterator last, Size count, const T& value) {
-        search_n(first, last,count, value, tinySTL::equal_to<T>());
-
-        return first;
+        return search_n(first, last,count, value, tinySTL::equal_to<T>());
     }
 
     template <class ForwardIterator, class Size, class T, class BinaryPredicate>
