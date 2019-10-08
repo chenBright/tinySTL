@@ -133,7 +133,7 @@ namespace tinySTL {
 
         ForwardIterator1 result = last1;
         while (true) {
-            auto tmpResult = std::search(first1, last1, first2, last2);
+            auto tmpResult = search(first1, last1, first2, last2);
             if (tmpResult == last1) {
                 break;
             } else {
@@ -154,7 +154,7 @@ namespace tinySTL {
 
         ForwardIterator1 result = last1;
         while (true) {
-            auto tmpResult = std::search(first1, last1, first2, last2, p);
+            auto tmpResult = search(first1, last1, first2, last2, p);
             if (tmpResult == last1) {
                 break;
             } else {
@@ -256,6 +256,50 @@ namespace tinySTL {
 
             return first1;
         }
+    }
+
+    /**
+     * search_n
+     */
+    // 在 [first, last)中搜索 count 个连续等于 value 的元素序列，返回序列的第一个的迭代器。
+    // 如果 count <= 0 或者找不到序列，则返回 last。
+    //
+    // 其中 p 函数：
+    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
+    // 若元素应被当做相等则返回，则返回 true。
+    template <class ForwardIterator, class Size, class T>
+    ForwardIterator search_n(ForwardIterator first, ForwardIterator last, Size count, const T& value) {
+        search_n(first, last,count, value, tinySTL::equal_to<T>());
+
+        return first;
+    }
+
+    template <class ForwardIterator, class Size, class T, class BinaryPredicate>
+    ForwardIterator search_n(ForwardIterator first, ForwardIterator last, Size count, const T& value, BinaryPredicate p) {
+        for (; first != last; ++first) {
+            if (!p(*first, value)) {
+                continue;
+            }
+
+            auto candiate = first;
+            Size currentCount = 0;
+            while (true) {
+                ++currentCount;
+                if (currentCount >= count) {
+                    return candiate;
+                }
+
+                ++first;
+                if (first == last) {
+                    return last;
+                }
+                if (!p(*first, value)) {
+                    break;
+                }
+            }
+        }
+
+        return first;
     }
 
     /**
