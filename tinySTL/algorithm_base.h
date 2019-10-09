@@ -19,19 +19,19 @@ namespace tinySTL {
     // 对于[first, last) 范围内所有的元素，p(*it) == true。
     template <class InputIterator, class UnaryPredicate>
     bool all_of(InputIterator first, InputIterator last, UnaryPredicate p) {
-        return std::find_if_not(first, last, p) == last;
+        return find_if_not(first, last, p) == last;
     }
 
     // 对于[first, last) 范围内，存在元素，使得 p(*it) == true。
     template <class InputIterator, class UnaryPredicate>
     bool any_of(InputIterator first, InputIterator last, UnaryPredicate p) {
-        return std::find_if(first, last, p) != last;
+        return find_if(first, last, p) != last;
     }
 
     // 对于[first, last) 范围内所有的元素，p(*it) != true，即 p(*it) == false。
     template <class InputIterator, class UnaryPredicate>
     bool none_of(InputIterator first, InputIterator last, UnaryPredicate p) {
-        return std::find_if(first, last, p) == last;
+        return find_if(first, last, p) == last;
     }
 
     /**
@@ -87,7 +87,7 @@ namespace tinySTL {
     //
     // 其中 p 函数：
     // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
-    // 若元素应被当做相等则返回，则返回 true。
+    // 若元素相等，则返回 true。
     template <class InputIterator1, class InputIterator2>
     tinySTL::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2) {
         while (first1 != last1 && *first1 == *first2) {
@@ -138,8 +138,7 @@ namespace tinySTL {
     // 在 [first, last) 范围内查找等于 value 的元素。
     //
     // 其中 p 函数：
-    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
-    // 若元素应被当做相等则返回，则返回 true。
+    // 若 p(*it) == true，则返回 true。
     template <class InputIterator, class T>
     InputIterator find(InputIterator first, InputIterator last, const T& value) {
         while (first != last && *first != value) {
@@ -177,7 +176,7 @@ namespace tinySTL {
     //
     // 其中 p 函数：
     // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
-    // 若元素应被当做相等则返回，则返回 true。
+    // 若元素相等，则返回 true。
     template <class ForwardIterator1, class ForwardIterator2>
     ForwardIterator1 find_end(ForwardIterator1 first1, ForwardIterator1 last1,
                               ForwardIterator2 first2, ForwardIterator2 last2) {
@@ -229,7 +228,7 @@ namespace tinySTL {
     //
     // 其中 p 函数：
     // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
-    // 若元素应被当做相等则返回，则返回 true。
+    // 若元素相等，则返回 true。
     template <class InputIterator, class ForwardIterator>
     InputIterator find_first_of(InputIterator first1, InputIterator last1,
                                 ForwardIterator first2, ForwardIterator last2) {
@@ -267,7 +266,7 @@ namespace tinySTL {
     //
     // 其中 p 函数：
     // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
-    // 若元素应被当做相等则返回，则返回 true。
+    // 若元素相等，则返回 true。
     template <class ForwardIterator>
     ForwardIterator adjacent_find(ForwardIterator first, ForwardIterator last) {
         return adjacent_find(first, last, tinySTL::equal_to<typename iterator_traits<ForwardIterator>::value_type>());
@@ -297,7 +296,7 @@ namespace tinySTL {
     //
     // 其中 p 函数：
     // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
-    // 若元素应被当做相等则返回，则返回 true。
+    // 若元素相等，则返回 true。
     template <class ForwardIterator1, class ForwardIterator2>
     ForwardIterator1 search(ForwardIterator1 first1, ForwardIterator1 last1,
                             ForwardIterator2 first2, ForwardIterator2 last2) {
@@ -351,7 +350,7 @@ namespace tinySTL {
     //
     // 其中 p 函数：
     // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
-    // 若元素应被当做相等则返回，则返回 true。
+    // 若元素相等，则返回 true。
     template <class ForwardIterator, class Size, class T>
     ForwardIterator search_n(ForwardIterator first, ForwardIterator last, Size count, const T& value) {
         return search_n(first, last,count, value, tinySTL::equal_to<T>());
@@ -409,6 +408,41 @@ namespace tinySTL {
         }
 
         return d_last;
+    }
+
+    /**
+     * remove
+     * remove_if
+     */
+    // 从 [first, last) 范围移除所有满足特定判别标准的元素，并返回范围新结尾的尾后迭代器。
+    //
+    // 其中 p 函数：
+    // 若 p(*it) == true，则返回 true。
+    template <class ForwardIterator, class T>
+    ForwardIterator remove(ForwardIterator first, ForwardIterator last, const T& value) {
+        auto it = first;
+        while (first != last) {
+            // TODO 结合 bind1st 和 equal_to，调用下面的版本，来避免代码重复
+            if (!(*first == value)) {
+                *it++ = *first;
+            }
+            ++first;
+        }
+
+        return it;
+    }
+
+    template <class ForwardIterator, class UnaryPredicate>
+    ForwardIterator remove_if(ForwardIterator first, ForwardIterator last, UnaryPredicate p) {
+        auto it = first;
+        while (first != last) {
+            if (!p(*first)) {
+                *it++ = *first;
+            }
+            ++first;
+        }
+
+        return it;
     }
 
     /**
