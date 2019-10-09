@@ -6,9 +6,33 @@
 
 #include "functional_base.h"
 #include "iterator_base.h"
+#include "utility_pair.h"
 #include "utility_move.h"
 
 namespace tinySTL {
+
+    /**
+     * all_of
+     * any_of
+     * none_of
+     */
+    // 对于[first, last) 范围内所有的元素，p(*it) == true。
+    template <class InputIterator, class UnaryPredicate>
+    bool all_of(InputIterator first, InputIterator last, UnaryPredicate p) {
+        return std::find_if_not(first, last, p) == last;
+    }
+
+    // 对于[first, last) 范围内，存在元素，使得 p(*it) == true。
+    template <class InputIterator, class UnaryPredicate>
+    bool any_of(InputIterator first, InputIterator last, UnaryPredicate p) {
+        return std::find_if(first, last, p) != last;
+    }
+
+    // 对于[first, last) 范围内所有的元素，p(*it) != true，即 p(*it) == false。
+    template <class InputIterator, class UnaryPredicate>
+    bool none_of(InputIterator first, InputIterator last, UnaryPredicate p) {
+        return std::find_if(first, last, p) == last;
+    }
 
     /**
      * for_each
@@ -57,27 +81,54 @@ namespace tinySTL {
     }
 
     /**
-     * all_of
-     * any_of
-     * none_of
+     * mismatch
      */
-    // 对于[first, last) 范围内所有的元素，p(*it) == true。
-    template <class InputIterator, class UnaryPredicate>
-    bool all_of(InputIterator first, InputIterator last, UnaryPredicate p) {
-        return std::find_if_not(first, last, p) == last;
+    // 找到第一个 !(*it1 == *it2) 迭代器 pair。
+    //
+    // 其中 p 函数：
+    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
+    // 若元素应被当做相等则返回，则返回 true。
+    template <class InputIterator1, class InputIterator2>
+    tinySTL::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2) {
+        while (first1 != last1 && *first1 == *first2) {
+            ++first1;
+            ++first2;
+        }
+
+        return {first1, first2};
     }
 
-    // 对于[first, last) 范围内，存在元素，使得 p(*it) == true。
-    template <class InputIterator, class UnaryPredicate>
-    bool any_of(InputIterator first, InputIterator last, UnaryPredicate p) {
-        return std::find_if(first, last, p) != last;
+    template <class InputIterator1, class InputIterator2, class BinaryPredicate>
+    tinySTL::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, BinaryPredicate p) {
+        while (first1 != last1 && p(*first1, *first2)) {
+            ++first1;
+            ++first2;
+        }
+
+        return {first1, first2};
     }
 
-    // 对于[first, last) 范围内所有的元素，p(*it) != true，即 p(*it) == false。
-    template <class InputIterator, class UnaryPredicate>
-    bool none_of(InputIterator first, InputIterator last, UnaryPredicate p) {
-        return std::find_if(first, last, p) == last;
+    template <class InputIterator1, class InputIterator2>
+    tinySTL::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2) {
+        while (first1 != last1 && first2 == last2 && *first1 == *first2) {
+            ++first1;
+            ++first2;
+        }
+
+        return {first1, first2};
     }
+
+    template <class InputIterator1, class InputIterator2, class BinaryPredicate>
+    tinySTL::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, BinaryPredicate p) {
+        while (first1 != last1 && first2 == last2 && p(*first1, *first2)) {
+            ++first1;
+            ++first2;
+        }
+
+        return {first1, first2};
+    }
+
+
 
     /**
      * find
@@ -85,6 +136,10 @@ namespace tinySTL {
      * find_if_not
      */
     // 在 [first, last) 范围内查找等于 value 的元素。
+    //
+    // 其中 p 函数：
+    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
+    // 若元素应被当做相等则返回，则返回 true。
     template <class InputIterator, class T>
     InputIterator find(InputIterator first, InputIterator last, const T& value) {
         while (first != last && *first != value) {
@@ -434,11 +489,11 @@ namespace tinySTL {
     // comp 比较函数的用法同上。
     //
     // 如果有多个相等的最小值，则返回第一个最小值。
-     template <class ForwardIt>
-     ForwardIt min_element(ForwardIt first, ForwardIt last) {
+    template <class ForwardIt>
+    ForwardIt min_element(ForwardIt first, ForwardIt last) {
         using value_type = typename iterator_traits<ForwardIt>::value_type;
         return min_element(first, last, tinySTL::less<value_type>());
-     }
+    }
 
     template <class ForwardIt, class Compare>
     ForwardIt min_element(ForwardIt first, ForwardIt last, Compare comp) {

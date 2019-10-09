@@ -31,6 +31,7 @@ a subset of STL
     - [x] for_each
     - [x] count
     - [x] count_if
+    - [x] mismatch
     - [x] find
     - [x] find_if
     - [x] find_if_not
