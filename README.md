@@ -42,6 +42,8 @@ a subset of STL
     - [x] search_n
     - [x] move
     - [x] move_backward
+    - [x] remove
+    - [x] remove_if
     - [x] max
     - [x] max_element
     - [x] min
