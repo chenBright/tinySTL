@@ -55,6 +55,7 @@ a subset of STL
     - [x] minus
     - [x] multiplies
     - [x] divides
+    - [x] modulus
     - [x] equal_to
     - [x] not_equal_to
     - [x] greater
