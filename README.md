@@ -37,6 +37,7 @@ a subset of STL
     - [x] find_if_not
     - [x] find_end
     - [x] find_first_of
+    - [x] adjacent_find
     - [x] search
     - [x] search_n
     - [x] move

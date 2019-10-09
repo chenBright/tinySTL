@@ -261,6 +261,35 @@ namespace tinySTL {
     }
 
     /**
+     * adjacent_find
+     */
+    // 在 [first, last) 范围内搜索连续相等的两个元素，返回第一个元素的迭代器。
+    //
+    // 其中 p 函数：
+    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
+    // 若元素应被当做相等则返回，则返回 true。
+    template <class ForwardIterator>
+    ForwardIterator adjacent_find(ForwardIterator first, ForwardIterator last) {
+        return adjacent_find(first, last, tinySTL::equal_to<typename iterator_traits<ForwardIterator>::value_type>());
+    }
+
+
+    template <class ForwardIterator, class BinaryPredicate>
+    ForwardIterator adjacent_find(ForwardIterator first, ForwardIterator last, BinaryPredicate p) {
+        if (first == last) {
+            return last;
+        }
+
+        for (auto next = first++; next != first; ++first, ++next) {
+            if (p(*first, *next)) {
+                return first;
+            }
+        }
+
+        return last;
+    }
+
+    /**
      * search
      */
     // 在 [first1, last1 - (last2 - first2))（确保最后一次搜索的长度等于 last2  - first2） 中搜索序列 [first2, last2)，返回第一次出现的迭代器。
