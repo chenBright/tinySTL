@@ -28,12 +28,19 @@ namespace tinySTL {
         }
     };
 
-
     // 类型 T 必须支持 - 操作符
     template <class T>
     struct minus : public binary_finction<T, T, T> {
         T operator()(const T& lhs, const T& rhs) {
             return lhs - rhs;
+        }
+    };
+
+    // 类型 T 必须支持 * 操作符
+    template <class T>
+    struct multiplies : public binary_finction<T, T, T> {
+        T operator()(const T& lhs, const T& rhs) {
+            return lhs * rhs;
         }
     };
 
