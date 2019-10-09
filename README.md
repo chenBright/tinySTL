@@ -51,6 +51,7 @@ a subset of STL
     - [x] hash
     - [x] plus
     - [x] minus
+    - [x] multiplies
     - [x] equal_to
     - [x] not_equal_to
     - [x] greater
