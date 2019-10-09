@@ -53,6 +53,7 @@ a subset of STL
     - [x] plus
     - [x] minus
     - [x] multiplies
+    - [x] divides
     - [x] equal_to
     - [x] not_equal_to
     - [x] greater
