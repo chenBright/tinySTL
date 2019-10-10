@@ -60,6 +60,14 @@ namespace tinySTL {
         }
     };
 
+    // 类型 T 必须支持 -（符号）操作符
+    template <class T>
+    struct negate : public unarg_function<T, T> {
+        T operator()(const T& x) {
+            return -x;
+        }
+    };
+
     // 类型 T 必须支持 == 操作符
     template <class T>
     struct equal_to : public binary_finction<T, T, bool> {
