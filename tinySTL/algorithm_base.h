@@ -413,6 +413,8 @@ namespace tinySTL {
     /**
      * remove
      * remove_if
+     * remove_copy
+     * remove_copy_if
      */
     // 从 [first, last) 范围移除所有满足特定判别标准的元素，并返回范围新结尾的尾后迭代器。
     //
@@ -443,6 +445,32 @@ namespace tinySTL {
         }
 
         return it;
+    }
+
+    // 复制 [first, last) 范围的元素到以 d_first 为起点的范围，省略满足特定判别标准的元素。
+    // 源与目标范围不能重叠。
+    template <class InputIterator, class OutputIterator, class T>
+    OutputIterator remove_copy(InputIterator first, InputIterator last, OutputIterator d_first, const T& value) {
+        while (first != last) {
+            if (*first == value) {
+                ++first;
+            } else {
+                *d_first++ = *first++;
+            }
+        }
+        return d_first;
+    }
+
+    template <class InputIterator, class OutputIterator, class UnaryPredicate>
+    OutputIterator remove_copy_if(InputIterator first, InputIterator last, OutputIterator d_first, UnaryPredicate p) {
+        while (first != last) {
+            if (p(*first)) {
+                ++first;
+            } else {
+                *d_first++ = *first++;
+            }
+        }
+        return d_first;
     }
 
     /**
