@@ -431,6 +431,21 @@ namespace tinySTL {
     }
 
     /**
+     * copy_backward
+     */
+    // 将 [first, last) 范围的元素复制到以 d_first 为终点（不包括 d_last）的范围内。
+    // 以逆序移动元素（首先复制末元素），但保持其相对顺序。
+    // 若 d_last 在 (first, last] 内则行为未定义。该情况下必须用 std::copy 代替 std::copy_backward。
+    template <class BidirIterator1, class BidirIterator2>
+    BidirIterator2 copy_backward(BidirIterator1 first, BidirIterator1 last, BidirIterator2 d_last) {
+        while (first != last) {
+            *(--d_last) = *(--last);
+        }
+
+        return d_last;
+    }
+
+    /**
      * move
      */
     // 将 [first, last) 范围的元素移动到以 d_first 为起点的范围内。
@@ -445,8 +460,8 @@ namespace tinySTL {
      * move_backward
      */
     // 将 [first, last) 范围的元素移动到以 d_first 为终点（不包括 d_last）的范围内。
-    // 以逆序移动元素（首先复制末元素），但保持其相对顺序。
-    // 若 d_last 在 (first, last] 内则行为未定义。该情况下必须用 std::move 代替 std::move_backward 。
+    // 以逆序移动元素（首先移动末元素），但保持其相对顺序。
+    // 若 d_last 在 (first, last] 内则行为未定义。该情况下必须用 std::move 代替 std::move_backward。
     template <class BindirIterator1, class BindirIterator2>
     BindirIterator2 move_backward(BindirIterator1 first, BindirIterator1 last, BindirIterator2 d_last) {
         while (first != last) {
