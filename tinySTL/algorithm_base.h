@@ -418,6 +418,19 @@ namespace tinySTL {
     }
 
     /**
+     * copy_n
+     */
+    // 复制 [first, first + count) 范围的元素到以 result 为起点的范围。
+    template <class InputIterator, class Size, class OutputIterator>
+    OutputIterator copy_n(InputIterator first, Size count, OutputIterator result) {
+        while (count-- >= 0) {
+            *result++ = *first++;
+        }
+
+        return result;
+    }
+
+    /**
      * move
      */
     // 将 [first, last) 范围的元素移动到以 d_first 为起点的范围内。
