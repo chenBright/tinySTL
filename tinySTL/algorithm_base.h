@@ -385,6 +385,39 @@ namespace tinySTL {
     }
 
     /**
+     * copy
+     * copy_if
+     */
+    // 复制 [first, last) 范围的元素到以 d_first 为起点的范围，省略满足特定判别标准的元素。
+    // 注意：d_first 不能在 [first, last) 内。
+    template <class InputIterator, class OutputIterator>
+    OutputIterator copy(InputIterator first, InputIterator last, OutputIterator d_first) {
+        while (first != last) {
+            *d_first++ = *first++;
+        }
+
+        return d_first;
+    }
+
+
+    // 复制 [first, last) 范围内满足特定判别标准的元素到以 d_first 为起点的范围。
+    // 注意：d_first 不能在 [first, last) 内。
+    //
+    // 其中 p 函数：
+    // 若 p(*it) == true，则返回 true。
+    template <class InputIterator, class OutputIterator, class UnaryPredicate>
+    OutputIterator copy_if(InputIterator first, InputIterator last, OutputIterator d_first, UnaryPredicate pred) {
+        while (first != last) {
+            if (pred(*first)) {
+                *d_first++ = *first;
+            }
+            ++first;
+        }
+
+        return d_first;
+    }
+
+    /**
      * move
      */
     // 将 [first, last) 范围的元素移动到以 d_first 为起点的范围内。
