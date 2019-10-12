@@ -43,6 +43,7 @@ a subset of STL
     - [x] copy
     - [x] copy_if
     - [x] copy_n
+    - [x] copy_backward
     - [x] move
     - [x] move_backward
     - [x] remove
