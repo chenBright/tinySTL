@@ -40,6 +40,8 @@ a subset of STL
     - [x] adjacent_find
     - [x] search
     - [x] search_n
+    - [x] copy
+    - [x] copy_if
     - [x] move
     - [x] move_backward
     - [x] remove
