@@ -71,6 +71,10 @@ a subset of STL
     - [x] less
     - [x] greater_equal
     - [x] less_equal
+    - [x] logical_and
+    - [x] identity
+    - [x] select1st
+    - [x] select2nd
 - [x] utility
     - [x] initializer_list
     - [x] forward
