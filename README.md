@@ -80,7 +80,6 @@ a subset of STL
 
 ## TODO
 
-- std::get(std::pair)
 - copy（uninitialized_copy） 系列
 - 智能指针
 - bind、function

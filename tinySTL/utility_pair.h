@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <tuple>
 
 #include "type_traits.h"
 #include "utility_move.h"
@@ -130,6 +131,74 @@ namespace tinySTL {
     template<class T1, class T2>
     void swap(pair<T1, T2>& x, pair<T1, T2>& y) {
         x.swap(y);
+    }
+
+    namespace detail {
+        template <size_t I>
+        struct get_pair;
+
+        template <>
+        struct get_pair<0> {
+            template <class T1, class T2>
+            T1& get(tinySTL::pair<T1, T2>& p) {
+                return p.first;
+            }
+
+            template <class T1, class T2>
+            const T1& get(const tinySTL::pair<T1, T2>& p) {
+                return p.first;
+            }
+
+            template <class T1, class T2>
+            T1&& get(tinySTL::pair<T1, T2>&& p) {
+                return tinySTL::forward<T1>(p.first);
+            }
+
+            template <class T1, class T2>
+            const T1&& get(const tinySTL::pair<T1, T2>&& p) {
+                return tinySTL::forward<const T1>(p.first);
+            }
+        };
+
+        template <>
+        struct get_pair<1> {
+            template <class T1, class T2>
+            T1& get(tinySTL::pair<T1, T2>& p) {
+                return p.second;
+            }
+
+            template <class T1, class T2>
+            const T1& get(const tinySTL::pair<T1, T2>& p) {
+                return p.second;
+            }
+
+            template <class T1, class T2>
+            T1&& get(tinySTL::pair<T1, T2>&& p) {
+                return tinySTL::forward<T1>(p.second);
+            }
+
+            template <class T1, class T2>
+            const T1&& get(const tinySTL::pair<T1, T2>&& p) {
+                return tinySTL::forward<const T1>(p.second);
+            }
+        };
+    }
+
+    // I 为 0 或 1。
+    // 详细用法见：https://zh.cppreference.com/w/cpp/utility/pair/get
+    template <size_t I, class T1, class T2>
+    typename std::tuple_element<I, tinySTL::pair<T1, T2>>::type& get(tinySTL::pair<T1, T2>& p) noexcept {
+        return detail::get_pair<I>::get(p);
+    }
+
+    template <size_t I, class T1, class T2>
+    const typename std::tuple_element<I, tinySTL::pair<T1, T2>>::type& get(const tinySTL::pair<T1, T2>& p) noexcept {
+        return detail::get_pair<I>::get(p);
+    }
+
+    template <size_t I, class T1, class T2>
+    typename std::tuple_element<I, tinySTL::pair<T1, T2>>::type&& get(tinySTL::pair<T1, T2>&& p) noexcept {
+        return detail::get_pair<I>::get(tinySTL::move(p));
     }
 } // namespace tinySTl
 
