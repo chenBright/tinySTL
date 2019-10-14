@@ -818,7 +818,7 @@ namespace tinySTL {
 
         // 所有迭代器失效。
         void swap(deque &other) {
-            using std::swap;
+            using tinySTL::swap;
             swap(start_, other.start_);
             swap(finish_, other.finish_);
             swap(map_, other.map_);

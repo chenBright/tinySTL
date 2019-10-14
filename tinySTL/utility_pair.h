@@ -68,7 +68,7 @@ namespace tinySTL {
         }
 
         void swap(pair& other) noexcept {
-            using std::swap;
+            using tinySTL::swap;
             // 如果存在对应类型版本的 swap() 函数，
             // 则调用该特定版本。
             // 因为如果实参类的命名空间中存在该实参类型版本的 swap() 函数，

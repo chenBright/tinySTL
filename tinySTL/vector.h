@@ -427,8 +427,7 @@ namespace tinySTL {
          * @param other 容器
          */
         void swap(vector &other) noexcept {
-            // TODO tinySTL 版本的 swap
-            using std::swap;
+            using tinySTL::swap;
             swap(start_, other.start_);
             swap(finish_, other.finish_);
             swap(end_of_storage_, other.end_of_storage_);

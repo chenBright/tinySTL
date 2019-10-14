@@ -342,7 +342,7 @@ namespace tinySTL {
         }
 
         void swap(hashtable& other) {
-            using std::swap;
+            using tinySTL::swap;
             swap(hash_, other.hash_);
             swap(equals_, other.equals_);
             swap(buckets_, other.buckets_);
