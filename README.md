@@ -88,8 +88,9 @@ STL 的子集。
     - [x] move
     - [x] pair
     - [x] make_pair
--[x] memory
-    - [x] shared_ptr（简单实现）
+-[x] memory（简单实现）
+    - [x] shared_ptr
+    - [x] weak_ptr
 
 ## TODO
 
