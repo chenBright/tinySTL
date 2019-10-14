@@ -557,10 +557,20 @@ namespace tinySTL {
     template <class ForwardIterator1, class ForwardIterator2>
     ForwardIterator2 swap_ranges(ForwardIterator1 first1, ForwardIterator2 last1, ForwardIterator2 first2) {
         while (first1 != last1) {
-            std::iter_swap(first1++, first2++);
+            iter_swap(first1++, first2++);
         }
 
         return first2;
+    }
+
+    /**
+     * iter_swap
+     */
+    // 交换给定的迭代器所指向的元素的值。
+    template <class ForwardIterator1, class ForwardIterator2>
+    void iter_swap(ForwardIterator1 a, ForwardIterator2 b) {
+        using tinySTL::swap;
+        swap(*a, *b);
     }
 
     /**
