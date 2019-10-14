@@ -75,6 +75,7 @@ STL 的子集。
     - [x] greater_equal
     - [x] less_equal
     - [x] logical_and
+    - [x] logical_or
     - [x] identity
     - [x] select1st
     - [x] select2nd

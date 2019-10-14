@@ -124,6 +124,14 @@ namespace tinySTL {
         }
     };
 
+    // 类型 T 必须支持 || 操作符
+    template <class T>
+    struct logical_or : public binary_finction<T, T, bool> {
+        T operator()(const T& lhs, const T& rhs) {
+            return lhs || rhs;
+        }
+    };
+
     // 证同、选择、投射
     // 只将参数原封不动地返回，之所以有这般设计是为了增加间接性。
 
