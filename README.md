@@ -1,5 +1,8 @@
 # tinySTL
-a subset of STL
+
+STL 的子集。
+
+本项目为本人的练习项目，所以未提供测试，不能保证完全正确。
 
 ## 已完成
 
@@ -81,6 +84,8 @@ a subset of STL
     - [x] move
     - [x] pair
     - [x] make_pair
+-[x] memory
+    - [x] shared_ptr（简单实现）
 
 ## TODO
 
