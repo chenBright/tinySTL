@@ -248,7 +248,8 @@ namespace tinySTL {
                 y->parent_->left_  = y;
             else
                 y->parent_->right_ = y;
-            using std::swap;
+
+            using tinySTL::swap;
             swap(z->color_, y->color_);
             y = z;
         } else {
@@ -671,7 +672,7 @@ namespace tinySTL {
          ***************************************************/
 
         void swap(rb_tree& other) {
-            using std::swap;
+            using tinySTL::swap;
             swap(header_,     other.header_);
             swap(count_node_, other.count_node_);
             swap(comp_,       other.comp_);

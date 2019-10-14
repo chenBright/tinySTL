@@ -3,6 +3,7 @@
 
 #include <initializer_list>
 #include <algorithm>
+#include <cstddef>
 
 #include "functional_base.h"
 #include "iterator_base.h"
@@ -532,6 +533,22 @@ namespace tinySTL {
             }
         }
         return d_first;
+    }
+
+    /**
+     * swap
+     */
+    template <class T>
+    void swap(T& a, T& b) noexcept {
+        T tmp(tinySTL::move(a));
+        a = tinySTL::move(b);
+        b = tinySTL::move(tmp);
+    }
+
+    template <class T, std::size_t N>
+    void swap(T (&a)[N], T (&b)[N]) noexcept {
+        // TODO swap_ranges
+        std::swap_ranges(a, a + N, b);
     }
 
     /**

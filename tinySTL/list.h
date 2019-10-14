@@ -409,7 +409,7 @@ namespace tinySTL {
         }
 
         void swap(list &other) {
-            using std::swap;
+            using tinySTL::swap;
             std::swap(node_, other.node_);
             std::swap(size_, other.size_);
         }
@@ -522,7 +522,7 @@ namespace tinySTL {
                 return;
             }
 
-            using std::swap;
+            using tinySTL::swap;
             swap(node_->previous, node_->next);
             auto it = node_->previous; // 原 node_->next
             while (it != node_) {

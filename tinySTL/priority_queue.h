@@ -105,7 +105,7 @@ namespace tinySTL {
         }
 
         void swap(priority_queue &other) {
-            using std::swap;
+            using tinySTL::swap;
             swap(comp_, other.comp_);
             swap(c_, other.c_); // 实际调用 c_ 的 swap 函数，原因见《C++ Promer》P706
         }
