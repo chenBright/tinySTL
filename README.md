@@ -54,6 +54,7 @@ STL 的子集。
     - [x] remove_copy
     - [x] remove_copy_if
     - [x] swap
+    - [x] swap_ranges
     - [x] max
     - [x] max_element
     - [x] min

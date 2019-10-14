@@ -547,8 +547,20 @@ namespace tinySTL {
 
     template <class T, std::size_t N>
     void swap(T (&a)[N], T (&b)[N]) noexcept {
-        // TODO swap_ranges
-        std::swap_ranges(a, a + N, b);
+        swap_ranges(a, a + N, b);
+    }
+
+    /**
+     * swap_ranges
+     */
+    // 范围 [first1, last1) 和以 first2 为起点的另一范围间交换元素。
+    template <class ForwardIterator1, class ForwardIterator2>
+    ForwardIterator2 swap_ranges(ForwardIterator1 first1, ForwardIterator2 last1, ForwardIterator2 first2) {
+        while (first1 != last1) {
+            std::iter_swap(first1++, first2++);
+        }
+
+        return first2;
     }
 
     /**
