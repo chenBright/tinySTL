@@ -79,6 +79,7 @@ STL 的子集。
     - [x] less_equal
     - [x] logical_and
     - [x] logical_or
+    - [x] logical_not
     - [x] identity
     - [x] select1st
     - [x] select2nd
@@ -96,7 +97,6 @@ STL 的子集。
 ## TODO
 
 - copy（uninitialized_copy） 系列
-- 智能指针
 - bind、function
 - [补充 hash 函数](https://zh.cppreference.com/w/cpp/utility/hash)
 - 异常保证
