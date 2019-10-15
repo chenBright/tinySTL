@@ -347,12 +347,288 @@ namespace tinySTL {
             weak_count_ = nullptr;
             ptr_ = nullptr;
         }
-    };
+    }; // class weak_ptr
 
     template <class T>
     void swap(weak_ptr<T>& left, weak_ptr<T>& right) {
         left.swap(right);
     }
+
+    template <class T>
+    class unique_ptr {
+    public:
+        using pointer = T*;
+        using element_type = T;
+
+    private:
+        T* ptr_;
+
+    public:
+        unique_ptr() noexcept : ptr_(nullptr) {}
+
+        explicit unique_ptr(std::nullptr_t) noexcept : ptr_(nullptr) {}
+
+        explicit unique_ptr(pointer ptr) : ptr_(ptr) {}
+
+        unique_ptr(unique_ptr&& other) noexcept : ptr_(tinySTL::move(other.ptr_)) {
+            other.ptr_ = nullptr;
+        }
+
+        ~unique_ptr() {
+            if (!is_empty()) {
+                delete ptr_;
+            }
+        }
+
+        unique_ptr& operator=(unique_ptr&& other) noexcept {
+            ptr_ = tinySTL::move(other.ptr_);
+            other.ptr_ = nullptr;
+        }
+
+        unique_ptr& operator=(std::nullptr_t) noexcept {
+            ptr_ = nullptr;
+        }
+
+        pointer release() noexcept {
+            auto tmp = ptr_;
+            ptr_ = nullptr;
+
+            return tmp;
+        }
+
+        void reset(pointer ptr = pointer()) noexcept {
+            if (!is_empty()) {
+                delete ptr_;
+            }
+
+            ptr_ = ptr;
+        }
+
+        void swap(unique_ptr& other) {
+            using tinySTL::swap;
+            swap(ptr_, other.ptr_);
+        }
+
+        pointer get() const noexcept {
+            return ptr_;
+        }
+
+        explicit operator bool() const noexcept {
+            return !is_empty();
+        }
+
+        T& operator*() const {
+            return *ptr_;
+        }
+
+        pointer operator->() const noexcept {
+            return ptr_;
+        }
+
+    private:
+        // 禁止拷贝
+        unique_ptr(const unique_ptr&) = delete;
+        unique_ptr& operator=(const unique_ptr&) = delete;
+
+        bool is_empty() const {
+            return ptr_ == nullptr;
+        }
+    }; // class unique_ptr
+
+    template <class T, class U>
+    bool operator==(const unique_ptr<T>& left, const unique_ptr<T>& right) noexcept {
+        return left.get() == right.get();
+    }
+
+    template <class T, class U>
+    bool operator!=(const unique_ptr<T>& left, const unique_ptr<T>& right) noexcept {
+        return !(left == right);
+    }
+
+    template <class T, class U>
+    bool operator<(const unique_ptr<T>& left, const unique_ptr<T>& right) noexcept {
+        return left.get() < right.get();
+    }
+
+    template <class T, class U>
+    bool operator<=(const unique_ptr<T>& left, const unique_ptr<T>& right) noexcept {
+        return !(right < left);
+    }
+
+    template <class T, class U>
+    bool operator>(const unique_ptr<T>& left, const unique_ptr<T>& right) noexcept {
+        return right < left;
+    }
+
+    template <class T, class U>
+    bool operator>=(const unique_ptr<T>& left, const unique_ptr<T>& right) noexcept {
+        return !(right > left);
+    }
+
+    // 与 nullptr_t 比较
+
+    template <class T>
+    bool operator==(const unique_ptr<T>& left, std::nullptr_t) noexcept {
+        return !left;
+    }
+
+    template <class T>
+    bool operator==(std::nullptr_t, const unique_ptr<T>& right) noexcept {
+        return !right;
+    }
+
+    template <class T>
+    bool operator!=(const unique_ptr<T>& left, std::nullptr_t) noexcept {
+        return static_cast<bool>(left);
+    }
+
+    template <class T>
+    bool operator!=(std::nullptr_t, const unique_ptr<T>& right) noexcept {
+        return static_cast<bool>(right);
+    }
+
+    template <class T>
+    bool operator<(const unique_ptr<T>& left, std::nullptr_t) noexcept {
+        return tinySTL::less<T*>(left, nullptr);
+    }
+
+    template <class T>
+    bool operator<(std::nullptr_t, const unique_ptr<T>& right) noexcept {
+        return tinySTL::less<T*>(nullptr, right);
+    }
+
+    template <class T, class U>
+    bool operator<=(const unique_ptr<T>& left, std::nullptr_t) noexcept {
+        return !(nullptr < left);
+    }
+
+    template <class T, class U>
+    bool operator<=(std::nullptr_t, const unique_ptr<T>& right) noexcept {
+        return !(right < nullptr);
+    }
+
+    template <class T, class U>
+    bool operator>(const unique_ptr<T>& left, std::nullptr_t) noexcept {
+        return nullptr < left;
+    }
+
+    template <class T, class U>
+    bool operator>(std::nullptr_t, const unique_ptr<T>& right) noexcept {
+        return right < nullptr;
+    }
+
+    template <class T, class U>
+    bool operator>=(const unique_ptr<T>& left, std::nullptr_t) noexcept {
+        return !(nullptr > left);
+    }
+
+    template <class T, class U>
+    bool operator>=(std::nullptr_t, const unique_ptr<T>& right) noexcept {
+        return !(right > nullptr);
+    }
+
+    template <class T>
+    void swap(unique_ptr<T>& left, unique_ptr<T>& right) {
+        left.swap(right);
+    }
+
+    // T 数组的特化版本
+    template <class T>
+    class unique_ptr<T[]> {
+    public:
+        using pointer = T*;
+        using element_type = T;
+
+    private:
+        T* ptr_;
+
+    public:
+        unique_ptr() noexcept : ptr_(nullptr) {}
+
+        explicit unique_ptr(std::nullptr_t) noexcept : ptr_(nullptr) {}
+
+        explicit unique_ptr(pointer ptr) : ptr_(ptr) {}
+
+        unique_ptr(unique_ptr&& other) noexcept : ptr_(tinySTL::move(other.ptr_)) {}
+
+        ~unique_ptr() {
+            if (!is_empty()) {
+                delete [] ptr_;
+            }
+        }
+
+        unique_ptr& operator=(unique_ptr&& other) noexcept {
+            ptr_ = tinySTL::move(other.ptr_);
+            other.ptr_ = nullptr;
+        }
+
+        unique_ptr& operator=(std::nullptr_t) noexcept {
+            ptr_ = nullptr;
+        }
+
+        void reset(pointer ptr = pointer()) noexcept {
+            if (!is_empty()) {
+                delete ptr_;
+            }
+
+            ptr_ = ptr;
+        }
+
+        pointer release() noexcept {
+            auto tmp = ptr_;
+            ptr_ = nullptr;
+
+            return tmp;
+        }
+
+        void reset(std::nullptr_t) noexcept {
+            if (!is_empty()) {
+                delete ptr_;
+                ptr_ = nullptr;
+            }
+        }
+
+        void swap(unique_ptr& other) {
+            using tinySTL::swap;
+            swap(ptr_, other.ptr_);
+        }
+
+        pointer get() const noexcept {
+            return ptr_;
+        }
+
+        explicit operator bool() const noexcept {
+            return !is_empty();
+        }
+
+        T& operator*() const {
+            return *ptr_;
+        }
+
+        pointer operator->() const noexcept {
+            return ptr_;
+        }
+
+        T& operator[](size_t i) const {
+            return ptr_[i];
+        }
+
+
+    private:
+        unique_ptr(const unique_ptr&) = delete;
+        unique_ptr& operator=(const unique_ptr&) = delete;
+
+        bool is_empty() const {
+            return ptr_ == nullptr;
+        }
+    }; // class unique_ptr<T[]>
+
+    template <class T>
+    void swap(unique_ptr<T[]>& left, unique_ptr<T[]>& right) {
+        left.swap(right);
+    }
+
+
 } // namespace tinySTL
 
 #endif //TINYSTL_MEMORY_H
