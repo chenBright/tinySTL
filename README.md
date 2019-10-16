@@ -80,6 +80,7 @@ STL 的子集。
     - [x] logical_and
     - [x] logical_or
     - [x] logical_not
+    - [x] bit_and
     - [x] identity
     - [x] select1st
     - [x] select2nd
