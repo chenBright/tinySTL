@@ -536,6 +536,34 @@ namespace tinySTL {
     }
 
     /**
+     * replace
+     * replace_if
+     */
+    // 用 new_value 替换范围 [first, last) 中所有满足特定判别标准的元素。
+    //
+    // 其中 p 函数：
+    // 若 p(*it) == true，则返回 true。
+    template <class ForwardIterator, class T>
+    void replace(ForwardIterator first, ForwardIterator last, const T& old_value, const T& new_value) {
+        while (first != last) {
+            if (*first == old_value) {
+                *first = new_value;
+            }
+            ++first;
+        }
+    }
+
+    template <class ForwardIterator, class UnaryPredicate, class T>
+    void replace_if(ForwardIterator first, ForwardIterator last, UnaryPredicate p, const T& new_value) {
+        while (first != last) {
+            if (p(*first)) {
+                *first = new_value;
+            }
+            ++first;
+        }
+    }
+
+    /**
      * swap
      */
     template <class T>

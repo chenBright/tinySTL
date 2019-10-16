@@ -53,6 +53,8 @@ STL 的子集。
     - [x] remove_if
     - [x] remove_copy
     - [x] remove_copy_if
+    - [x] replace
+    - [x] replace_if
     - [x] swap
     - [x] swap_ranges
     - [x] iter_swap
