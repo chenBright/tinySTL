@@ -16,6 +16,7 @@
 #include "type_traits.h"
 #include "algorithm_base.h"
 #include "utility_move.h"
+#include "memory_function.h"
 
 namespace tinySTL {
     namespace detail {
@@ -338,12 +339,12 @@ namespace tinySTL {
                 const size_type length = size();
                 if (length > other.size()) {
                     // 当前 deque 大小比 other 大，则将 other 的元素拷贝到当前 deque，然后 erase 多余的元素。
-                    auto newEnd = std::copy(other.begin(), other.end(), begin());
+                    auto newEnd = tinySTL::copy(other.begin(), other.end(), begin());
                     erase(newEnd, end());
                 } else {
                     // 当前 deque 大小比 other 小，
                     // 则将 other 的一部分（size() 个）元素拷贝到当前 deque，然后将剩下的元素插入到 cend() 之前。
-                    std::copy_n(other.begin(), length, begin());
+                    tinySTL::copy_n(other.begin(), length, begin());
                     insert(cend(), other.begin() + length, other, end());
                 }
             }
@@ -584,13 +585,13 @@ namespace tinySTL {
                     // 可以一次性将 [start_, position) 范围的元素拷贝到以 newStart 的起点的空间上。
                     auto it = std::uninitialized_copy_n(start_, elementsBefore, newStart);
                     std::uninitialized_copy_n(first, insertSize - elementsBefore, it);
-                    std::copy(last - elementsBefore, last, begin());
+                    tinySTL::copy(last - elementsBefore, last, begin());
                 } else {
                     // 不可以一次性将 [start_, position) 范围的元素拷贝到以 newStart 的起点的空间上。
                     // 一部分拷贝到为构造的内存空间上，一部分拷贝到已经构造过的内存空间上。
                     std::uninitialized_copy_n(begin(), insertSize, newStart);
-                    auto it = std::copy(begin() + insertSize, newPosition, begin());
-                    std::copy(first, last, it);
+                    auto it = tinySTL::copy(begin() + insertSize, newPosition, begin());
+                    tinySTL::copy(first, last, it);
                 }
                 start_ = newStart;
                 return newPosition - insertSize;
@@ -604,16 +605,16 @@ namespace tinySTL {
                 auto elementsAfter = size() - elementsBefore;
                 if (elementsAfter < insertSize) {
                     // 拷贝 (last - first - elementsAfter) 个元素。
-                    auto it = std::uninitialized_copy(first + elementsAfter, last, finish_);
+                    auto it = tinySTL::uninitialized_copy(first + elementsAfter, last, finish_);
                     // 一次性将 [position, finish_) 范围的元素拷贝到未构造的空间上。
-                    std::uninitialized_copy(newPosition, finish_, it);
-                    std::copy_n(first, first + elementsAfter, newPosition);
+                    tinySTL::uninitialized_copy(newPosition, finish_, it);
+                    tinySTL::copy_n(first, first + elementsAfter, newPosition);
                 } else {
                     // 不可以一次性将 [position, finish_) 范围的元素拷贝到未构造的空间上。
                     // 一部分拷贝到为构造的内存空间上，一部分拷贝到已经构造过的内存空间上。
-                    std::uninitialized_copy(end() - insertSize, end(), finish_);
-                    std::copy_backward(newPosition, end() - insertSize, finish_);
-                    std::copy(first, last, newPosition);
+                    tinySTL::uninitialized_copy(end() - insertSize, end(), finish_);
+                    tinySTL::copy_backward(newPosition, end() - insertSize, finish_);
+                    tinySTL::copy(first, last, newPosition);
                 }
                 finish_ = newFinish;
                 return newPosition;
@@ -640,11 +641,11 @@ namespace tinySTL {
             auto nextPosition = newPosition + 1;
             if (newPosition - begin() < size() / 2) {
                 // position 靠近头部，则拷贝前面的元素。
-                std::copy_backward(begin(), newPosition, nextPosition);
+                tinySTL::copy_backward(begin(), newPosition, nextPosition);
                 pop_front();
             } else {
                 // position 靠近尾部，则拷贝后面的元素。
-                std::copy(nextPosition, end(), newPosition);
+                tinySTL::copy(nextPosition, end(), newPosition);
                 pop_back();
             }
 
@@ -671,7 +672,7 @@ namespace tinySTL {
             auto newLast = newFirst + n;
             if (elementsBefore < elementsAfter) {
                 // 前面的元素少，则拷贝前面的元素
-                std::copy_backward(begin(), newFirst, newLast);
+                tinySTL::copy_backward(begin(), newFirst, newLast);
                 auto newStart = begin() + n;
                 nodeAllocator.destory(begin(), newStart);
                 for (auto node = start_.node_; node < newStart.node_; ++node) {
@@ -680,7 +681,7 @@ namespace tinySTL {
                 start_ = newStart;
             } else {
                 // 后面的元素少，则拷贝后面的元素
-                std::copy(newLast, end(), newFirst);
+                tinySTL::copy(newLast, end(), newFirst);
                 auto newFinish = end() - n;
                 nodeAllocator.destory(newFinish, end());
                 for (auto node = newFinish.node_ + 1; node <= finish_.node_; ++node) {
@@ -899,11 +900,11 @@ namespace tinySTL {
             for (auto it = start_.node_; it < finish_.node_; ++it) {
                 auto nextNode = next(first, detail::deque_node_size);
                 // 整块初始化
-                std::uninitialized_copy(first, nextNode, it);
+                tinySTL::uninitialized_copy(first, nextNode, it);
                 first = next;
             }
             // 初始化最后一个缓冲区
-            std::uninitialized_copy(first, last, finish_.first_);
+            tinySTL::uninitialized_copy(first, last, finish_.first_);
         }
 
         /**
@@ -1081,9 +1082,9 @@ namespace tinySTL {
                 newStart = map_ + (mapSize_ - newNumNodes) / 2
                         + (addToFront ? nodesToAdd : 0);
                 if (newStart < start_.node_) {
-                    std::copy(start_.node_, finish_.node_ + 1, newStart);
+                    tinySTL::copy(start_.node_, finish_.node_ + 1, newStart);
                 } else {
-                    std::copy_backward(start_.node_,
+                    tinySTL::copy_backward(start_.node_,
                                        finish_.node_ + 1,
                                        newStart + nodesToAdd);
                 }
@@ -1093,7 +1094,7 @@ namespace tinySTL {
                 auto newMap = allocate_map();
                 newStart = newMap + (mapSize_ - newNumNodes) / 2
                         + (addToFront ? nodesToAdd : 0);
-                std::copy(start_.node_, finish_.node_ + 1, newStart);
+                tinySTL::copy(start_.node_, finish_.node_ + 1, newStart);
                 deallocate_map();
                 map_ = newMap;
             }
@@ -1129,13 +1130,13 @@ namespace tinySTL {
                 auto copyFront = oldFront + 1; // 原第二个元素
                 push_front(front()); // 将第一个元素拷贝到前一个位置
                 // 将原第二个元素起直到插入点之前的位置向前一个位置拷贝
-                std::copy(copyFront, newPosition, oldFront);
+                tinySTL::copy(copyFront, newPosition, oldFront);
             } else {
                 auto oldBack = back(); // 原最后一个元素
                 auto copyBack = back() - 1; // 原倒数第二个元素
                 push_back(back()); // 将最后一个元素拷贝到后一个位置
                 // 将插入点位置起直到原倒数第二个元素的位置向后一个位置拷贝
-                std::copy_backward(newPosition, oldBack, end() - 1);
+                tinySTL::copy_backward(newPosition, oldBack, end() - 1);
             }
 
             *newPosition = std::forward<U>(value);
