@@ -1,5 +1,5 @@
-#ifndef TINYSTL_MEMORY_H
-#define TINYSTL_MEMORY_H
+#ifndef TINYSTL_MEMORY_PTR_H
+#define TINYSTL_MEMORY_PTR_H
 
 #include <utility>
 #include <memory>
@@ -631,4 +631,4 @@ namespace tinySTL {
 
 } // namespace tinySTL
 
-#endif //TINYSTL_MEMORY_H
+#endif //TINYSTL_MEMORY_PTR_H

@@ -15,6 +15,7 @@
 #include "type_traits.h"
 #include "algorithm_base.h"
 #include "utility_move.h"
+#include "memory_function.h"
 
 namespace tinySTL {
     // 封装动态数组的顺序容器
@@ -307,21 +308,20 @@ namespace tinySTL {
                     //    复制到当前使用空间的尾部，并与 end() 对齐
                     // 3. 最后，将 [first, last) 范围的元素插入到 newPosition 的位置
 
-                    // TODO tinySTL 版本的 uninitialized_fill_n
                     //  注意：此处传入的迭代器有const，有non-const
-                    std::uninitialized_copy(cend() - (last - first), cend(), end());
+                    tinySTL::uninitialized_copy(cend() - (last - first), cend(), end());
                     // 注意：此处传入的迭代器有const，有non-const
-                    std::copy_backward(position, cend() - (last - first), end());
-                    std::copy(first, last, newPosition);
+                    tinySTL::copy_backward(position, cend() - (last - first), end());
+                    tinySTL::copy(first, last, newPosition);
                     finish_ += last - first;
                 } else {
                     // [position, cend()) 可以容纳得不下 [first, last)：
                     // 1. 将容纳不下的 [first, last) 的部分先复制到 end() 起始位置 ；
                     // 2. 将 [position, cend()) 范围的元素复制到步骤1复制过去的元素后面；
                     // 3. 将 [first, last) 剩下部分复制到 newPosition 的位置
-                    auto insertEndIterator = std::uninitialized_copy(first + (cend() - position), last, end());
-                    std::uninitialized_copy(position, cend(), insertEndIterator);
-                    std::copy(first, first + (last - first), newPosition);
+                    auto insertEndIterator = tinySTL::uninitialized_copy(first + (cend() - position), last, end());
+                    tinySTL::uninitialized_copy(position, cend(), insertEndIterator);
+                    tinySTL::copy(first, first + (last - first), newPosition);
                 }
 
                 return newPosition;
@@ -337,9 +337,9 @@ namespace tinySTL {
 
             // "commit or rollback" semantics
             try {
-                tmp.finish_ = std::uninitialized_copy(cbegin(), position, tmp.start_);
-                tmp.finish_ = std::uninitialized_copy(first, last, tmp.finish_);
-                tmp.finish_ = std::uninitialized_copy(position, cend(), tmp.finish_);
+                tmp.finish_ = tinySTL::uninitialized_copy(cbegin(), position, tmp.start_);
+                tmp.finish_ = tinySTL::uninitialized_copy(first, last, tmp.finish_);
+                tmp.finish_ = tinySTL::uninitialized_copy(position, cend(), tmp.finish_);
                 tmp.end_of_storage_ = tmp.start_ + newSize;
             } catch (...) {
                 dataAllocator.destoty(tmp.start_, tmp.finish_);
@@ -373,7 +373,7 @@ namespace tinySTL {
             if (position + 1 == finish_) {
                 // TODO tinySTL 版本的 copy
                 // 将 [position + 1, finish_) 范围的元素复制到以 position 为起始的位置
-                std::copy(position + 1, finish_, newPosition);
+                tinySTL::copy(position + 1, finish_, newPosition);
             }
             --finish_;
             dataAllocator.destory(finish_);
@@ -383,7 +383,7 @@ namespace tinySTL {
 
         iterator erase(const_iterator first, const_reference last) {
             auto newFirst = const_cast<iterator>(first); // 去 const，原因同上
-            auto newEnd = std::copy(last, cend(), newFirst);
+            auto newEnd = tinySTL::copy(last, cend(), newFirst);
             dataAllocator.destory(newEnd, end()); // 销毁元素
 
             return newFirst;
@@ -459,7 +459,7 @@ namespace tinySTL {
         void copy_initialize(ForwardIterator first, ForwardIterator last, forward_iterator_tag) {
             auto copySize = static_cast<size_type>(distance(first, last));
             start_ = dataAllocator.allocate(copySize);
-            finish_ = std::uninitialized_copy(first, last, start_);
+            finish_ = tinySTL::uninitialized_copy(first, last, start_);
             end_of_storage_ = finish_;
         }
 
@@ -491,7 +491,7 @@ namespace tinySTL {
         void realloctae(size_type newSize) {
             vector tmp; // 新内存空间
             tmp.start_ = dataAllocator.allocate(newSize);
-            tmp.finish_ = std::uninitialized_copy(start_, finish_, tmp.start_);
+            tmp.finish_ = tinySTL::uninitialized_copy(start_, finish_, tmp.start_);
             tmp.end_of_storage_ = tmp.start_ + newSize;
 
             swap(tmp);
@@ -531,7 +531,7 @@ namespace tinySTL {
             if (capacity() > size()) {
                 auto newPosition = begin() + (position - cbegin());
                 dataAllocator.construct(finish_++, value);
-                std::copy_backward(position, cend() - 1, end());
+                tinySTL::copy_backward(position, cend() - 1, end());
                 *newPosition = std::forward<U>(value);
 
                 return newPosition;
@@ -540,9 +540,9 @@ namespace tinySTL {
                 vector tmp;
                 tmp.start_ = dataAllocator.allocate(newSize);
                 auto newPosition = tmp.start_ + (position - cbegin());
-                tmp.finish_ = std::uninitialized_copy(cbegin(), position, tmp.start_);
+                tmp.finish_ = tinySTL::uninitialized_copy(cbegin(), position, tmp.start_);
                 dataAllocator.construct(tmp.finish_++, std::forward<U>(value));
-                tmp.finish_ = std::uninitialized_copy(position, cend(), tmp.finish_);
+                tmp.finish_ = tinySTL::uninitialized_copy(position, cend(), tmp.finish_);
                 tmp.end_of_storage_ = tmp.start_ + newSize;
                 swap(tmp);
 
