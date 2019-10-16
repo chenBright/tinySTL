@@ -96,6 +96,7 @@ STL 的子集。
     - [x] shared_ptr
     - [x] weak_ptr
     - [x] unique_ptr
+    - [x] addressof
     - [x] uninitialized_copy
 
 ## TODO

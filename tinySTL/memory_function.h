@@ -7,6 +7,19 @@
 
 namespace tinySTL {
     /**
+     * addressof
+     */
+    // 获得对象或函数 arg 的实际地址。
+    template <class T>
+    T* addressof(T& arg) noexcept {
+        return reinterpret_cast<T*>( // 当做 T*
+                &const_cast<char&>( // 去 const
+                        reinterpret_cast<const volatile char&>(arg) // 当做 char
+                        )
+                );
+    }
+
+    /**
      * uninitialized_copy
      */
     // 将 [first, last) 范围的元素复制到始于 d_first 的未初始化内存。
@@ -18,7 +31,7 @@ namespace tinySTL {
         try {
             while (first != last) {
                 // placement new
-                ::new (static_cast<void*>(std::addressof(*current))) Value(*first);
+                ::new (static_cast<void*>(addressof(*current))) Value(*first);
 
                 ++first;
                 (void) ++current;
