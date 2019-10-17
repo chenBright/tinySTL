@@ -22,7 +22,7 @@ STL 的子集。
 - [x] multiset
 - [x] map
 - [x] multimap
-- [x] hashtable
+- [x] hashtable（其他 hash 函数参考[here](https://zh.cppreference.com/w/cpp/utility/hash)）
 - [x] unordered_set
 - [x] unordered_map
 - [x] unordered_multiset
@@ -101,12 +101,12 @@ STL 的子集。
     - [x] unique_ptr
     - [x] addressof
     - [x] uninitialized_copy
+    - [x] uninitialized_copy_n
 
 ## TODO
 
-- copy（uninitialized_copy） 系列
+- copy（uninitialized_copy、memcpy） 系列
 - bind、function
-- [补充 hash 函数](https://zh.cppreference.com/w/cpp/utility/hash)
 - 异常保证
 - [allocator static成员函数问题](https://www.zhihu.com/question/53085291/answer/133516400)
 - dynamic_bitset
