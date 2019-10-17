@@ -47,6 +47,31 @@ namespace tinySTL {
             throw;
         }
     }
+
+    /**
+     * uninitialized_copy_n
+     */
+    // 从始于 first 的范围复制 count 个元素到始于 d_first 的未初始化内存区域。
+    template <class InputIterator, class Size, class ForwardIterator>
+    ForwardIterator uninitialized_copy_n(InputIterator first, Size count, ForwardIterator d_first) {
+        using Value = typename tinySTL::iterator_traits<ForwardIterator>::value_type;
+        ForwardIterator current = d_first;
+        try {
+            while (count-- > 0) {
+                ::new (static_cast<void*>(addressof(*current))) Value(*first);
+
+                ++first;
+                (void) ++current;
+            }
+        } catch (...) {
+            while (d_first != current) {
+                d_first->~Value();
+            }
+            throw;
+        }
+
+        return current;
+    }
 }
 
 #endif //TINYSTL_MEMORY_FUNCTION_H
