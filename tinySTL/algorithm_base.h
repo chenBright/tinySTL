@@ -139,7 +139,7 @@ namespace tinySTL {
     // 在 [first, last) 范围内查找等于 value 的元素。
     //
     // 其中 p 函数：
-    // 若 p(*it) == true，则返回 true。
+    // 若 p(*it) == true / false。
     template <class InputIterator, class T>
     InputIterator find(InputIterator first, InputIterator last, const T& value) {
         while (first != last && *first != value) {
@@ -405,7 +405,7 @@ namespace tinySTL {
     // 注意：d_first 不能在 [first, last) 内。
     //
     // 其中 p 函数：
-    // 若 p(*it) == true，则返回 true。
+    // 若 p(*it) == true / false。
     template <class InputIterator, class OutputIterator, class UnaryPredicate>
     OutputIterator copy_if(InputIterator first, InputIterator last, OutputIterator d_first, UnaryPredicate pred) {
         while (first != last) {
@@ -481,7 +481,7 @@ namespace tinySTL {
     // 从 [first, last) 范围移除所有满足特定判别标准的元素，并返回范围新结尾的尾后迭代器。
     //
     // 其中 p 函数：
-    // 若 p(*it) == true，则返回 true。
+    // 若 p(*it) == true / false。
     template <class ForwardIterator, class T>
     ForwardIterator remove(ForwardIterator first, ForwardIterator last, const T& value) {
         auto it = first;
@@ -542,7 +542,7 @@ namespace tinySTL {
     // 用 new_value 替换范围 [first, last) 中所有满足特定判别标准的元素。
     //
     // 其中 p 函数：
-    // 若 p(*it) == true，则返回 true。
+    // 若 p(*it) == true / false。
     template <class ForwardIterator, class T>
     void replace(ForwardIterator first, ForwardIterator last, const T& old_value, const T& new_value) {
         while (first != last) {
@@ -561,6 +561,32 @@ namespace tinySTL {
             }
             ++first;
         }
+    }
+
+    /**
+     * replace_copy
+     * replace_copy_if
+     */
+    // 复制 [first, last) 范围的元素到以 d_first 为起点的范围，并以 new_value 替换所有满足特定判别标准的元素。
+    //
+    // 其中 p 函数：
+    // 若 p(*it) == true / false。
+    template <class InputIterator, class OutputIterator, class T>
+    OutputIterator replace_copy(InputIterator first, InputIterator last, OutputIterator d_first, const T& old_value, const T& new_value) {
+        while (first != last) {
+            *d_first++ = *first == old_value ? new_value : *first;
+        }
+
+        return d_first;
+    }
+
+    template <class InputIterator, class OutputIterator, class UnaryPredicate, class T>
+    OutputIterator replace_copy(InputIterator first, InputIterator last, OutputIterator d_first, UnaryPredicate p, const T& new_value) {
+        while (first != last) {
+            *d_first++ = p(*first) ? new_value : *first;
+        }
+
+        return d_first;
     }
 
     /**
