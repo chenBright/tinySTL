@@ -628,6 +628,18 @@ namespace tinySTL {
     }
 
     /**
+     * reverse
+     */
+    // 翻转 [first, last) 范围的元素。
+    template <class BirdirIterator>
+    void reverse(BirdirIterator first, BirdirIterator last) {
+        while (first != last && first != --last) {
+            iter_swap(first, last);
+            ++first;
+        }
+    }
+
+    /**
      * max
      */
     // 返回最大值
