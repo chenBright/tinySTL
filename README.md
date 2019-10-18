@@ -60,6 +60,7 @@ STL 的子集。
     - [x] swap
     - [x] swap_ranges
     - [x] iter_swap
+    - [x] reverse
     - [x] max
     - [x] max_element
     - [x] min
