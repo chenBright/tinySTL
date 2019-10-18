@@ -72,6 +72,29 @@ namespace tinySTL {
 
         return current;
     }
+
+    /**
+     * uninitialized_fill
+     */
+    // 复制给定的 value 到 [first, last) 范围的未初始化内存区域。
+    template <class ForwardIterator, class T>
+    void uninitialized_fill(ForwardIterator first, ForwardIterator last, const T& value) {
+        using Value = typename tinySTL::iterator_traits<ForwardIterator>::value_type;
+        ForwardIterator current = first;
+        try {
+            while (current != last) {
+                ::new (static_cast<void*>(*current)) Value(value);
+                ++current;
+            }
+        } catch (...) {
+            while (first != last) {
+                first->~Value();
+                ++first;
+            }
+            throw;
+        }
+
+    }
 }
 
 #endif //TINYSTL_MEMORY_FUNCTION_H

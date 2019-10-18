@@ -104,6 +104,7 @@ STL 的子集。
     - [x] addressof
     - [x] uninitialized_copy
     - [x] uninitialized_copy_n
+    - [x] uninitialized_fill
 
 ## TODO
 
