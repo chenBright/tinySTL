@@ -441,8 +441,7 @@ namespace tinySTL {
          */
         void fill_initialize(size_type n, const_reference x) {
             iterator result = dataAllocator.allocate(n); // 分配可以容纳 n 个 T 类型大小的内存空间
-            // TODO tinySTL 版本的 uninitialized_fill_n
-            std::uninitialized_fill_n(result, n, x); // 在内存空间上构造 n 个 T 类型的元素
+            tinySTL::uninitialized_fill_n(result, n, x); // 在内存空间上构造 n 个 T 类型的元素
             // 配置 vector<T> 的内存地址信息
             start_ = result;
             finish_ = start_ + n;

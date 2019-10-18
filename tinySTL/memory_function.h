@@ -93,7 +93,28 @@ namespace tinySTL {
             }
             throw;
         }
+    }
 
+    /**
+     * uninitialized_fill_n
+     */
+    // 复制给定的 value 到 [first, first + count) 范围的未初始化内存区域。
+    template <class ForwardIterator, class Size, class T>
+    void uninitialized_fill_n(ForwardIterator first, Size count, const T& value) {
+        using Value = typename tinySTL::iterator_traits<ForwardIterator>::value_type;
+        ForwardIterator current = first;
+        try {
+            while (count-- > 0) {
+                ::new (static_cast<void*>(*current)) Value(value);
+
+                ++current;
+            }
+        } catch (...) {
+            while (first != current) {
+                first->~Value();
+            }
+            throw;
+        }
     }
 }
 
