@@ -86,6 +86,7 @@ STL 的子集。
     - [x] logical_not
     - [x] bit_and
     - [x] bit_or
+    - [x] bit_xor
     - [x] identity
     - [x] select1st
     - [x] select2nd
