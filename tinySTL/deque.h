@@ -583,13 +583,13 @@ namespace tinySTL {
                 // 分配好 map 之后，在 newStart 前已经预留好 insertSize 个位置。
                 if (elementsBefore < insertSize) {
                     // 可以一次性将 [start_, position) 范围的元素拷贝到以 newStart 的起点的空间上。
-                    auto it = std::uninitialized_copy_n(start_, elementsBefore, newStart);
-                    std::uninitialized_copy_n(first, insertSize - elementsBefore, it);
+                    auto it = tinySTL::uninitialized_copy_n(start_, elementsBefore, newStart);
+                    tinySTL::uninitialized_copy_n(first, insertSize - elementsBefore, it);
                     tinySTL::copy(last - elementsBefore, last, begin());
                 } else {
                     // 不可以一次性将 [start_, position) 范围的元素拷贝到以 newStart 的起点的空间上。
                     // 一部分拷贝到为构造的内存空间上，一部分拷贝到已经构造过的内存空间上。
-                    std::uninitialized_copy_n(begin(), insertSize, newStart);
+                    tinySTL::uninitialized_copy_n(begin(), insertSize, newStart);
                     auto it = tinySTL::copy(begin() + insertSize, newPosition, begin());
                     tinySTL::copy(first, last, it);
                 }
@@ -865,10 +865,10 @@ namespace tinySTL {
             create_map_and_nodes(count);
             for (auto it = start_.node_; it < finish_.node_; ++it) {
                 // 整块初填充
-                std::uninitialized_fill(*it, *it + detail::deque_node_size, value);
+                tinySTL::uninitialized_fill(*it, *it + detail::deque_node_size, value);
             }
             // 填充最后一个缓冲区
-            std::uninitialized_fill(finish_.first_, finish_.current_, value);
+            tinySTL::uninitialized_fill(finish_.first_, finish_.current_, value);
         }
 
         /**
