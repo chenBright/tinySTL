@@ -631,12 +631,25 @@ namespace tinySTL {
      * reverse
      */
     // 翻转 [first, last) 范围的元素。
-    template <class BirdirIterator>
-    void reverse(BirdirIterator first, BirdirIterator last) {
+    template <class BidirIterator>
+    void reverse(BidirIterator first, BidirIterator last) {
         while (first != last && first != --last) {
             iter_swap(first, last);
             ++first;
         }
+    }
+
+    /**
+     * reverse_copy
+     */
+    // 逆序复制 [first, last) 范围的元素到以 d_first 为起点的范围。
+    template <class BidirIterator, class OutputIterator>
+    OutputIterator reverse_copy(BidirIterator first, BidirIterator last, OutputIterator d_first) {
+        while (first != last) {
+            *d_first++ = *--last;
+        }
+
+        return d_first;
     }
 
     /**
