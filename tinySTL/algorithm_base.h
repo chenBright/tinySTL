@@ -653,6 +653,30 @@ namespace tinySTL {
     }
 
     /**
+     * rotate
+     */
+    // 旋转 [first, last) 范围的元素，使得 n_first 成为首元素。
+    // 返回原 first 元素旋转后的迭代器，即 first + (last - n_first)。
+    template <class ForeardIterator>
+    ForeardIterator rotate(ForeardIterator first, ForeardIterator n_first, ForeardIterator last) {
+        if (first == n_first) {
+            return last;
+        }
+
+        if (n_first == last) {
+            return first;
+        }
+
+        auto n = last - n_first;
+
+        reverse(first, n_first);
+        reverse(n_first, last);
+        reverse(first, last);
+
+        return first + n;
+    }
+
+    /**
      * max
      */
     // 返回最大值

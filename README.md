@@ -62,6 +62,7 @@ STL 的子集。
     - [x] iter_swap
     - [x] reverse
     - [x] reverse_copy
+    - [x] rotate
     - [x] max
     - [x] max_element
     - [x] min
