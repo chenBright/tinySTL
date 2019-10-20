@@ -657,8 +657,8 @@ namespace tinySTL {
      */
     // 旋转 [first, last) 范围的元素，使得 n_first 成为首元素。
     // 返回原 first 元素旋转后的迭代器，即 first + (last - n_first)。
-    template <class ForeardIterator>
-    ForeardIterator rotate(ForeardIterator first, ForeardIterator n_first, ForeardIterator last) {
+    template <class ForwardIterator>
+    ForwardIterator rotate(ForwardIterator first, ForwardIterator n_first, ForwardIterator last) {
         if (first == n_first) {
             return last;
         }
@@ -674,6 +674,17 @@ namespace tinySTL {
         reverse(first, last);
 
         return first + n;
+    }
+
+    /**
+     * rotate_copy
+     */
+    // 从范围 [first, last) 复制元素到始于 d_first 的另一范围，
+    // 使得 n_first 成为新范围的首元素，而 n_first - 1 成为末元素，即达到旋转的效果。
+    template <class ForwardIterator, class OutputIterator>
+    OutputIterator rotate_copy(ForwardIterator first, ForwardIterator n_first, ForwardIterator last, OutputIterator d_first) {
+        d_first = copy(n_first, last, d_first);
+        return copy(first, n_first, d_first);
     }
 
     /**
