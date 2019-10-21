@@ -101,6 +101,7 @@ STL 的子集。
     - [x] pair
     - [x] make_pair
 - [x] numeric
+    - [x] iota
     - [x] accumulate
 -[x] memory（简单实现）
     - [x] shared_ptr
