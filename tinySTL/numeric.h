@@ -6,6 +6,17 @@
 namespace tinySTL {
 
     /**
+     * iota
+     */
+    // 以始于 value 并重复地求值 ++value 的顺序递增值填充范围 [first, last) 。
+    template <class ForwardIterator, class T>
+    void iota(ForwardIterator first, ForwardIterator last, T value) {
+        while (first != last) {
+            *first++ = value++;
+        }
+    }
+
+    /**
      * accumulate
      */
     // 计算给定值 init 与给定范围 [first, last) 中元素的和。
