@@ -688,6 +688,37 @@ namespace tinySTL {
     }
 
     /**
+     * unique
+     */
+    // 删除连续的元素，只剩下一个元素。
+    //
+    // 其中 p 比较函数：
+    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
+    // 如果 a 等于 b，则返回 true。
+    template <class ForwardIterator>
+    ForwardIterator unique(ForwardIterator first, ForwardIterator last) {
+        using element_type = typename iterator_traits<ForwardIterator>::value_type;
+        return unique(first, last, tinySTL::equal_to<element_type>());
+    }
+
+    template <class ForwardIterator, class BinaryPredicate>
+    ForwardIterator unique(ForwardIterator first, ForwardIterator last, BinaryPredicate p) {
+        if (first == last) {
+            return last;
+        }
+
+        ForwardIterator result = first;
+        while (first != last) {
+            // result + 1 与 first 相邻，则不需要移动元素
+            if (!p(*result, *first) && ++result != first) {
+                *result = tinySTL::move(*first);
+            }
+        }
+
+        return ++result;
+    }
+
+    /**
      * max
      */
     // 返回最大值
