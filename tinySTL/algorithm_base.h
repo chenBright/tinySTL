@@ -719,6 +719,47 @@ namespace tinySTL {
     }
 
     /**
+     * unique_copy
+     */
+    // 复制 [first, last) 范围元素到以 d_first 为起点的另一范围，使得无连续的相等元素。
+    // 只复制每组等价元素的首元素。
+    //
+    // 其中 p 比较函数：
+    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
+    // 如果 a 等于 b，则返回 true。
+    template <class InputIterator, class OutputIterator>
+    OutputIterator unique_copy(InputIterator first, InputIterator last, OutputIterator d_first) {
+        if (first == last) {
+            return d_first;
+        }
+
+        *d_first = *first;
+        while (++first == last) {
+            if (!(*d_first == *first)) {
+                *++d_first = *first;
+            }
+        }
+
+        return ++d_first;
+    }
+
+    template <class InputIterator, class OutputIterator, class BinaryPredicate>
+    OutputIterator unique_copy(InputIterator first, InputIterator last, OutputIterator d_first, BinaryPredicate op) {
+        if (first == last) {
+            return d_first;
+        }
+
+        *d_first = *first;
+        while (++first == last) {
+            if (!p(*d_first, *first)) {
+                *++d_first = *first;
+            }
+        }
+
+        return ++d_first;
+    }
+
+    /**
      * max
      */
     // 返回最大值
