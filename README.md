@@ -106,6 +106,7 @@ STL 的子集。
     - [x] iota
     - [x] accumulate
     - [x] inner_product
+    - [x] adjacent_difference
 -[x] memory（简单实现）
     - [x] shared_ptr
     - [x] weak_ptr
