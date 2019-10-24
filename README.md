@@ -66,6 +66,7 @@ STL 的子集。
     - [x] rotate_copy
     - [x] unique
     - [x] unique_copy
+    - [x] is_partitioned
     - [x] max
     - [x] max_element
     - [x] min
