@@ -760,6 +760,38 @@ namespace tinySTL {
     }
 
     /**
+     * is_partitioned
+     */
+    // 如果 [first, last) 范围中的所有满足 p 的元素（即 p(*it) == true）都出现在所有不满足的元素前则返回 true 。
+    // 如果 [first, last) 为空亦返回 true 。
+    template <class InputIterator, class UnaryPredicate>
+    bool is_partitioned(InputIterator first, InputIterator last, UnaryPredicate p) {
+        while (first != last) {
+            if (!p(*first)) {
+                // 找到分界点
+                break;
+            }
+            ++first;
+        }
+
+        // 分界点为 last，则直接返回 true。
+        if (first == last) {
+            return true;
+        }
+
+        // 此时 p(*first) == fase。
+
+        while (++first != last) {
+            if (p(*first)) {
+                // 存在满足 p 的元素，则直接返回 false。
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * max
      */
     // 返回最大值
