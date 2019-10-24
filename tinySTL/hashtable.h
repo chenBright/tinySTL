@@ -274,7 +274,7 @@ namespace tinySTL {
 
         template <class... Args>
         iterator emplace_equal(Args&&... args) {
-            return insert_equal(value_type(std::forward<Args>(args)...));
+            return insert_equal(value_type(tinySTL::forward<Args>(args)...));
         }
 
         tinySTL::pair<iterator, bool> insert_unique(const value_type& value) {
@@ -293,7 +293,7 @@ namespace tinySTL {
 
         template <class... Args>
         iterator emplace_unique(Args&&... args) {
-            return insert_unique(value_type(std::forward<Args>(args)...));
+            return insert_unique(value_type(tinySTL::forward<Args>(args)...));
         }
 
         iterator erase(const_iterator position) {
@@ -432,7 +432,7 @@ namespace tinySTL {
             resize(numElements_ + 1);
 
             auto index = bucket_num(KeyOfValue()(value));
-            auto newNode = create_node(std::forward<Y>(value));
+            auto newNode = create_node(tinySTL::forward<Y>(value));
             ++numElements_;
             for (auto current = buckets_[index]; current != nullptr; current = current->next_) {
                 if (equals_(KeyOfValue()(value), KeyOfValue()(current->data_))) {
@@ -460,7 +460,7 @@ namespace tinySTL {
                 }
             }
 
-            auto newNode = create_node(std::forward<Y>(value));
+            auto newNode = create_node(tinySTL::forward<Y>(value));
             newNode->next_ = buckets_[index];
             buckets_[index] = newNode;
             ++numElements_;

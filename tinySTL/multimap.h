@@ -164,7 +164,7 @@ namespace tinySTL {
 
         template <class P>
         iterator insert(P&& value) {
-            return tree_.insert_equal(std::forward<P>(value));
+            return tree_.insert_equal(tinySTL::forward<P>(value));
         }
 
         iterator insert(const_iterator hint, const value_type& value) {
@@ -173,7 +173,7 @@ namespace tinySTL {
 
         template <class P>
         iterator insert(const_iterator hint, P&& value) {
-            return tree_.insert_equal(hint, std::forward<P>(value));
+            return tree_.insert_equal(hint, tinySTL::forward<P>(value));
         }
 
         template <class InputIterator>
@@ -187,14 +187,14 @@ namespace tinySTL {
 
         template <class... Args>
         iterator emplace(Args&&... args) {
-            return tree_.emplace_equal(std::forward<Args>(args)...);
+            return tree_.emplace_equal(tinySTL::forward<Args>(args)...);
         }
 
         // 插入新元素到尽可能接近恰在 hint 前的位置。
         // 原位构造元素，即不进行复制或移动操作。
         template <class... Args>
         iterator emplace_hint(const_iterator hint, Args&&... args) {
-            return tree_.insert_equal(hint, std::forward<Args>(args)...);
+            return tree_.insert_equal(hint, tinySTL::forward<Args>(args)...);
         }
 
         // 迭代器 pos 必须合法且可解引用。

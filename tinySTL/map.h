@@ -182,7 +182,7 @@ namespace tinySTL {
 
         template <class P>
         tinySTL::pair<iterator, bool> insert(P&& value) {
-            return tree_.insert_unique(std::forward<P>(value));
+            return tree_.insert_unique(tinySTL::forward<P>(value));
         }
 
         tinySTL::pair<iterator, bool> insert(value_type&& value) {
@@ -196,7 +196,7 @@ namespace tinySTL {
 
         template <class P>
         tinySTL::pair<iterator, bool> insert(const_iterator hint, P&& value) {
-            return tree_.insert_unique(hint, std::forward<P>(value));
+            return tree_.insert_unique(hint, tinySTL::forward<P>(value));
         }
 
         iterator insert(const_iterator hint, value_type&& value) {
@@ -215,12 +215,12 @@ namespace tinySTL {
         // 若容器中无拥有该关键的元素，则插入以给定的 args 原位构造的新元素到容器。
         template <class... Args>
         tinySTL::pair<iterator, bool> emplace(Args&&... args) {
-            return tree_.emplace_unique(std::forward<Args>(args)...);
+            return tree_.emplace_unique(tinySTL::forward<Args>(args)...);
         }
 
         template <class... Args>
         iterator emplace_hint( const_iterator hint, Args&&... args ) {
-            return insert(hint, std::forward<Args>(args)...);
+            return insert(hint, tinySTL::forward<Args>(args)...);
         }
 
         // 迭代器 pos 必须合法且可解引用。从而 end() 迭代器（合法，但不可解引用）不能用作 position 所用的值。

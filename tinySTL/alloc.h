@@ -489,7 +489,7 @@ namespace tinySTL {
         // 其他同上
         template <class... Args>
         inline void construct(T *ptr, Args&&... args) {
-            tinySTL::construct(ptr, std::forward<Args>(args)...);
+            tinySTL::construct(ptr, tinySTL::forward<Args>(args)...);
         }
         // T 的构造函数没有形参，其他同上
         static void construct(pointer ptr) {

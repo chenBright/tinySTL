@@ -94,7 +94,7 @@ namespace tinySTL {
 
         template <class... Args>
         void emplace(Args... args) {
-            c.emplace_back(std::forward<Args>(args)...);
+            c.emplace_back(tinySTL::forward<Args>(args)...);
         }
 
         void pop() {

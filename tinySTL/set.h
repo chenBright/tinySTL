@@ -170,13 +170,13 @@ namespace tinySTL {
 
         template <class... Args>
         std::pair<iterator, bool> emplace(Args&&... args) {
-            return tree_.emplace_unique(std::forward<Args>(args)...);
+            return tree_.emplace_unique(tinySTL::forward<Args>(args)...);
         }
 
         // 插入新元素到容器中尽可能接近于恰在 hint 前的位置。
         template <class... Args>
         iterator emplace_hint(const_iterator hint, Args&&... args) {
-            return insert(hint, std::forward<Args>(args)...);
+            return insert(hint, tinySTL::forward<Args>(args)...);
         }
 
         iterator erase(const_iterator position) {

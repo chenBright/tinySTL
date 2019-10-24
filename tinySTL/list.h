@@ -328,7 +328,7 @@ namespace tinySTL {
 
         template <class... Args>
         iterator emplace(const_iterator position, Args&&... args) {
-            return insert(position, T(std::forward<Args>(args)...));
+            return insert(position, T(tinySTL::forward<Args>(args)...));
         }
 
         iterator erase(const_iterator position) {
@@ -367,7 +367,7 @@ namespace tinySTL {
 
         template <class... Args>
         void emplace_back(Args&&... args) {
-            emplace(end(), std::forward<Args>(args)...);
+            emplace(end(), tinySTL::forward<Args>(args)...);
         }
 
         void pop_back() {
@@ -384,7 +384,7 @@ namespace tinySTL {
 
         template <class... Args>
         void emplace_front(Args&&... args) {
-            emplace(begin(), std::forward<Args>(args)...);
+            emplace(begin(), tinySTL::forward<Args>(args)...);
         }
 
         void pop_front() {
@@ -632,7 +632,7 @@ namespace tinySTL {
          */
         template <class Y>
         iterator insert_aux(const_iterator position, Y &&value) {
-            link_type newNode = create_node(std::forward<Y>(value));
+            link_type newNode = create_node(tinySTL::forward<Y>(value));
             newNode->previous = position.node_->previous;
             newNode->next = position.node_;
             newNode->previous->next = newNode->next->previous = newNode;

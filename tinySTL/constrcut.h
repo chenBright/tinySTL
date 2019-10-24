@@ -6,6 +6,7 @@
 
 #include "iterator_base.h"
 #include "type_traits.h"
+#include "utility_move.h"
 
 namespace tinySTL {
     // 定义了全局函数 construct() 和 destory()。
@@ -31,7 +32,7 @@ namespace tinySTL {
     // 其他同上
     template <class T, class... Args>
     inline void construct(T *ptr, Args&&... args) {
-        ::new(ptr) T(std::forward<Args>(args)...);
+        ::new(ptr) T(tinySTL::forward<Args>(args)...);
     }
 
     // T 的构造函数没有形参，其他同上

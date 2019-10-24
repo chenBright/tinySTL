@@ -49,7 +49,7 @@ namespace tinySTL {
                 }
                 if (rightIndex >= maxIndex) {
                     if (comp(value, first[leftIndex])) {
-                        first[currentIndex] = std::forward<T>(first[leftIndex]);
+                        first[currentIndex] = tinySTL::forward<T>(first[leftIndex]);
                         currentIndex = leftIndex;
                     }
                     break;
@@ -59,16 +59,16 @@ namespace tinySTL {
                     break;
                 } else if (comp(first[leftIndex], first[rightIndex])) { // 有且只有一个子结点比 value 大
                     // 右子结点大
-                    first[currentIndex] = std::forward<T>(first[rightIndex]);
+                    first[currentIndex] = tinySTL::forward<T>(first[rightIndex]);
                     currentIndex = rightIndex;
                 } else {
                     // 左子结点大
-                    first[currentIndex] = std::forward<T>(first[leftIndex]);
+                    first[currentIndex] = tinySTL::forward<T>(first[leftIndex]);
                     currentIndex = leftIndex;
                 }
             }
 
-            first[currentIndex] = std::forward<T>(value);
+            first[currentIndex] = tinySTL::forward<T>(value);
         }
     }
 
