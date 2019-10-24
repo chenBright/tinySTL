@@ -94,7 +94,27 @@ namespace tinySTL {
 
     };
 
-    template <class T> using add_lvalue_reference_t = typename add_lvalue_reference<T>::type; // C++ 14
+    /**
+     * add_rvalue_reference
+     */
+    // 获取 T 的左值引用类型。
+    template <class T>
+    struct add_rvalue_reference {
+        using type = T&&;
+    };
+
+    template <class T>
+    struct add_rvalue_reference<T&> {
+        using type = T&&;
+    };
+
+    template <class T>
+    struct add_rvalue_reference<T&&> {
+        using type = T&&;
+
+    };
+
+    template <class T> using add_rvalue_reference_t = typename add_rvalue_reference<T>::type; // C++ 14
 
 
 
