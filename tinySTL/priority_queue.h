@@ -95,7 +95,7 @@ namespace tinySTL {
 
         template <class... Args>
         void emplace(Args... args) {
-            c_.push_back(std::forward<Args>(args)...);
+            c_.push_back(tinySTL::forward<Args>(args)...);
             push_heap(c_.begin(), c_.end(), comp_);
         }
 

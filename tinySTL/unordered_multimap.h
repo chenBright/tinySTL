@@ -148,7 +148,7 @@ namespace tinySTL {
 
         template <class P>
         tinySTL::pair<iterator, bool> insert(P&& value) {
-            return hashtable_.insert_equal(std::forward<P>(value));
+            return hashtable_.insert_equal(tinySTL::forward<P>(value));
         }
 
         template <class InputIterator>
@@ -162,12 +162,12 @@ namespace tinySTL {
 
         template <class... Args>
         tinySTL::pair<iterator, bool> emplace(Args&&... args) {
-            return hashtable_.emplace_equal(std::forward<Args>(args)...);
+            return hashtable_.emplace_equal(tinySTL::forward<Args>(args)...);
         }
 
         template <class... Args>
         iterator emplace_hint(const_iterator hint, Args&&... args) {
-            return insert(hint, std::forward<Args>(args)...);
+            return insert(hint, tinySTL::forward<Args>(args)...);
         }
 
         void swap(unordered_multimap& other) {

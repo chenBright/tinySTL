@@ -7,7 +7,6 @@ STL 的子集。
 ## 已完成
 
 - [x] 空间配置器
-- [x] type traits
 - [x] 普通迭代器
 - [x] 反向迭代器
 - [x] vector
@@ -27,6 +26,15 @@ STL 的子集。
 - [x] unordered_map
 - [x] unordered_multiset
 - [x] unordered_multimap
+- [x] type traits
+    - [x] __true_type
+    - [x] __false_type
+    - [x] is_integral
+    - [x] remove_reference
+    - [x] remove_reference_t
+    - [x] add_lvalue_reference
+    - [x] add_lvalue_reference_t
+    - [x] __type_traits
 - [x] 算法
     - [x] all_of
     - [x] any_of

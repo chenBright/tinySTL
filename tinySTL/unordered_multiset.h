@@ -154,12 +154,12 @@ namespace tinySTL {
 
         template <class... Args>
         tinySTL::pair<iterator, bool> emplace(Args&&... args) {
-            return hashtable_.emplace_equal(std::forward<Args>(args)...);
+            return hashtable_.emplace_equal(tinySTL::forward<Args>(args)...);
         }
 
         template <class... Args>
         iterator emplace_hint(const_iterator hint, Args&&... args) {
-            return insert(hint, std::forward<Args>(args)...);
+            return insert(hint, tinySTL::forward<Args>(args)...);
         }
 
         iterator erase(const_iterator position) {

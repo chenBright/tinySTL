@@ -360,8 +360,7 @@ namespace tinySTL {
         // 在容器就地构造元素
         template <class... Args>
         iterator emplace(const_iterator position, Args&&... args) {
-            // TODO tinySTL 版本的 forward
-            return insert(position, T(std::forward<Args>(args)...));
+            return insert(position, T(tinySTL::forward<Args>(args)...));
         }
 
         // 擦除指定位置的元素
@@ -371,7 +370,6 @@ namespace tinySTL {
             // 2. first 迭代器所指的位置需要被覆盖。
             auto newPosition = const_cast<iterator>(position);
             if (position + 1 == finish_) {
-                // TODO tinySTL 版本的 copy
                 // 将 [position + 1, finish_) 范围的元素复制到以 position 为起始的位置
                 tinySTL::copy(position + 1, finish_, newPosition);
             }
@@ -395,14 +393,13 @@ namespace tinySTL {
         }
 
         void push_back(const T &&value) {
-            // TODO tinySTL 版本的 move
             insert(cend(), tinySTL::move(value));
         }
 
         // 在容器末尾就地构造元素
         template <class... Args>
         void emplace_back(Args&&... args) {
-            push_back(T(std::forward<Args>(args)...));
+            push_back(T(tinySTL::forward<Args>(args)...));
         }
 
         void pop_back() {
@@ -531,7 +528,7 @@ namespace tinySTL {
                 auto newPosition = begin() + (position - cbegin());
                 dataAllocator.construct(finish_++, value);
                 tinySTL::copy_backward(position, cend() - 1, end());
-                *newPosition = std::forward<U>(value);
+                *newPosition = tinySTL::forward<U>(value);
 
                 return newPosition;
             } else {
@@ -540,7 +537,7 @@ namespace tinySTL {
                 tmp.start_ = dataAllocator.allocate(newSize);
                 auto newPosition = tmp.start_ + (position - cbegin());
                 tmp.finish_ = tinySTL::uninitialized_copy(cbegin(), position, tmp.start_);
-                dataAllocator.construct(tmp.finish_++, std::forward<U>(value));
+                dataAllocator.construct(tmp.finish_++, tinySTL::forward<U>(value));
                 tmp.finish_ = tinySTL::uninitialized_copy(position, cend(), tmp.finish_);
                 tmp.end_of_storage_ = tmp.start_ + newSize;
                 swap(tmp);

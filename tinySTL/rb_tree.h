@@ -609,7 +609,7 @@ namespace tinySTL {
         }
 
         template <typename... Args>
-        iterator emplace_equal(Args&&... args) { return insert_equal(value_type(std::forward<Args>(args)...)); }
+        iterator emplace_equal(Args&&... args) { return insert_equal(value_type(tinySTL::forward<Args>(args)...)); }
 
         tinySTL::pair<iterator, bool> insert_unique(const value_type&  value) { return insert_unique_aux(value);                 }
         tinySTL::pair<iterator, bool> insert_unique(      value_type&& value) { return insert_unique_aux(tinySTL::move(value));  }
@@ -626,7 +626,7 @@ namespace tinySTL {
         }
 
         template <typename... Args>
-        tinySTL::pair<iterator, bool> emplace_unique(Args&&... args) { return insert_unique(value_type(std::forward<Args>(args)...)); }
+        tinySTL::pair<iterator, bool> emplace_unique(Args&&... args) { return insert_unique(value_type(tinySTL::forward<Args>(args)...)); }
 
         /********************************************
          *                                          *
@@ -737,7 +737,7 @@ namespace tinySTL {
 
         template <typename Y>
         iterator insert_aux(rb_tree_node<value_type>* child, rb_tree_node<value_type>* parent, Y&& value) {
-            auto new_node = create_node(std::forward<Y>(value));
+            auto new_node = create_node(tinySTL::forward<Y>(value));
             new_node->parent_ = parent;
             new_node->left_   = new_node->right_ = nullptr;
             ++count_node_;
@@ -771,7 +771,7 @@ namespace tinySTL {
                 parent = child;
                 child  = comp_(KeyOfValue()(value), key(parent)) ? parent->left_ : parent->right_;
             }
-            return insert_aux(child, parent, std::forward<Y>(value));
+            return insert_aux(child, parent, tinySTL::forward<Y>(value));
         }
 
         /**************************************************
@@ -793,11 +793,11 @@ namespace tinySTL {
             auto it = static_cast<iterator>(parent);
             if (comp_result) {
                 if (it == begin())
-                    return {insert_aux(child, parent, std::forward<Y>(value)), true};
+                    return {insert_aux(child, parent, tinySTL::forward<Y>(value)), true};
                 --it;
             }
             if (comp_(key(it.node_), KeyOfValue()(value)))
-                return {insert_aux(child, parent, std::forward<Y>(value)), true};
+                return {insert_aux(child, parent, tinySTL::forward<Y>(value)), true};
             return {it, false};
         }
 

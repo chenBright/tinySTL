@@ -436,7 +436,7 @@ namespace tinySTL {
      */
     // 将 [first, last) 范围的元素复制到以 d_first 为终点（不包括 d_last）的范围内。
     // 以逆序移动元素（首先复制末元素），但保持其相对顺序。
-    // 若 d_last 在 (first, last] 内则行为未定义。该情况下必须用 std::copy 代替 std::copy_backward。
+    // 若 d_last 在 (first, last] 内则行为未定义。该情况下必须用 tinySTL::copy 代替 tinySTL::copy_backward。
     template <class BidirIterator1, class BidirIterator2>
     BidirIterator2 copy_backward(BidirIterator1 first, BidirIterator1 last, BidirIterator2 d_last) {
         while (first != last) {

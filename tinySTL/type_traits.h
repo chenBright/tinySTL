@@ -72,6 +72,31 @@ namespace tinySTL {
         using type = T;
     };
 
+    template <class T> using remove_reference_t = typename remove_reference<T>::type; // C++ 14
+
+    /**
+     * add_lvalue_reference
+     */
+    // 获取 T 的左值引用类型。
+    template <class T>
+    struct add_lvalue_reference {
+        using type = T&;
+    };
+
+    template <class T>
+    struct add_lvalue_reference<T&> {
+        using type = T&;
+    };
+
+    template <class T>
+    struct add_lvalue_reference<T&&> {
+        using type = T&;
+
+    };
+
+    template <class T> using add_lvalue_reference_t = typename add_lvalue_reference<T>::type; // C++ 14
+
+
 
     // has_trivial_default_constructor  -> 不重要的构造函数
     // has_trivial_copy_constructor     -> 不重要的拷贝构造函数

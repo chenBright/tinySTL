@@ -7,6 +7,7 @@
 
 #include "type_traits.h"
 #include "utility_move.h"
+#include "algorithm_base.h"
 
 namespace tinySTL {
     template <class T1, class T2>
@@ -22,14 +23,14 @@ namespace tinySTL {
         pair(const T1& x, const T2& y) : first(x), second(y) {}
 
         template <class U1, class U2>
-        pair(U1&& x, U2&& y) : first(std::forward<U1>(x)), second(std::forward<U2>(y)) {}
+        pair(U1&& x, U2&& y) : first(tinySTL::forward<U1>(x)), second(tinySTL::forward<U2>(y)) {}
 
         template <class U1, class U2>
         explicit pair(const pair<U1, U2>& p) : first(p.first), second(p.second) {}
 
         // 万能引用结合完美转发。
         template <class U1, class U2>
-        explicit pair(pair<U1, U2>&& p) : first(std::forward<U1>(p.first)), second(std::forward<U2>(p.second)) {}
+        explicit pair(pair<U1, U2>&& p) : first(tinySTL::forward<U1>(p.first)), second(tinySTL::forward<U2>(p.second)) {}
 
         template <class U1, class U2>
         explicit pair(const pair& p) : first(p.first), second(p.second) {}
@@ -61,8 +62,8 @@ namespace tinySTL {
 
         template <class U1, class U2>
         pair& operator=(pair<U1, U2>&& other) { // 万能引用（引用折叠）
-            first = std::forward<U1>(other.first);
-            second = std::forward<T2>(other.second);
+            first = tinySTL::forward<U1>(other.first);
+            second = tinySTL::forward<T2>(other.second);
 
             return *this;
         }
@@ -79,7 +80,6 @@ namespace tinySTL {
         }
     }; // struct pair
 
-    // TODO tinySTL 版本的 decay
     // 类型 T 退化（隐式转换，移除 cv 限定符：const 和 volatile）：
     // - 左值 -> 右值
     // - 数组 -> 指针
@@ -87,7 +87,7 @@ namespace tinySTL {
     template<class T1, class T2>
     pair<typename std::decay<T1>::type, typename std::decay<T2>::type> make_pair(T1&& first, T2&& second) {
         return pair<typename std::decay<T1>::type, typename std::decay<T2>::type>
-               (std::forward<T1>(first), std::forward<T2>(second));
+               (tinySTL::forward<T1>(first), tinySTL::forward<T2>(second));
     }
 
     template <typename T1, typename T2>

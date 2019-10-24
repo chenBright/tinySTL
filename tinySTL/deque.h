@@ -631,7 +631,7 @@ namespace tinySTL {
         // 否则，则只有未被 erase 的元素不失效。
         template <class... Args>
         iterator emplace(const_iterator position, Args&&... args) {
-            insert(position, T(std::forward<Args>(args)...));
+            insert(position, T(tinySTL::forward<Args>(args)...));
         }
 
         iterator erase(const_iterator position) {
@@ -722,12 +722,12 @@ namespace tinySTL {
         template <class... Args>
         iterator emplace_back(Args&&... args) {
             if (finish_.current_ != finish_.last_ - 1) {
-                nodeAllocator.construct(finish_.current_, std::forward<Args>(args)...);
+                nodeAllocator.construct(finish_.current_, tinySTL::forward<Args>(args)...);
             } else {
                 // 最后一个缓冲区只剩下一个可用空间，则在尾部分配一个新的缓冲区。
                 reserve_map_at_back();
                 *(finish_.node_ + 1) = allocate_node();
-                nodeAllocator.construct(finish_.current_, std::forward<Args>(args)...);
+                nodeAllocator.construct(finish_.current_, tinySTL::forward<Args>(args)...);
                 finish_.set_node(finish_.node_ + 1);
                 finish_.current_ = finish_.first_;
             }
@@ -773,7 +773,7 @@ namespace tinySTL {
         template <class... Args>
         iterator emplace_front(Args&&... args) {
             if (start_.current_ != start_.first_) {
-                nodeAllocator.construct(start_.current_ - 1, std::forward<Args>(args)...);
+                nodeAllocator.construct(start_.current_ - 1, tinySTL::forward<Args>(args)...);
                 --start_.current_;
             } else {
                 // 第一个缓冲区没有可用空间，则头部分配一个新的缓冲区。
@@ -781,7 +781,7 @@ namespace tinySTL {
                 *(start_.node_ - 1) = allocate_node();
                 start_.set_node(start_.node_ - 1);
                 start_.current_ = start_.last_ - 1;
-                nodeAllocator.construct(start_.current_, std::forward<Args>(args)...);
+                nodeAllocator.construct(start_.current_, tinySTL::forward<Args>(args)...);
             }
 
             return begin();
@@ -1139,7 +1139,7 @@ namespace tinySTL {
                 tinySTL::copy_backward(newPosition, oldBack, end() - 1);
             }
 
-            *newPosition = std::forward<U>(value);
+            *newPosition = tinySTL::forward<U>(value);
 
             return newPosition;
         }
