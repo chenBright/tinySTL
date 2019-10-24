@@ -128,6 +128,8 @@ STL 的子集。
     - [x] uninitialized_copy_n
     - [x] uninitialized_fill
     - [x] uninitialized_fill_n
+- [x] cstring    
+    - [x] memcpy
 
 ## TODO
 
