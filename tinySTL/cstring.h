@@ -6,6 +6,24 @@
 
 namespace tinySTL {
     /**
+     * strcpy
+     */
+    // 复制 src 所指向的字符串，包含空终止符（'\0'），到首元素为 dest 所指向的字符数组。
+    // 返回原 dest 指针。
+    // 若 dest 数组不够大则行为未定义。
+    // 若字符串重叠则行为未定义。
+    char* strcpy(char* dest, const char* src) {
+        if (dest == const_cast<char*>(src)) {
+            return dest;
+        }
+
+        char* return_str = dest;
+        while ((*dest++ = *src++) != '\0');
+
+        return return_str;
+    }
+
+    /**
      * memcpy
      */
     // 从 src 所指向的对象复制 count 个字符到 dest 所指向的对象。

@@ -131,6 +131,7 @@ STL 的子集。
     - [x] uninitialized_fill
     - [x] uninitialized_fill_n
 - [x] cstring    
+    - [x] strcpy
     - [x] memcpy
 
 ## TODO
