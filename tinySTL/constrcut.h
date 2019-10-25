@@ -64,7 +64,7 @@ namespace tinySTL {
          * @param last 最后一个要析构的迭代器的后一个迭代器
          */
         template <class ForwardIterator>
-        inline void _destory(ForwardIterator first, ForwardIterator last, __true_type) {
+        inline void _destory(ForwardIterator first, ForwardIterator last, true_type) {
 
         }
 
@@ -75,7 +75,7 @@ namespace tinySTL {
          * @param last 最后一个要析构的迭代器的后一个迭代器
          */
         template <class ForwardIterator>
-        inline void _destory(ForwardIterator first, ForwardIterator last, __false_type) {
+        inline void _destory(ForwardIterator first, ForwardIterator last, false_type) {
             while (first != last) {
                 destory(&*first);
                 ++first;

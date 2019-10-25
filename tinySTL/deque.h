@@ -841,7 +841,7 @@ namespace tinySTL {
          * @param last 数值
          */
         template <class InputIterator>
-        void initialize_aux(InputIterator first, InputIterator last, __true_type) {
+        void initialize_aux(InputIterator first, InputIterator last, true_type) {
             fill_initialize(first, last);
         }
 
@@ -852,7 +852,7 @@ namespace tinySTL {
          * @param last 末尾迭代器
          */
         template <class InputIterator>
-        void initialize_aux(InputIterator first, InputIterator last, __false_type) {
+        void initialize_aux(InputIterator first, InputIterator last, false_type) {
             copy_initialize(first, last, iterator_category(first));
         }
 
