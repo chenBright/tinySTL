@@ -8,7 +8,7 @@ namespace tinySTL {
         using value_type    = T;
         using type          = integral_constant;
 
-        static T value = v;
+        static constexpr T value = v;
 
         // C++ 14
         constexpr explicit operator value_type() const noexcept {

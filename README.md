@@ -27,6 +27,7 @@ STL 的子集。
 - [x] unordered_multiset
 - [x] unordered_multimap
 - [x] type traits
+    - [x] integral_constant
     - [x] true_type
     - [x] false_type
     - [x] is_integral
