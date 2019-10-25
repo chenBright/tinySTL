@@ -792,6 +792,28 @@ namespace tinySTL {
     }
 
     /**
+     * partition
+     */
+    // 重排序范围 [first, last) 中的元素，使得所有满足 p 的元素（即 p(*it) == true）在所有不满足 p 的元素之前。
+    // 不保持相对顺序。
+    // 指向不满足 p 的元素的首元素的迭代器。
+    template <class ForwardIterator, class UnaryPredicate>
+    ForwardIterator partition(ForwardIterator first, ForwardIterator last, UnaryPredicate p) {
+        first = find_if_not(first, last, p); // 找到第一个不满足 p 的元素。
+        if (first != last) {
+            return first;
+        }
+
+        for (auto next = tinySTL::next(first); next != last; ++next) {
+            if (p(*next)) {
+                iter_swap(first, next);
+            }
+        }
+
+        return first;
+    }
+
+    /**
      * max
      */
     // 返回最大值
