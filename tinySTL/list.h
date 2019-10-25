@@ -641,12 +641,12 @@ namespace tinySTL {
         }
 
         template <class InputIterator>
-        iterator insert_range_aux(const_iterator position, InputIterator first, InputIterator last, __true_type) {
+        iterator insert_range_aux(const_iterator position, InputIterator first, InputIterator last, true_type) {
             insert(position, static_cast<size_type>(first), static_cast<T>(last));
         }
 
         template <class InputIterator>
-        iterator insert_range_aux(const_iterator position, InputIterator first, InputIterator last, __false_type) {
+        iterator insert_range_aux(const_iterator position, InputIterator first, InputIterator last, false_type) {
             if (first == last) {
                 return static_cast<iterator>(position.node_);
             }

@@ -471,12 +471,12 @@ namespace tinySTL {
         }
 
         template <class InputIterator>
-        void initialize_aux(InputIterator first, InputIterator last, __true_type) {
+        void initialize_aux(InputIterator first, InputIterator last, true_type) {
             fill_initialize(static_cast<size_type>(first), static_cast<value_type>(last));
         }
 
         template <class InputIterator>
-        void initialize_aux(InputIterator first, InputIterator last, __false_type) {
+        void initialize_aux(InputIterator first, InputIterator last, false_type) {
             copy_initialize(first, last, iterator_category(first));
         }
 
