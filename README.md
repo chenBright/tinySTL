@@ -80,6 +80,7 @@ STL 的子集。
     - [x] unique_copy
     - [x] is_partitioned
     - [x] partition
+    - [x] partition_copy
     - [x] max
     - [x] max_element
     - [x] min

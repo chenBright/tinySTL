@@ -814,6 +814,32 @@ namespace tinySTL {
     }
 
     /**
+     * partition_copy
+     */
+    // 从 [first, last) 范围复制元素到两个不同范围。
+    // 复制满足谓词 p 的元素到始于 d_first_true 的范围。
+    // 复制剩余元素到始于 d_first_false 的范围。
+    // 若输入范围与任一输出范围重叠，则行为未定义。
+    template <class InputIterator, class OutputIterator1, class OutputIterator2, class UnaryPredicate>
+    tinySTL::pair<OutputIterator1, OutputIterator2>
+            partition_copy(InputIterator first,
+                           InputIterator last,
+                           OutputIterator1 d_first_true,
+                           OutputIterator2 d_first_false,
+                           UnaryPredicate p) {
+        while (first != last) {
+            if (p(*first)) {
+                *d_first_true++ = *first;
+            } else {
+                *d_first_false++ = *first;
+            }
+            ++first;
+        }
+
+        return tinySTL::make_pair(d_first_true, d_first_false);
+    }
+
+    /**
      * max
      */
     // 返回最大值
