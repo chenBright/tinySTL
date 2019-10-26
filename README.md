@@ -123,7 +123,7 @@ STL 的子集。
     - [x] inner_product
     - [x] adjacent_difference
     - [x] partial_sum
--[x] memory（简单实现）
+- [x] memory（简单实现）
     - [x] shared_ptr
     - [x] weak_ptr
     - [x] unique_ptr
