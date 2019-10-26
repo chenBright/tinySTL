@@ -23,6 +23,17 @@ namespace tinySTL {
     using true_type    = integral_constant<bool, true>;
     using false_type   = integral_constant<bool, false>;
 
+    // is_same
+    // 如果 T 与 U 指名同一类型（考虑 const/volatile 限定），则成员常量 value 为 true。
+    // 否则 value 为 false 。
+    template <class T, class U>
+    struct is_same : public false_type {};
+
+    template <class T>
+    struct is_same<T, T> : public true_type {};
+
+    template <class T, class U> constexpr bool is_same_v = is_same<T, U>::value; // C++ 17
+
     // is_integral 是否为整数
     // 作用：用于区分重载函数，例如 Vector<int> 有这样两个构造函数:
     // 1 vector(size_type n, const_reference value)，其中 const_reference = const int&
