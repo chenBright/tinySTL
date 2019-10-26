@@ -30,6 +30,7 @@ STL 的子集。
     - [x] integral_constant
     - [x] true_type
     - [x] false_type
+    - [x] is_same
     - [x] is_integral
     - [x] remove_reference
     - [x] remove_reference_t
