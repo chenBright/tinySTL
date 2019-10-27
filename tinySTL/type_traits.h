@@ -34,6 +34,48 @@ namespace tinySTL {
 
     template <class T, class U> constexpr bool is_same_v = is_same<T, U>::value; // C++ 17
 
+    /**
+     * remove_cv
+     * remove_const
+     * remove_volatile
+     */
+    // 移除最顶层 const
+    template <class T>
+    struct remove_const {
+        using type = T;
+    };
+
+    template <class T>
+    struct remove_const<const T> {
+        using type = T;
+    };
+
+    template <class T, class U> using remove_const_t = typename remove_const<T>::type; // C++ 14
+
+
+    // 移除最顶层 volatile
+    template <class T>
+    struct remove_volatile {
+        using type = T;
+    };
+
+    template <class T>
+    struct remove_volatile<volatile T> {
+        using type = T;
+    };
+
+    template <class T, class U> using remove_volatile_t = typename remove_volatile<T>::type; // C++ 14
+
+
+    // 移除最顶层 const 、最顶层 volatile 或两者
+    template <class T>
+    struct remove_cv {
+        using type = typename remove_volatile<typename remove_const<T>::type>::type;
+    };
+
+    template <class T, class U> using remove_cv_t = typename remove_cv<T>::type; // C++ 14
+
+
     // is_integral 是否为整数
     // 作用：用于区分重载函数，例如 Vector<int> 有这样两个构造函数:
     // 1 vector(size_type n, const_reference value)，其中 const_reference = const int&
