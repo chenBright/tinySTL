@@ -764,6 +764,10 @@ namespace tinySTL {
      */
     // 如果 [first, last) 范围中的所有满足 p 的元素（即 p(*it) == true）都出现在所有不满足的元素前则返回 true 。
     // 如果 [first, last) 为空亦返回 true 。
+    //
+    // 其中 p 比较函数：
+    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
+    // 如果 a 等于 b，则返回 true。
     template <class InputIterator, class UnaryPredicate>
     bool is_partitioned(InputIterator first, InputIterator last, UnaryPredicate p) {
         while (first != last) {
@@ -797,6 +801,10 @@ namespace tinySTL {
     // 重排序范围 [first, last) 中的元素，使得所有满足 p 的元素（即 p(*it) == true）在所有不满足 p 的元素之前。
     // 不保持相对顺序。
     // 指向不满足 p 的元素的首元素的迭代器。
+    //
+    // 其中 p 比较函数：
+    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
+    // 如果 a 等于 b，则返回 true。
     template <class ForwardIterator, class UnaryPredicate>
     ForwardIterator partition(ForwardIterator first, ForwardIterator last, UnaryPredicate p) {
         first = find_if_not(first, last, p); // 找到第一个不满足 p 的元素。
@@ -820,6 +828,10 @@ namespace tinySTL {
     // 复制满足谓词 p 的元素到始于 d_first_true 的范围。
     // 复制剩余元素到始于 d_first_false 的范围。
     // 若输入范围与任一输出范围重叠，则行为未定义。
+    //
+    // 其中 p 比较函数：
+    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
+    // 如果 a 等于 b，则返回 true。
     template <class InputIterator, class OutputIterator1, class OutputIterator2, class UnaryPredicate>
     tinySTL::pair<OutputIterator1, OutputIterator2>
             partition_copy(InputIterator first,
@@ -837,6 +849,40 @@ namespace tinySTL {
         }
 
         return tinySTL::make_pair(d_first_true, d_first_false);
+    }
+
+    /**
+     * stable_partition
+     */
+    // partition 的稳定版本
+    template <class BidirIterator, class UnaryPredicate>
+    BidirIterator stable_partition(BidirIterator first, BidirIterator last, UnaryPredicate p) {
+        while (first != last && p(*first)) {
+            ++first;
+        }
+
+        if (first == last) {
+            return last;
+        }
+
+        auto n = tinySTL::distance(first, last);
+        // 只需要为 [first, last) 准备临时存储空间即可，用于存储 p(*it) == false 的元素。
+        auto* tmp_array = new typename tinySTL::iterator_traits<BidirIterator>::value_type[n];
+        decltype(n) index = 0;
+        auto current = first++;
+
+        while (first != last) {
+            if (p(*first)) {
+                *current++ = *first++;
+            } else {
+                tmp_array[index++] = *first++;
+            }
+        }
+
+        copy_n(tmp_array, index, current);
+        delete[] tmp_array;
+
+        return current;
     }
 
     /**

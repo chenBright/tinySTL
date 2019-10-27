@@ -42,7 +42,7 @@ STL 的子集。
     - [x] add_rvalue_reference
     - [x] add_rvalue_reference_t
     - [x] __type_traits
-- [x] 算法
+- [x] algorithm
     - [x] all_of
     - [x] any_of
     - [x] none_of
@@ -84,6 +84,7 @@ STL 的子集。
     - [x] is_partitioned
     - [x] partition
     - [x] partition_copy
+    - [x] stable_partition
     - [x] max
     - [x] max_element
     - [x] min
