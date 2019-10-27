@@ -13,12 +13,37 @@ namespace tinySTL {
     // 若 dest 数组不够大则行为未定义。
     // 若字符串重叠则行为未定义。
     char* strcpy(char* dest, const char* src) {
-        if (dest == const_cast<char*>(src)) {
+        if (dest == nullptr || src == nullptr || dest == const_cast<char*>(src)) {
             return dest;
         }
 
         char* return_str = dest;
         while ((*dest++ = *src++) != '\0');
+
+        return return_str;
+    }
+
+    /**
+     * strncpy
+     */
+    // 复制 src 所指向的字节字符串的 count 个字符（包含终止空字符）到 dest 所指向的字符数组。
+    // 如果已经复制了 count 个字符，但未达到 src 的尾部，即未遍历到 src 的空终止符（'\0'），则不会为 dest 添加 '\0'。
+    // 如果复制到了 src 的空终止符（'\0'），但未达到 count 个字符，则写空字符到 dest，直到总共写入 count 个字符位置。
+    // 若字符串重叠，则行为未定义。
+    // 参考 https://zhuanlan.zhihu.com/p/37383750
+    char* strncpy(char* dest, const char* src, std::size_t count) {
+        if (dest == nullptr || src == nullptr || dest == const_cast<char*>(src)) {
+            return dest;
+        }
+
+        char* return_str = dest;
+        while (count-- > 0) {
+            // 如果 strlen(src) < count，则后面会写入 count - strlen(src) 个 '\0'，
+            // 但不会进入循环，以防止访问 src 时导致缓冲区溢出。
+            while ((*dest++ = *src) != '\0') {
+                ++src;
+            }
+        }
 
         return return_str;
     }
@@ -34,7 +59,7 @@ namespace tinySTL {
     // std::memcpy 理论上是最快的内存到内存复制子程序。通常它比必须扫描其所复制数据的 strcpy ，或必须预防并处理重叠输入的 std::memmove 更高效。
     // 许多 C++ 编译器将适当的内存复制循环变换为 std::memcpy 调用。
     void* memcpy(void* dest, const void* src, std::size_t count) {
-        if (dest == const_cast<void*>(src)) {
+        if (dest == nullptr || src == nullptr || dest == const_cast<void*>(src)) {
             return dest;
         }
 

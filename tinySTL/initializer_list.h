@@ -5,7 +5,6 @@
 #include <cstddef>
 
 namespace tinySTL {
-    // TODO 经过测试后，替换项目中的 std::initializer_list
     // 访问 const T 类型对象数组的轻量代理对象
     // 接口功能见：https://zh.cppreference.com/w/cpp/utility/initializer_list
     template <class T>

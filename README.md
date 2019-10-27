@@ -2,7 +2,7 @@
 
 STL 的子集。
 
-本项目为本人的练习项目，所以未提供测试，不能保证完全正确。
+本项目为本人的练习项目，所以暂时未提供测试，不能保证完全正确。请多多包涵。
 
 ## 已完成
 
@@ -123,7 +123,7 @@ STL 的子集。
     - [x] inner_product
     - [x] adjacent_difference
     - [x] partial_sum
--[x] memory（简单实现）
+- [x] memory（简单实现）
     - [x] shared_ptr
     - [x] weak_ptr
     - [x] unique_ptr
@@ -134,6 +134,7 @@ STL 的子集。
     - [x] uninitialized_fill_n
 - [x] cstring    
     - [x] strcpy
+    - [x] strncpy
     - [x] memcpy
 
 ## TODO
