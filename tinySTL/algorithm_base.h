@@ -744,7 +744,7 @@ namespace tinySTL {
     }
 
     template <class InputIterator, class OutputIterator, class BinaryPredicate>
-    OutputIterator unique_copy(InputIterator first, InputIterator last, OutputIterator d_first, BinaryPredicate op) {
+    OutputIterator unique_copy(InputIterator first, InputIterator last, OutputIterator d_first, BinaryPredicate p) {
         if (first == last) {
             return d_first;
         }
