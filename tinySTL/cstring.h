@@ -49,6 +49,20 @@ namespace tinySTL {
     }
 
     /**
+     * strcat
+     */
+    // 将 src 连接到 dest 后面。
+    // dest 所指的内存空间要能容纳得下 strlen(src) + strlen(dest) + 1 个字符。
+    // 若字符串重叠，则行为未定义。
+    char* strcat(char* dest, const char* src) {
+        char* return_str = dest;
+        dest += std::strlen(dest);
+        while ((*dest = *src) != '\0');
+
+        return return_str;
+    }
+
+    /**
      * memcpy
      */
     // 从 src 所指向的对象复制 count 个字符到 dest 所指向的对象。
