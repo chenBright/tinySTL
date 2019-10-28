@@ -32,8 +32,13 @@ STL 的子集。
     - [x] false_type
     - [x] is_same
     - [x] remove_const
+    - [x] remove_const_t
     - [x] remove_volatile
+    - [x] remove_volatile_t
     - [x] remove_cv
+    - [x] remove_cv_t
+    - [x] is_void
+    - [x] is_void_v
     - [x] is_integral
     - [x] remove_reference
     - [x] remove_reference_t
