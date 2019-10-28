@@ -90,6 +90,7 @@ STL 的子集。
     - [x] partition
     - [x] partition_copy
     - [x] stable_partition
+    - [x] partition_point
     - [x] max
     - [x] max_element
     - [x] min

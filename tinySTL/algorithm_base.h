@@ -886,6 +886,23 @@ namespace tinySTL {
     }
 
     /**
+     * partition_point
+     */
+    // 返回 partition 的分界点，即第一个不满足 p 的元素。
+    //
+    // 其中 p 比较函数：
+    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
+    // 如果 a 等于 b，则返回 true。
+    template <class ForwardIterator, class UnaryPredicate>
+    ForwardIterator partition_point(ForwardIterator first, ForwardIterator last, UnaryPredicate p) {
+        while (first != last && p(*first)) {
+            ++first;
+        }
+
+        return first;
+    }
+
+    /**
      * max
      */
     // 返回最大值
