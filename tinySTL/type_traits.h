@@ -75,6 +75,15 @@ namespace tinySTL {
 
     template <class T, class U> using remove_cv_t = typename remove_cv<T>::type; // C++ 14
 
+    /**
+     * is_void
+     * is_void_t
+     */
+    //
+    template <class T>
+    struct is_void : public is_same<void, typename remove_cv<T>::type> {};
+
+    template <class T> bool is_void_v = is_void<T>::value; // C++ 17
 
     // is_integral 是否为整数
     // 作用：用于区分重载函数，例如 Vector<int> 有这样两个构造函数:
