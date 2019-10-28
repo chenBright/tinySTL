@@ -139,6 +139,7 @@ STL 的子集。
 - [x] cstring    
     - [x] strcpy
     - [x] strncpy
+    - [x] strcat
     - [x] memcpy
 
 ## TODO
