@@ -56,10 +56,24 @@ namespace tinySTL {
     // 若字符串重叠，则行为未定义。
     char* strcat(char* dest, const char* src) {
         char* return_str = dest;
-        dest += std::strlen(dest);
+        dest += strlen(dest);
         while ((*dest = *src) != '\0');
 
         return return_str;
+    }
+
+    /**
+     * strlen
+     */
+    // 返回给定字节字符串的长度，即首元素为 str 所指向的字符数组直到而不包含首个空字符的字符数。
+    // 若 str 所指向的字符数组中无空字符，则行为未定义。
+    std::size_t strlen(const char* str) {
+        std::size_t length = 0;
+        while (str++ != '\0') {
+            ++length;
+        }
+
+        return length;
     }
 
     /**
