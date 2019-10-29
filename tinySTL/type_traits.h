@@ -1,6 +1,8 @@
 #ifndef TINYSTL_TYPE_TRAITS_H
 #define TINYSTL_TYPE_TRAITS_H
 
+#include <cstddef> // nullptr_t
+
 namespace tinySTL {
     // integral_constant 是包装特定类型的静态常量。它是 C++ 类型特性的基类。
     template <class T, T v>
@@ -84,6 +86,16 @@ namespace tinySTL {
     struct is_void : public is_same<void, typename remove_cv<T>::type> {};
 
     template <class T> bool is_void_v = is_void<T>::value; // C++ 17
+
+    /**
+     * is_null_pointer
+     * is_null_pointer_v
+     */
+    //
+    template <class T>
+    struct is_null_pointer : public is_same<std::nullptr_t, typename remove_cv<T>::type> {};
+
+    template <class T> bool is_null_pointer_v = is_null_pointer<T>::value;
 
     // is_integral 是否为整数
     // 作用：用于区分重载函数，例如 Vector<int> 有这样两个构造函数:
