@@ -903,6 +903,24 @@ namespace tinySTL {
     }
 
     /**
+     * is_sorted
+     */
+    // 检查 [first, last) 范围的元素是否以非递减排序。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    template <class ForwardIterator>
+    bool is_sorted(ForwardIterator first, ForwardIterator last) {
+        return std::is_sorted_until(first, last);
+    }
+
+    template <class ForwardIterator, class Compare>
+    bool is_sorted(ForwardIterator first, ForwardIterator last, Compare comp) {
+        return std::is_sorted_until(first, last, comp);
+    }
+
+    /**
      * max
      */
     // 返回最大值
