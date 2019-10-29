@@ -39,6 +39,8 @@ STL 的子集。
     - [x] remove_cv_t
     - [x] is_void
     - [x] is_void_v
+    - [x] is_null_pointer
+    - [x] is_null_pointer_v
     - [x] is_integral
     - [x] remove_reference
     - [x] remove_reference_t
