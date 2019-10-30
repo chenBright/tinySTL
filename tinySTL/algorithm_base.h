@@ -912,12 +912,12 @@ namespace tinySTL {
     // 如果 a 小于 b，则返回 true。
     template <class ForwardIterator>
     bool is_sorted(ForwardIterator first, ForwardIterator last) {
-        return std::is_sorted_until(first, last);
+        return is_sorted_until(first, last);
     }
 
     template <class ForwardIterator, class Compare>
     bool is_sorted(ForwardIterator first, ForwardIterator last, Compare comp) {
-        return std::is_sorted_until(first, last, comp);
+        return is_sorted_until(first, last, comp);
     }
 
     /**

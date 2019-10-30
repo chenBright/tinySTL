@@ -63,6 +63,17 @@ namespace tinySTL {
     }
 
     /**
+     * strxfrm
+     */
+    // 从 src 拷贝前 count 个字符到 dest 中，并返回 src 的长度。
+    // 如果 count > strlen(src)，则只拷贝 strlen(src) 个字符。
+    std::size_t strxfrm(char* dest, const char* src, std::size_t count) {
+        strncpy(dest, src, count);
+
+        return strlen(src);
+    }
+
+    /**
      * strlen
      */
     // 返回给定字节字符串的长度，即首元素为 str 所指向的字符数组直到而不包含首个空字符的字符数。
