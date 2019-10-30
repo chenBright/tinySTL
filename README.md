@@ -42,6 +42,8 @@ STL 的子集。
     - [x] is_null_pointer
     - [x] is_null_pointer_v
     - [x] is_integral
+    - [x] is_floating_point
+    - [x] is_floating_point_v
     - [x] remove_reference
     - [x] remove_reference_t
     - [x] add_lvalue_reference

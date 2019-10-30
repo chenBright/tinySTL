@@ -36,11 +36,10 @@ namespace tinySTL {
 
     template <class T, class U> constexpr bool is_same_v = is_same<T, U>::value; // C++ 17
 
-    /**
-     * remove_cv
-     * remove_const
-     * remove_volatile
-     */
+    // remove_cv
+    // remove_const
+    // remove_volatil
+
     // 移除最顶层 const
     template <class T>
     struct remove_const {
@@ -91,7 +90,7 @@ namespace tinySTL {
      * is_null_pointer
      * is_null_pointer_v
      */
-    //
+    // 判断 T 是否为 std::nullptr_t 类型。
     template <class T>
     struct is_null_pointer : public is_same<std::nullptr_t, typename remove_cv<T>::type> {};
 
@@ -146,6 +145,17 @@ namespace tinySTL {
 
     template <>
     struct is_integral<unsigned long long > : public true_type {};
+
+    // is_floating_point
+    // is_floating_point_v
+    // 判断 T 是否为浮点类型。
+    template <class T>
+    struct is_floating_point : public integral_constant<bool,
+                               is_same<float, typename remove_cv<T>::type>::value ||
+                               is_same<double, typename remove_cv<T>::type>::value ||
+                               is_same<long double , typename remove_cv<T>::type>::value> {};
+
+    template <class T> bool is_floating_pointer_v = is_floating_point<T>::value; // C++ 17
 
     // remove_reference 取出引用，得到类型 T
     template <class T>
