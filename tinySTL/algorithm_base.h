@@ -921,6 +921,37 @@ namespace tinySTL {
     }
 
     /**
+     * is_sorted_until
+     */
+    // 检查 [first, last) 范围的元素以非递减排序的最大范围。
+    // 返回第一个不符合非递减排序的元素的迭代器。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    template <class ForwardIterator>
+    ForwardIterator is_sorted_until(ForwardIterator first, ForwardIterator last) {
+        reutrn is_sorted_until(first, last, tinySTL::less<iterator_traits<ForwardIterator>::value_type>());
+    }
+
+    template <class ForwardIterator, class Compare>
+    ForwardIterator is_sorted_until(ForwardIterator first, ForwardIterator last, Compare comp) {
+        if (first == last) {
+            return last;
+        }
+
+        auto *next = first + 1;
+        while (next != last) {
+            if (!comp(*first, *next)) {
+                return next;
+            }
+            ++first;
+        }
+
+        return last;
+    }
+
+    /**
      * max
      */
     // 返回最大值
