@@ -152,6 +152,7 @@ STL 的子集。
     - [x] strcpy
     - [x] strncpy
     - [x] strcat
+    - [x] strncat
     - [x] strxfrm
     - [x] strlen
     - [x] memcpy
