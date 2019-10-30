@@ -96,6 +96,7 @@ STL 的子集。
     - [x] stable_partition
     - [x] partition_point
     - [x] is_sorted
+    - [x] is_sorted_until
     - [x] max
     - [x] max_element
     - [x] min
