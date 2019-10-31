@@ -952,6 +952,43 @@ namespace tinySTL {
     }
 
     /**
+     * sort
+     */
+    // 非稳定排序
+    template <class RandomIterator>
+    void sort(RandomIterator first, RandomIterator last) {
+        using value_type = iterator_traits<RandomIterator>::value_type;
+        sort(first, last, tinySTL::less<value_type>());
+    }
+
+    template <class RandomIterator, class Compare>
+    void sort(RandomIterator first, RandomIterator last, Compare comp) {
+        if (last - first <= 1) {
+            return;
+        }
+
+        // 快排
+        auto start = first;
+        auto end = last - 1;
+        auto pivot = first;
+        while (start < end) {
+            while (start < end && comp(*pivot, *end)) {
+                --end;
+            }
+            *start = tinySTL::move(*end);
+
+            while (start < end && !(*pivot, *start)) {
+                ++start;
+            }
+            *end = tinySTL::move(*start);
+        }
+
+        *start = tinySTL::move(*pivot);
+        sort(first, start, comp);
+        sort(start + 1, last, comp);
+    }
+
+    /**
      * max
      */
     // 返回最大值
