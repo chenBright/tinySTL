@@ -63,10 +63,29 @@ namespace tinySTL {
     }
 
     /**
+     * strncat
+     */
+    // 将 src 前 count 个字符连接到 dest 后面。
+    // 如果 count > strlen(src)，则只拷贝 strlen(src) 个字符。
+    // 若字符串重叠，则行为未定义。
+    char* strncat(char* dest, const char* src, std::size_t count) {
+        char* return_str = dest;
+        while (count-- != 0 && *src != '\0') {
+            *dest++ = *src++;
+        }
+        *dest = '\0';
+
+        return return_str;
+    }
+
+    /**
      * strxfrm
      */
     // 从 src 拷贝前 count 个字符到 dest 中，并返回 src 的长度。
     // 如果 count > strlen(src)，则只拷贝 strlen(src) 个字符。
+    // 若 dest 数组不够大则行为未定义。
+    // 若字符串重叠，则行为未定义。
+    // 若 count 为 ​0​ ，则允许 dest 为空指针。此时，strxfrm 函数的作用相当于 strlen 函数。
     std::size_t strxfrm(char* dest, const char* src, std::size_t count) {
         strncpy(dest, src, count);
 
