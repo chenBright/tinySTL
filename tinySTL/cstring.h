@@ -99,11 +99,34 @@ namespace tinySTL {
     // 若 str 所指向的字符数组中无空字符，则行为未定义。
     std::size_t strlen(const char* str) {
         std::size_t length = 0;
-        while (str++ != '\0') {
+        while (*str++ != '\0') {
             ++length;
         }
 
         return length;
+    }
+
+    /**
+     * strcmp
+     */
+    // 按字典序比较两个字符串。
+    int strcmp(const char* lhs, const char* rhs) {
+        if (lhs == rhs) {
+            return 0;
+        }
+
+        while (true) {
+            if (*lhs != *rhs) {
+                return *lhs < *rhs;
+            }
+
+            if (*lhs == '\0') {
+                return 0;
+            }
+
+            ++lhs;
+            ++rhs;
+        }
     }
 
     /**
