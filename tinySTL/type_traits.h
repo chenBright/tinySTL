@@ -157,6 +157,21 @@ namespace tinySTL {
 
     template <class T> bool is_floating_pointer_v = is_floating_point<T>::value; // C++ 17
 
+    // is_array
+    // is_array_v
+    // 判断 T 是否数组类型。
+    template <class T>
+    struct is_array : public false_type {};
+
+    template <class T>
+    struct is_array<T[]> : public true_type {};
+
+    template <class T, std::size_t N>
+    struct is_array<T[N]> : public true_type {};
+
+    template <class T> bool is_array_v = is_array<T>::value; // C++ 17
+
+
     // remove_reference 取出引用，得到类型 T
     template <class T>
     struct remove_reference {
