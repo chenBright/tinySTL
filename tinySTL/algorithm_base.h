@@ -9,6 +9,7 @@
 #include "iterator_base.h"
 #include "utility_pair.h"
 #include "utility_move.h"
+#include "algorithm_heap.h"
 
 namespace tinySTL {
 
@@ -986,6 +987,34 @@ namespace tinySTL {
         *start = tinySTL::move(*pivot);
         sort(first, start, comp);
         sort(start + 1, last, comp);
+    }
+
+    /**
+     * partial_sort
+     */
+    // 重排元素，使得 [first, middle) 含有范围 [first, last) 中已排序的 middle - first 个最小元素。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    template <class RandomIterator>
+    void partial_sort(RandomIterator first, RandomIterator middle, RandomIterator last) {
+        using value_type = iterator_traits<RandomIterator>::value_type;
+        partial_sort(first, middle, last, tinySTL::less<value_type>());
+    }
+
+    template <class RandomIterator, class Compare>
+    void partial_sort(RandomIterator first, RandomIterator middle, RandomIterator last, Compare comp) {
+        tinySTL::make_heap(first, middle); // 最大堆
+        for (auto it = middle; it != last; ++it) {
+            if (comp(*it, *first)) {
+                auto tmp = tinySTL::move(*it);
+                *it = tinySTL::move(*first);
+                tinySTL::detail::pop_heap_aux(first, 0, tinySTL::distance(first, middle), tinySTL::move(tmp), comp);
+            }
+        }
+        // 在构建好的最大堆的基础上进行堆排序。
+        tinySTL::sort_heap(first, middle);
     }
 
     /**

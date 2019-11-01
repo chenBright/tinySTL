@@ -25,6 +25,7 @@ namespace tinySTL {
         auto value = tinySTL::move(*--last);
         auto currentIndex = distance(first, last);
         auto parentIndex = (currentIndex - 1) / 2;
+        // 上浮操作
         while (currentIndex > 0 && comp(first[parentIndex], value)) {
             first[currentIndex] = tinySTL::move(first[parentIndex]);
             currentIndex = parentIndex;
@@ -40,6 +41,7 @@ namespace tinySTL {
         // 参考《C++ Primer》P609
         template<class RandomAccessIterator, class Distance, class T, class Compare>
         void pop_heap_aux(RandomAccessIterator first, Distance currentIndex, Distance maxIndex, T &&value, Compare comp) {
+            // 下沉操作
             while (true) {
                 auto leftIndex = currentIndex * 2 + 1;
                 auto rightIndex = leftIndex + 1;
