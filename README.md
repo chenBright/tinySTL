@@ -46,6 +46,7 @@ STL 的子集。
     - [x] is_floating_point_v
     - [x] is_array
     - [x] is_array_v
+    - [x] is_pointer
     - [x] remove_reference
     - [x] remove_reference_t
     - [x] add_lvalue_reference
