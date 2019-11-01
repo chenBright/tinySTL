@@ -117,7 +117,7 @@ namespace tinySTL {
 
         while (true) {
             if (*lhs != *rhs) {
-                return *lhs < *rhs;
+                return *lhs < *rhs ? -1 :1;
             }
 
             if (*lhs == '\0') {
@@ -126,6 +126,29 @@ namespace tinySTL {
 
             ++lhs;
             ++rhs;
+        }
+    }
+
+    /**
+     * strncmp
+     */
+    // 按字典序比较两个字符串的前 count 个字符。
+    int strncmp(const char* lhs, const char* rhs, std::size_t count) {
+        if (lhs == rhs) {
+            return 0;
+        }
+
+        while (true) {
+            if (count-- == 0) {
+                return 0;
+            }
+
+            if (*lhs != *rhs) {
+                return *lhs < *rhs ? -1 : 1;
+            }
+
+            ++lhs;
+            --rhs;
         }
     }
 
