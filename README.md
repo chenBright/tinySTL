@@ -101,6 +101,7 @@ STL 的子集。
     - [x] is_sorted
     - [x] is_sorted_until
     - [x] sort
+    - [x] partial_sort
     - [x] max
     - [x] max_element
     - [x] min
