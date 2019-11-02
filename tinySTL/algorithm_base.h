@@ -1018,6 +1018,39 @@ namespace tinySTL {
     }
 
     /**
+     * partial_sort_copy
+     */
+    // 以升序排序范围 [first, last) 中的某些元素，存储结果于范围 [d_first, d_last) 。
+    template class InputIterator, class RandomIterator>
+    RandomIterator partial_sort_copy(InputIterator first, InputIterator last,
+                                     RandomIterator d_first, RandomIterator d_last) {
+        using value_type = iterator_traits<RandomIterator>::value_type;
+        return partial_sort_copy(first, last, d_first, d_last, tinySTL::less<value_type>());
+    }
+
+    template class InputIterator, class RandomIterator, class Compare>
+    RandomIterator partial_sort_copy(InputIterator first, InputIterator last,
+                                     RandomIterator d_first, RandomIterator d_last, Compare comp) {
+        auto d_middle = d_first;
+        while (first != last && d_middle != last) {
+            *d_middle++ = *first++;
+        }
+        tinySTL::make_heap(first, d_middle); // 构建最大堆
+        // 更新最大堆，找出最小的 (last - first) 个元素
+        for (auto it = first; it != last; ++it) {
+            if (comp(*it, *d_first)) {
+                // 下沉操作
+                tinySTL::detail::pop_heap_aux(first, 0, tinySTL::distance(first, d_middle), *it, comp);
+            }
+        }
+
+        // 堆排序
+        tinySTL::sort_heap(d_first, d_middle, comp);
+
+        return d_middle;
+    }
+
+    /**
      * max
      */
     // 返回最大值
