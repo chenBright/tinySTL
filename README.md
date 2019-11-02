@@ -162,6 +162,7 @@ STL 的子集。
     - [x] strlen
     - [x] strcmp
     - [x] strncmp
+    - [x] strchr
     - [x] memcpy
 
 ## TODO

@@ -153,6 +153,29 @@ namespace tinySTL {
     }
 
     /**
+     * strchr
+     */
+    // 在 str 字符串中寻找字符 static_cast<char>(ch) 首次出现的位置。
+    // 如果没有找到或者 static_cast<char>(ch) == '\0'，则返回 NULL。
+    const char* strchr(const char* str, int ch) {
+        auto c = static_cast<char>(ch);
+        while (*str != '\0' && *str != c) {
+            ++str;
+        }
+
+        return *str == c ? str : nullptr;
+    }
+
+    char* strchr(char* str, int ch) {
+        auto c = static_cast<char>(ch);
+        while (*str != '\0' && *str != c) {
+            ++str;
+        }
+
+        return *str == c ? str : nullptr;
+    }
+
+    /**
      * memcpy
      */
     // 从 src 所指向的对象复制 count 个字符到 dest 所指向的对象。
