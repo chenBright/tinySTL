@@ -171,6 +171,7 @@ namespace tinySTL {
 
     template <class T> bool is_array_v = is_array<T>::value; // C++ 17
 
+    // is_pointer
     // 判断 T 是否为指向对象指针或指向函数指针。
     template <class T>
     struct is_pointer_helper : public false_type {};
@@ -181,6 +182,16 @@ namespace tinySTL {
     template <class T>
     struct is_pointer : public is_pointer_helper<typename remove_cv<T>::type> {};
 
+    // is_lvalue_reference
+    // is_lvalue_reference_v
+    // 判断 T 是否为左值引用类型。
+    template <class T>
+    struct is_lvalue_reference : public false_type {};
+
+    template <class T>
+    struct is_lvalue_reference<T&> : public true_type {};
+
+    template <class T> bool is_lvalue_reference_v = is_lvalue_reference<T>::value;
 
     // remove_reference 取出引用，得到类型 T
     template <class T>
