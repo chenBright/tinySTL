@@ -193,6 +193,17 @@ namespace tinySTL {
 
     template <class T> bool is_lvalue_reference_v = is_lvalue_reference<T>::value;
 
+    // is_rvalue_reference
+    // is_rvalue_reference_v
+    // 判断 T 是否为右值引用类型。
+    template <class T>
+    struct is_rvalue_reference : public false_type {};
+
+    template <class T>
+    struct is_rvalue_reference<T&&> : public true_type {};
+
+    template <class T> bool is_rvalue_reference_v = is_rvalue_reference<T>::value;
+
     // remove_reference 取出引用，得到类型 T
     template <class T>
     struct remove_reference {

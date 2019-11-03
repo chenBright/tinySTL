@@ -41,6 +41,7 @@ STL 的子集。
     - [x] is_array
     - [x] is_pointer
     - [x] is_lvalue_reference
+    - [x] is_rvalue_reference
     - [x] remove_reference
     - [x] add_lvalue_reference
     - [x] add_rvalue_reference
