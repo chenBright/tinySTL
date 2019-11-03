@@ -1051,6 +1051,30 @@ namespace tinySTL {
     }
 
     /**
+     * stable_sort
+     */
+    // 稳定排序
+    template <class RandomIterator>
+    void stable_sort(RandomIterator first, RandomIterator last) {
+        using value_type = iterator_traits<RandomIterator>::value_type;
+        stable_sort(first, last, tinySTL::less<value_type>());
+    }
+
+    template <class RandomIterator, class Compare>
+    void stable_sort(RandomIterator first, RandomIterator last, Compare comp) {
+        if (last - first <= 1) {
+            return;
+        }
+
+        auto middle = first + (last - first) / 2;
+        // 归并排序
+        stable_sort(first, middle, comp);
+        stable_sort(middle, last, comp);
+        // 原地归并
+        std::inplace_merge(first, middle, last, comp);
+    }
+
+    /**
      * max
      */
     // 返回最大值

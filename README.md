@@ -95,6 +95,7 @@ STL 的子集。
     - [x] sort
     - [x] partial_sort
     - [x] partial_sort_copy
+    - [x] stable_sort
     - [x] max
     - [x] max_element
     - [x] min
