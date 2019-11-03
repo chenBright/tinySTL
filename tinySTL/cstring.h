@@ -167,12 +167,30 @@ namespace tinySTL {
     }
 
     char* strchr(char* str, int ch) {
+        auto result = strchr(static_cast<const char*>(str), ch);
+
+        return result == nullptr ? nullptr : const_cast<char*>(result);
+    }
+
+    /**
+     * strrchr
+     */
+    // 在 str 字符串中寻找字符 static_cast<char>(ch) 最后一次出现的位置。
+    // 如果没有找到或者 static_cast<char>(ch) == '\0'，则返回 NULL。
+    const char* strrchr(const char* str, int ch) {
         auto c = static_cast<char>(ch);
-        while (*str != '\0' && *str != c) {
-            ++str;
+        auto last = str + strlen(str);
+        while (last != str && *str != c) {
+            --last;
         }
 
         return *str == c ? str : nullptr;
+    }
+
+    char* strrchr(char* str, int ch) {
+        auto result = strrchr(static_cast<const char*>(str), ch);
+
+        return result == nullptr ? nullptr : const_cast<char*>(result);
     }
 
     /**
