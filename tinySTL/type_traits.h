@@ -191,7 +191,7 @@ namespace tinySTL {
     template <class T>
     struct is_lvalue_reference<T&> : public true_type {};
 
-    template <class T> bool is_lvalue_reference_v = is_lvalue_reference<T>::value;
+    template <class T> bool is_lvalue_reference_v = is_lvalue_reference<T>::value; // C++ 17
 
     // is_rvalue_reference
     // is_rvalue_reference_v
@@ -202,7 +202,21 @@ namespace tinySTL {
     template <class T>
     struct is_rvalue_reference<T&&> : public true_type {};
 
-    template <class T> bool is_rvalue_reference_v = is_rvalue_reference<T>::value;
+    template <class T> bool is_rvalue_reference_v = is_rvalue_reference<T>::value; // C++ 17
+
+    // is_reference
+    // is_reference_v
+    // 判断 T 是否为引用类型。
+    template <class T>
+    struct is_reference : public false_type {};
+
+    template <class T>
+    struct is_reference<T&> : public true_type {};
+
+    template <class T>
+    struct is_reference<T&&> : public true_type {};
+
+    template <class T> bool is_reference_v = is_reference<T>::value; // C++ 17
 
     // remove_reference 取出引用，得到类型 T
     template <class T>
@@ -245,7 +259,7 @@ namespace tinySTL {
     /**
      * add_rvalue_reference
      */
-    // 获取 T 的左值引用类型。
+    // 获取 T 的右值引用类型。
     template <class T>
     struct add_rvalue_reference {
         using type = T&&;
