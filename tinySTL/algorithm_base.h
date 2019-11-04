@@ -1083,6 +1083,50 @@ namespace tinySTL {
     }
 
     /**
+     * merge
+     */
+    // 归并二个已排序范围 [first1, last1) 和 [first2, last2) 到始于 d_first 的一个已排序范围中。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    template <class InputIterator1, class InputIterator2, class OutputIterator>
+    OutputIterator merge(InputIterator1 first1, InputIterator1 last1,
+                         InputIterator2 first2, InputIterator2 last2, OutputIterator d_first) {
+        while (first1 != last1 && first2 != last2) {
+            if (*first1 < *first2) {
+                *d_first++ = *first1;
+            } else {
+                *d_first++ = *first2;
+            }
+        }
+
+        if (first1 != last1) {
+            return tinySTL::copy(first1, last1, d_first);
+        } else {
+            return tinySTL::copy(first2, last2, d_first);
+        }
+    }
+
+    template <class InputIterator1, class InputIterator2, class OutputIterator, class Compare>
+    OutputIterator merge(InputIterator1 first1, InputIterator1 last1,
+                         InputIterator2 first2, InputIterator2 last2, OutputIterator d_first, Compare comp) {
+        while (first1 != last1 && first2 != last2) {
+            if (comp(*first1, *first2)) {
+                *d_first++ = *first1;
+            } else {
+                *d_first++ = *first2;
+            }
+        }
+
+        if (first1 != last1) {
+            return tinySTL::copy(first1, last1, d_first);
+        } else {
+            return tinySTL::copy(first2, last2, d_first);
+        }
+    }
+
+    /**
      * inplace_merge
      */
     // 归并二个相继的已排序范围 [first, middle) 及 [middle, last) 为一个已排序范围 [first, last) 。
@@ -1106,7 +1150,7 @@ namespace tinySTL {
         auto halfN = tinySTL::distance(first, middle);
         auto* tmp = new typename iterator_traits<BidirIterator>::value_type[halfN];
         copy(first, middle, tmp);
-        std::merge(tmp, tmp + halfN, middle, last, first);
+        merge(tmp, tmp + halfN, middle, last, first);
 
         delete[] tmp;
     }
