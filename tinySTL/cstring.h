@@ -194,6 +194,27 @@ namespace tinySTL {
     }
 
     /**
+     * strspn
+     */
+    // 获取第一个在 src 中不能查找到的 dest 中字符的位置。
+    std::size_t strspn(const char* dest, const char* src) {
+        auto tmpDest = dest;
+        while (*tmpDest != '\0') {
+            // 在 src 中查找字符
+            auto tmpSrc = src;
+            while (true) {
+                if (*tmpSrc == '\0') {
+                    return tmpDest - dest;
+                } else if (*tmpSrc == *tmpDest) {
+                    break;
+                }
+            }
+        }
+
+        return tmpDest - dest;
+    }
+
+    /**
      * memcpy
      */
     // 从 src 所指向的对象复制 count 个字符到 dest 所指向的对象。

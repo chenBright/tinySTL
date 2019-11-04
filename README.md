@@ -160,6 +160,7 @@ STL 的子集。
     - [x] strncmp
     - [x] strchr
     - [x] strrchr
+    - [x] strspn
     - [x] memcpy
 
 ## TODO
