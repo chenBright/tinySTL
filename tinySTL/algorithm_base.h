@@ -1021,6 +1021,10 @@ namespace tinySTL {
      * partial_sort_copy
      */
     // 以升序排序范围 [first, last) 中的某些元素，存储结果于范围 [d_first, d_last) 。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
     template class InputIterator, class RandomIterator>
     RandomIterator partial_sort_copy(InputIterator first, InputIterator last,
                                      RandomIterator d_first, RandomIterator d_last) {
@@ -1054,6 +1058,10 @@ namespace tinySTL {
      * stable_sort
      */
     // 稳定排序
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
     template <class RandomIterator>
     void stable_sort(RandomIterator first, RandomIterator last) {
         using value_type = iterator_traits<RandomIterator>::value_type;
@@ -1071,7 +1079,36 @@ namespace tinySTL {
         stable_sort(first, middle, comp);
         stable_sort(middle, last, comp);
         // 原地归并
-        std::inplace_merge(first, middle, last, comp);
+        inplace_merge(first, middle, last, comp);
+    }
+
+    /**
+     * inplace_merge
+     */
+    // 归并二个相继的已排序范围 [first, middle) 及 [middle, last) 为一个已排序范围 [first, last) 。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    template <class BidirIterator>
+    void inplace_merge(BidirIterator first, BidirIterator middle, BidirIterator last) {
+        using value_type = iterator_traits<BidirIterator>::value_type;
+        inplace_merge(first, middle, last, tinySTL::less<value_type>());
+    }
+
+    template <class BidirIterator, class Compare>
+    void inplace_merge(BidirIterator first, BidirIterator middle, BidirIterator last, Compare comp) {
+        auto n = tinySTL::distance(first, last);
+        if (n < 1) {
+            return;
+        }
+
+        auto halfN = tinySTL::distance(first, middle);
+        auto* tmp = new typename iterator_traits<BidirIterator>::value_type[halfN];
+        copy(first, middle, tmp);
+        std::merge(tmp, tmp + halfN, middle, last, first);
+
+        delete[] tmp;
     }
 
     /**
