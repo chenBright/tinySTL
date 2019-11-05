@@ -215,6 +215,26 @@ namespace tinySTL {
     }
 
     /**
+     * strcspn
+     */
+    // 从字符串 dest 的开头计算连续的字符，而这些字符都完全不在字符串 src 中，
+    // 返回连续字符的最后一个字符的索引。
+    std::size_t strcspn(const char* dest, const char* src) {
+        if (dest == src) {
+            return 0;
+        }
+
+        std::size_t result = 0;
+        while (true) {
+            if (*dest == '\0' || strrchr(src, *dest) == nullptr) {
+                return result;
+            }
+            ++result;
+            ++dest;
+        }
+    }
+
+    /**
      * memcpy
      */
     // 从 src 所指向的对象复制 count 个字符到 dest 所指向的对象。
