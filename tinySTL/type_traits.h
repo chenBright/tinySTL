@@ -218,6 +218,17 @@ namespace tinySTL {
 
     template <class T> bool is_reference_v = is_reference<T>::value; // C++ 17
 
+    // is_const
+    // is_const_v
+    // 判断 T 为 const 限定类型（即 const 或 const volatile ）。
+    template <class T>
+    struct is_const : public false_type {};
+
+    template <class T>
+    struct is_const<const T> : public true_type {};
+
+    template <class T> bool is_const_v = is_const<T>::value; // C++ 17
+
     // remove_reference 取出引用，得到类型 T
     template <class T>
     struct remove_reference {
