@@ -235,6 +235,31 @@ namespace tinySTL {
     }
 
     /**
+     * strpbrk
+     */
+    // 返回 dest 第一个出现在 breakset 中的字符的指针。
+    const char* strpbrk(const char* dest, const char* breakset) {
+        if (dest == breakset) {
+            return dest;
+        }
+
+        while (*dest != '\0') {
+            if (strchr(breakset, *dest) != nullptr) {
+                return dest;
+            }
+            ++dest;
+        }
+
+        return nullptr;
+    }
+
+    char* strpbrk(char* dest, char* breakset) {
+        auto result = strpbrk(static_cast<const char*>(dest), static_cast<const char*>(breakset));
+
+        return result == nullptr ? nullptr : const_cast<char*>(result);
+    }
+
+    /**
      * memcpy
      */
     // 从 src 所指向的对象复制 count 个字符到 dest 所指向的对象。
