@@ -1083,6 +1083,51 @@ namespace tinySTL {
     }
 
     /**
+     * nth_element
+     */
+    // 使用快排的 partition 使得 [first, nth) 范围元素满足 comp(*it, *nth) == true，(nth, last) 范围元素不满足。
+    // partial_sort() 与 nth_element() 的区别：
+    // partial_sort() 会将 [first, middle) 范围的元素排序，而 nth_element() 不会。
+    // partial_sort() 的时间复杂度为 O(nlogn)，而 nth_element() 时间复杂度为 O(n)。
+    template <class RandomIterator>
+    void nth_element(RandomIterator first, RandomIterator nth, RandomIterator last) {
+        using value_type = iterator_traits<RandomIterator>::value_type;
+        nth_element(first, nth, last, tinySTL::less<value_type>());
+    }
+
+    template <class RandomIterator, class Compare>
+    void nth_element(RandomIterator first, RandomIterator nth, RandomIterator last, Compare comp) {
+        if (last - first <= 1) {
+            return;
+        }
+
+        // 快排的 partition
+        auto start = first;
+        auto end = last - 1;
+        auto pivot = first;
+        while (start < end) {
+            while (start < end && comp(*pivot, *end)) {
+                --end;
+            }
+            *start = tinySTL::move(*end);
+
+            while (start < end && !comp(*pivot, *start)) {
+                ++start;
+            }
+            *end = tinySTL::move(*start);
+        }
+        *start = tinySTL::move(*pivot);
+
+        if (start == nth) {
+            return;
+        } else if (start < nth) {
+            nth_element(start + 1, nth, last, comp);
+        } else {
+            nth_element(first, nth, start, comp);
+        }
+    }
+
+    /**
      * merge
      */
     // 归并二个已排序范围 [first1, last1) 和 [first2, last2) 到始于 d_first 的一个已排序范围中。
