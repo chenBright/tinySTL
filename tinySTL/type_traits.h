@@ -240,7 +240,8 @@ namespace tinySTL {
 
     template <class T> bool is_volatile_v = is_volatile<T>::value; // C++ 17
 
-    // remove_reference 取出引用，得到类型 T
+    // remove_reference
+    // 去除引用，得到类型 T
     template <class T>
     struct remove_reference {
         using type = T;
@@ -299,6 +300,36 @@ namespace tinySTL {
     };
 
     template <class T> using add_rvalue_reference_t = typename add_rvalue_reference<T>::type; // C++ 14
+
+    // remove_pointer
+    // remove_pointer_t
+    // 移除 T 的指针属性
+    template <class T>
+    struct remove_pointer {
+        using type = T;
+    };
+
+    template <class T>
+    struct remove_pointer<T*> {
+        using type = T;
+    };
+
+    template <class T>
+    struct remove_pointer<T* const> {
+        using type = T;
+    };
+
+    template <class T>
+    struct remove_pointer<T* volatile> {
+        using type = T;
+    };
+
+    template <class T>
+    struct remove_pointer<T* const volatile> {
+        using type = T;
+    };
+
+    template <class T> using remove_pointer_t = typename remove_pointer<T>::type; // C++ 14
 
 
 
