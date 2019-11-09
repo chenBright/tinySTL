@@ -260,6 +260,40 @@ namespace tinySTL {
     }
 
     /**
+     * strstr
+     */
+    // 在 str 查找 target 子串，并返回其第一次出现的首字母的指针。
+    // TODO 使用更高效的算法，例如 KMP
+    const char* strstr(const char* str, const char* target) {
+        if (str == target) {
+            return str;
+        }
+
+        while (*str != '\0') {
+            auto tmp = str;
+            auto it = target;
+            while (true) {
+                if (*it == '\0') {
+                    return str;
+                }
+
+                if (*it != *tmp) {
+                    break;
+                }
+            }
+            ++str;
+        }
+
+        return nullptr;
+    }
+
+    char* strstr(char* str, const char* target) {
+        auto result = strstr(static_cast<const char*>(str), target);
+
+        return result == nullptr ? nullptr : const_cast<char*>(result);
+    }
+
+    /**
      * memcpy
      */
     // 从 src 所指向的对象复制 count 个字符到 dest 所指向的对象。
