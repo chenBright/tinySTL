@@ -294,6 +294,39 @@ namespace tinySTL {
     }
 
     /**
+     * strtok
+     */
+    // 分割字符串 str。
+    // 详细用法见 https://zh.cppreference.com/w/cpp/string/byte/strtok
+    // C++ 分割字符串的方法总结：https://github.com/chenBright/code_snippets/tree/master/C%2B%2B/split
+    char* strtok(char* str, const char* delim) {
+        static char* ptr = nullptr;
+        if (str != nullptr) {
+            ptr = str;
+        }
+
+        if (ptr == nullptr) {
+            return nullptr;
+        }
+
+        ptr += strspn(ptr, delim);
+        if (*ptr == '\0') {
+            ptr = nullptr;
+            return nullptr;
+        }
+
+        char* return_ptr = ptr;
+        ptr += strcspn(ptr, delim);
+        if (*ptr == '\0') {
+            ptr = nullptr;
+        } else {
+            *ptr++ = '\0';
+        }
+
+        return return_ptr;
+    }
+
+    /**
      * memcpy
      */
     // 从 src 所指向的对象复制 count 个字符到 dest 所指向的对象。
