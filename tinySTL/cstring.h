@@ -327,6 +327,29 @@ namespace tinySTL {
     }
 
     /**
+     * memchr
+     */
+    // 查找 ptr 前 count 个字符，返回查找到第一个位置；否则，返回 nullptr。
+    const void* memchr(const void* ptr, int ch, std::size_t count) {
+        auto new_ptr = static_cast<unsigned char*>(const_cast<void*>(ptr));
+        auto new_ch = static_cast<unsigned char>(ch);
+        while (count-- > 0) {
+            if (*new_ptr == new_ch) {
+                return static_cast<const void*>(new_ptr);
+            }
+            ++new_ptr;
+        }
+
+        return nullptr;
+    }
+
+    void* memchr(void* ptr, int ch, std::size_t count) {
+        auto result = memchr(static_cast<const void*>(ptr), ch, count);
+
+        return result == nullptr ? nullptr : const_cast<void*>(result);
+    }
+
+    /**
      * memcpy
      */
     // 从 src 所指向的对象复制 count 个字符到 dest 所指向的对象。
