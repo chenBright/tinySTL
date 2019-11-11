@@ -171,6 +171,7 @@ STL 的子集。
     - [x] strpbrk
     - [x] strstr
     - [x] strtok
+    - [x] memchr
     - [x] memcpy
 
 ## TODO
