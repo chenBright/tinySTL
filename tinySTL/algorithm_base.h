@@ -1089,6 +1089,10 @@ namespace tinySTL {
     // partial_sort() 与 nth_element() 的区别：
     // partial_sort() 会将 [first, middle) 范围的元素排序，而 nth_element() 不会。
     // partial_sort() 的时间复杂度为 O(nlogn)，而 nth_element() 时间复杂度为 O(n)。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
     template <class RandomIterator>
     void nth_element(RandomIterator first, RandomIterator nth, RandomIterator last) {
         using value_type = iterator_traits<RandomIterator>::value_type;
@@ -1125,6 +1129,48 @@ namespace tinySTL {
         } else {
             nth_element(first, nth, start, comp);
         }
+    }
+
+    /**
+     * lower_bound
+     */
+    // 返回指向范围 [first, last) 中首个不小于（即大于或等于） value 的元素的迭代器，或若找不到这种元素则返回 last 。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    template <class ForwardIterator, class T>
+    ForwardIterator lower_bound(ForwardIterator first, ForwardIterator last, const T& value) {
+        auto count = tinySTL::distance(first, last);
+        while (count > 0) {
+            auto half = count / 2;
+            auto mid = tinySTL::next(start, half);
+            if (*mid < value) {
+                start = tinySTL::next(mid);
+                count -= half + 1;
+            } else {
+                count = half;
+            }
+        }
+
+        return first;
+    }
+
+    template <class ForwardIterator, class T, class Compare>
+    ForwardIterator lower_bound(ForwardIterator first, ForwardIterator last, const T& value, Compare comp) {
+        auto count = tinySTL::distance(first, last);
+        while (count > 0) {
+            auto half = count / 2;
+            auto mid = tinySTL::next(start, half);
+            if (comp(*mid, value)) {
+                start = tinySTL::next(mid);
+                count -= half + 1;
+            } else {
+                count = half;
+            }
+        }
+
+        return first;
     }
 
     /**

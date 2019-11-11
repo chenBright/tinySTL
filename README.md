@@ -101,6 +101,7 @@ STL 的子集。
     - [x] partial_sort_copy
     - [x] stable_sort
     - [x] nth_element
+    - [x] lower_bound
     - [x] merge
     - [x] inplace_merge
     - [x] max
