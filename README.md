@@ -173,6 +173,7 @@ STL 的子集。
     - [x] strtok
     - [x] memchr
     - [x] memcpy
+    - [x] memset
 
 ## TODO
 

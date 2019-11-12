@@ -372,6 +372,20 @@ namespace tinySTL {
 
         return dest;
     }
+
+    /**
+     * memset
+     */
+    // 转换值 ch 为 unsigned char 并复制它到 dest 的前 count 个字节。
+    void* memset(void* dest, int ch, std::size_t count) {
+        auto new_dest = static_cast<unsigned char*>(dest);
+        auto new_ch = static_cast<unsigned char>(ch);
+        while (count-- > 0) {
+            *new_dest++ = new_ch;
+        }
+
+        return dest;
+    }
 }
 
 #endif //TINYSTL_CSTRING_H
