@@ -1134,7 +1134,7 @@ namespace tinySTL {
     /**
      * lower_bound
      */
-    // 返回指向范围 [first, last) 中首个不小于（即大于或等于） value 的元素的迭代器，或若找不到这种元素则返回 last 。
+    // 返回指向范围 [first, last) 中第一个不小于（即大于或等于） value 的元素的迭代器，或若找不到这种元素则返回 last 。
     //
     // 其中 comp 比较函数：
     // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
@@ -1144,9 +1144,9 @@ namespace tinySTL {
         auto count = tinySTL::distance(first, last);
         while (count > 0) {
             auto half = count / 2;
-            auto mid = tinySTL::next(start, half);
+            auto mid = tinySTL::next(first, half);
             if (*mid < value) {
-                start = tinySTL::next(mid);
+                first = tinySTL::next(mid);
                 count -= half + 1;
             } else {
                 count = half;
@@ -1163,6 +1163,49 @@ namespace tinySTL {
             auto half = count / 2;
             auto mid = tinySTL::next(start, half);
             if (comp(*mid, value)) {
+                start = tinySTL::next(mid);
+                count -= half + 1;
+            } else {
+                count = half;
+            }
+        }
+
+        return first;
+    }
+
+    /**
+     * upper_bound
+     */
+    // 返回指向范围 [first, last) 中第一个大于 value 的元素的迭代器，或若找不到这种元素则返回 last 。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    ForwardIterator upper_bound(ForwardIterator first, ForwardIterator last, const T& value) {
+        auto count = tinySTL::distance(first, last);
+        while (count > 0) {
+            auto half = count / 2;
+            auto mid = tinySTL::next(first, half);
+            // 与 lower_bound 相比，value == *mid 情况，也当做查找的元素在后半部分。
+            // 而在 lower_bound 中，value == *mid 情况，则当做查找的元素在前半部分。
+            if (!(value < *mid)) {
+                first = tinySTL::next(mid);
+                count -= half + 1;
+            } else {
+                count = half;
+            }
+        }
+
+        return first;
+    }
+
+    template <class ForwardIterator, class T, class Compare>
+    ForwardIterator upper_bound(ForwardIterator first, ForwardIterator last, const T& value, Compare comp) {
+        auto count = tinySTL::distance(first, last);
+        while (count > 0) {
+            auto half = count / 2;
+            auto mid = tinySTL::next(start, half);
+            if (!comp(value, *mid)) {
                 start = tinySTL::next(mid);
                 count -= half + 1;
             } else {
