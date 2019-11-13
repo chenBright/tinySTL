@@ -175,6 +175,7 @@ STL 的子集。
     - [x] memchr
     - [x] memcpy
     - [x] memset
+    - [x] memmove
 
 ## TODO
 

@@ -386,6 +386,33 @@ namespace tinySTL {
 
         return dest;
     }
+
+    /**
+     * memmove
+     */
+    // 从 src 所指向的对象复制 count 个字节到 dest 所指向的对象。
+    // 两个字符串都被转换成 unsigned char 的数组。
+    // 若对象潜在重叠或不可平凡复制 (TriviallyCopyable) ，则 memmove 的行为未指定。
+    void* memmove(void* dest, const void* src, std::size_t count) {
+        if (dest == const_cast<void*>(src)) {
+            return dest;
+        }
+
+        // 复制区域没有重叠，则该函数的功能和 memcpy 一样。
+        if (dest <= const_cast<void*>(src) ||
+            static_cast<char*>(dest) >= static_cast<char*>(const_cast<void*>(src)) + count) {
+            return memcpy(dest, src, count);
+        } else {
+            auto new_dest = static_cast<unsigned char*>(dest) + count;
+            auto new_src = static_cast<const unsigned char*>(src) + count;
+
+            while (count-- > 0) {
+                *--new_dest = *new_src;
+            }
+
+            return dest;
+        }
+    }
 }
 
 #endif //TINYSTL_CSTRING_H
