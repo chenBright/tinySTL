@@ -103,6 +103,7 @@ STL 的子集。
     - [x] nth_element
     - [x] lower_bound
     - [x] upper_bound
+    - [x] binary_search
     - [x] merge
     - [x] inplace_merge
     - [x] max

@@ -1217,6 +1217,32 @@ namespace tinySTL {
     }
 
     /**
+     * binary_search
+     */
+    // 二分查找
+    template <class ForwardIterator, class T>
+    bool binary_search(ForwardIterator first, ForwardIterator last, const T& value) {
+        auto result = lower_bound(first, last, value, comp);
+        if (result == last) {
+            return false;
+        }
+
+        // 此时，value <= *result
+
+        return !(value < *result);
+    }
+
+    template <class ForwardIterator, class T, class Compare>
+    bool binary_search(ForwardIterator first, ForwardIterator last, const T& value, Compare comp) {
+        auto result = lower_bound(first, last, value, comp);
+        if (result == last) {
+            return false;
+        }
+
+        return !comp(value, *result);
+    }
+
+    /**
      * merge
      */
     // 归并二个已排序范围 [first1, last1) 和 [first2, last2) 到始于 d_first 的一个已排序范围中。
