@@ -1220,6 +1220,10 @@ namespace tinySTL {
      * binary_search
      */
     // 二分查找
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
     template <class ForwardIterator, class T>
     bool binary_search(ForwardIterator first, ForwardIterator last, const T& value) {
         auto result = lower_bound(first, last, value, comp);
@@ -1240,6 +1244,27 @@ namespace tinySTL {
         }
 
         return !comp(value, *result);
+    }
+
+    /**
+     * equal_range
+     */
+    // 返回 [first, last) 范围中所有等于 value 的元素的范围，
+    // 即 [lower_bound, upper_bound)。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    template <class ForwardIterator, class T>
+    tinySTL::pair<ForwardIterator, ForwardIterator>
+    equal_range(ForwardIterator first, ForwardIterator last, const T& value) {
+        return {lower_bound(first, last, value, comp), upper_bound(first, last, value, comp)};
+    }
+
+    template <class ForwardIterator, class T, class Compare>
+    tinySTL::pair<ForwardIterator, ForwardIterator>
+    equal_range(ForwardIterator first, ForwardIterator last, const T& value, Compare comp) {
+        return {lower_bound(first, last, value, comp), upper_bound(first, last, value, comp)};
     }
 
     /**

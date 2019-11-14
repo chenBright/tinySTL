@@ -104,6 +104,7 @@ STL 的子集。
     - [x] lower_bound
     - [x] upper_bound
     - [x] binary_search
+    - [x] equal_range
     - [x] merge
     - [x] inplace_merge
     - [x] max
