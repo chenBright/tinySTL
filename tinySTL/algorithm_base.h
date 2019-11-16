@@ -1341,6 +1341,46 @@ namespace tinySTL {
     }
 
     /**
+     * includes
+     */
+    // 判断[first2, last2) 是否是 [first1, last1) 的子序列（子序列不必连续）。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    template <class InputIterator1, class InputIterator2>
+    bool includes(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2) {
+        while (first1 != last1 && first2 != last2) {
+            if (*first2 < *first1) {
+                return false; // 在 [first1, last1) 范围肯定找不到等于 *first2 的元素
+            } else if (*first1 < *first2) {
+                ++first1;
+            } else {
+                ++first1;
+                ++first2;
+            }
+        }
+
+        return first2 != last2;
+    }
+
+    template <class InputIterator1, class InputIterator2, class Compare>
+    bool includes(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, Compare comp) {
+        while (first1 != last1 && first2 != last2) {
+            if (comp(*first2, *first1)) {
+                return false; // 在 [first1, last1) 范围肯定找不到等于 *first2 的元素
+            } else if (comp(*first1, *first2)) {
+                ++first1;
+            } else {
+                ++first1;
+                ++first2;
+            }
+        }
+
+        return first2 != last2;
+    }
+
+    /**
      * max
      */
     // 返回最大值
