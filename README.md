@@ -108,6 +108,7 @@ STL 的子集。
     - [x] merge
     - [x] inplace_merge
     - [x] includes
+    - [x] set_difference
     - [x] max
     - [x] max_element
     - [x] min
