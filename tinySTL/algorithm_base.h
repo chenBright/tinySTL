@@ -1383,7 +1383,8 @@ namespace tinySTL {
     /**
      * set_difference
      */
-    // 将已排序范围 [first1, last1) 并且不在已排序范围 [first2, last2) 中找到的元素复制到以 d_first 为起点的范围。
+    // 差集
+    // [first1, last1) 和 [first2, last2) 都是已排序的序列。
     //
     // 其中 comp 比较函数：
     // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
@@ -1394,7 +1395,7 @@ namespace tinySTL {
                                   OutputIterator d_first) {
         while (first1 != last1 && first2 != last2) {
             if (*first2 < *first1) {
-                ++first1;
+                ++first2;
             } else if (*first1 < *first2) {
                 *d_first++ = *first1++;
             } else {
@@ -1412,7 +1413,7 @@ namespace tinySTL {
                                   OutputIterator d_first, Compare comp) {
         while (first1 != last1 && first2 != last2) {
             if (comp(*first2, *first1)) {
-                ++first1;
+                ++first2;
             } else if (comp(*first1, *first2)) {
                 *d_first++ = *first1++;
             } else {
@@ -1422,6 +1423,51 @@ namespace tinySTL {
         }
 
         return tinySTL::copy(first1, last1, d_first);
+    }
+
+    /**
+     * set_intersection
+     */
+    // 交集
+    // [first1, last1) 和 [first2, last2) 都是已排序的序列。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    template <class InputIterator1, class InputIterator2, class OutputIterator>
+    OutputIterator set_intersection(InputIterator1 first1, InputIterator1 last1,
+                                    InputIterator2 first2, InputIterator2 last2,
+                                    OutputIterator d_first) {
+        while (first1 != last1 && first2 != last2) {
+            if (*first2 < *first1) {
+                ++first2;
+            } else if (*first1 < *first2) {
+                ++first1;
+            } else {
+                *d_first++ = *first1++;
+                ++first2;
+            }
+        }
+
+        return d_first;
+    }
+
+    template <class InputIterator1, class InputIterator2, class OutputIterator, class Compare>
+    OutputIterator set_intersection(InputIterator1 first1, InputIterator1 last1,
+                                    InputIterator2 first2, InputIterator2 last2,
+                                    OutputIterator d_first, Compare comp) {
+        while (first1 != last1 && first2 != last2) {
+            if (comp(*first2, *first1)) {
+                ++first2;
+            } else if (comp(*first1, *first2)) {
+                ++first1;
+            } else {
+                *d_first++ = *first1++;
+                ++first2;
+            }
+        }
+
+        return d_first;
     }
 
     /**
