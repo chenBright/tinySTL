@@ -111,6 +111,7 @@ STL 的子集。
     - [x] set_difference
     - [x] set_intersection
     - [x] set_symmetric_difference
+    - [x] set_union
     - [x] max
     - [x] max_element
     - [x] min
