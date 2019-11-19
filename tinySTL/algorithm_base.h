@@ -1471,6 +1471,62 @@ namespace tinySTL {
     }
 
     /**
+     * set_symmetric_difference
+     */
+    // 将不同时存在 [first1, last1) 和 [first2, last2) 范围的元素复制到以 d_first 为起点的范围。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    template <class InputIterator1, class InputIterator2, class OutputIterator>
+    OutputIterator set_symmetric_difference(InputIterator1 first1, InputIterator1 last1,
+                                            InputIterator2 first2, InputIterator2 last2,
+                                            OutputIterator d_first) {
+        while (first1 != last1) {
+            if (first2 == last2) {
+                return tinySTL::copy(first1, last2, d_first);
+            }
+
+            if (*first1 < *first2) {
+                *d_first++ = *first1++;
+            } else {
+                if (*first2 < *first1) {
+                    *d_first++ = *first2++;
+                } else {
+                    ++first1;
+                    ++first2;
+                }
+            }
+        }
+
+        return tinySTL::copy(first2, last2, d_first);
+    }
+
+    template <class InputIterator1, class InputIterator2, class OutputIterator, class Compare>
+    OutputIterator set_symmetric_difference(InputIterator1 first1, InputIterator1 last1,
+                                            InputIterator2 first2, InputIterator2 last2,
+                                            OutputIterator d_first, Compare comp) {
+        while (first1 != last1) {
+            if (first2 == last2) {
+                return tinySTL::copy(first1, last2, d_first);
+            }
+
+            if (comp(*first1, *first2)) {
+                *d_first++ = *first1++;
+            } else {
+                if (comp(*first2, *first1)) {
+                    *d_first++ = *first2++;
+                } else {
+                    ++first1;
+                    ++first2;
+                }
+            }
+        }
+
+        return tinySTL::copy(first2, last2, d_first);
+    }
+
+    /**
      * max
      */
     // 返回最大值
