@@ -1474,6 +1474,7 @@ namespace tinySTL {
      * set_symmetric_difference
      */
     // 将不同时存在 [first1, last1) 和 [first2, last2) 范围的元素复制到以 d_first 为起点的范围。
+    // [first1, last1) 和 [first2, last2) 都是已排序的序列。
     //
     // 其中 comp 比较函数：
     // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
@@ -1520,6 +1521,51 @@ namespace tinySTL {
                     ++first1;
                     ++first2;
                 }
+            }
+        }
+
+        return tinySTL::copy(first2, last2, d_first);
+    }
+
+    /**
+     * set_union
+     */
+    // 将存在 [first1, last1) 或者 [first2, last2) 范围的元素不重复地复制到以 d_first 为起点的范围。
+    // [first1, last1) 和 [first2, last2) 都是已排序的序列。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    template <class InputIterator1, class InputIterator2, class OutputIterator>
+    OutputIterator set_union(InputIterator1 first1, InputIterator1 last1,
+                             InputIterator2 first2, InputIterator2 last2,
+                             OutputIterator d_first) {
+        while (first1 != last1) {
+            if (*first1 < *first2) {
+                *d_first++ = *first1++;
+            } else if (*first2 < *first1) {
+                *d_first++ = *first2++;
+            } else {
+                *d_first++ = *first1++;
+                ++first2;
+            }
+        }
+
+        return tinySTL::copy(first2, last2, d_first);
+    }
+
+    template <class InputIterator1, class InputIterator2, class OutputIterator, class Compare>
+    OutputIterator set_union(InputIterator1 first1, InputIterator1 last1,
+                             InputIterator2 first2, InputIterator2 last2,
+                             OutputIterator d_first, Compare comp) {
+        while (first1 != last1) {
+            if (comp(*first1, *first2)) {
+                *d_first++ = *first1++;
+            } else if (comp(*first2, *first1)) {
+                *d_first++ = *first2++;
+            } else {
+                *d_first++ = *first1++;
+                ++first2;
             }
         }
 
