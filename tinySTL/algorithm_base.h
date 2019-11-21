@@ -1799,6 +1799,57 @@ namespace tinySTL {
 
         return first1 == last1 && first2 == last2;
     }
+
+    /**
+     * is_permutation
+     */
+    // 判断 [first2, last2) 是否为 [first1, last1) 的一个排列。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    template <class ForwardIterator1, class ForwardIterator2>
+    bool is_permutation(ForwardIterator1 first1, ForwardIterator1 last1, ForwardIterator2 first2) {
+        if (tinySTL::distance(first1, last1) != tinySTL::distance(first2, last2)) {
+            return false;
+        }
+
+        for (auto it = first1; it != last1; ++it) {
+            // 如果前面已经存在等于 *it 的元素，表示统计过个数了，则不需要统计了。
+            if (tinySTL::find(first1, it, *it) != it) {
+                continue;
+            }
+
+            // 统计元素个数
+            if (tinySTL::count(it, last1, *it) != tinySTL::count(first2, last2, *it)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    template <class ForwardIterator1, class ForwardIterator2, class Compare>
+    bool is_permutation(ForwardIterator1 first1, ForwardIterator1 last1, ForwardIterator2 first2, Compare comp) {
+        if (tinySTL::distance(first1, last1) != tinySTL::distance(first2, last2)) {
+            return false;
+        }
+
+        for (auto it = first1; it != last1; ++it) {
+            // 如果前面已经存在等于 *it 的元素，表示统计过个数了，则不需要统计了。
+            if (tinySTL::find(first1, it, [i, comp](auto x) { return comp(*it, x); }) != it) {
+                continue;
+            }
+
+            // 统计元素个数
+            if (tinySTL::count(it,     last1, [i, comp](auto x) { return comp(*it, x); }) !=
+                tinySTL::count(first2, last2, [i, comp](auto x) { return comp(*it, x); })) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
 
 #endif //TINYSTL_ALGORITHM_BASE_H
