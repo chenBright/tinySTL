@@ -118,7 +118,7 @@ STL 的子集。
     - [x] min_element
     - [x] equal
     - [x] lexicographical_compare
-    - [x] move
+    - [x] is_permutation
 - [x] functional
     - [x] hash
     - [x] plus
