@@ -119,6 +119,7 @@ STL 的子集。
     - [x] equal
     - [x] lexicographical_compare
     - [x] is_permutation
+    - [x] next_permutation
 - [x] functional
     - [x] hash
     - [x] plus
