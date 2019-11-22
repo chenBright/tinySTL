@@ -1850,6 +1850,53 @@ namespace tinySTL {
 
         return true;
     }
+
+    /**
+     * next_permutation
+     */
+    // 变换 [first, last)，得到下个排列。
+    // 如果存在，则返回 true；
+    // 如果不存在（没有元素、只有一个元素或者元素降序排序），则返回 false。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    template <class BidirIterator>
+    bool next_permutation(BidirIterator first, BidirIterator last) {
+        using element_type = typename iterator_traits<BidirIterator>::value_type;
+
+        return next_permutation(first, last, tinySTL::less<element_type>());
+    }
+
+    template <class BidirIterator, class Compare>
+    bool next_permutation(BidirIterator first, BidirIterator last, Compare comp) {
+        if (first == last) { // 没有元素
+            return false;
+        }
+
+        auto it = last;
+        if (first == --it) { // 只有一个元素
+            return false;
+        }
+
+        while (true) {
+            --it;
+            if (comp(*it, tinySTL::next(it))) { // 从后往前找打第一个 *it < *(it + 1) 的元素。
+                auto tmp_it = last;
+                while (!comp(*it, *--tmp_it)); // 从后往前找到第一个大于 *it 的元素。
+                tinySTL::iter_swap(it, tmp_it);
+                tinySTL::reverse(++it, last); // 交换之后，[++it, last) 还是降序排序。直接 reverse，即可得到升序序列。
+
+                return true;
+            }
+
+            if (it == first) { // 序列已经是降序序列。
+                return tinySTL::reverse(first, last);
+
+                return false;
+            }
+        }
+    }
 }
 
 #endif //TINYSTL_ALGORITHM_BASE_H
