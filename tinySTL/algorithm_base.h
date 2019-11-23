@@ -1881,7 +1881,7 @@ namespace tinySTL {
 
         while (true) {
             --it;
-            if (comp(*it, tinySTL::next(it))) { // 从后往前找打第一个 *it < *(it + 1) 的元素。
+            if (comp(*it, *tinySTL::next(it))) { // 从后往前找打第一个 *it < *(it + 1) 的元素。
                 auto tmp_it = last;
                 while (!comp(*it, *--tmp_it)); // 从后往前找到第一个大于 *it 的元素。
                 tinySTL::iter_swap(it, tmp_it);
@@ -1891,12 +1891,61 @@ namespace tinySTL {
             }
 
             if (it == first) { // 序列已经是降序序列。
-                return tinySTL::reverse(first, last);
+                tinySTL::reverse(first, last);
 
                 return false;
             }
         }
     }
+
+    /**
+     * prev_permutation
+     */
+    //
+    // 变换 [first, last)，得到上个排列。
+    // 如果存在，则返回 true；
+    // 如果不存在（没有元素、只有一个元素或者元素升序排序），则返回 false。
+    //
+    // 其中 comp 比较函数：
+    // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
+    // 如果 a 小于 b，则返回 true。
+    template <class BidirIterator>
+    bool prev_permutation(BidirIterator first, BidirIterator last) {
+        using element_type = typename iterator_traits<BidirIterator>::value_type;
+
+        return prev_permutation(first, last, tinySTL::less<element_type>());
+    }
+
+    template <class BidirIterator, class Compare>
+    bool prev_permutation(BidirIterator first, BidirIterator last, Compare comp) {
+        if (first == last) { // 没有元素
+            return false;
+        }
+
+        auto it = last;
+        if (first == --it) { // 只有一个元素
+            return false;
+        }
+
+        while (true) {
+            --it;
+            if (comp(*tinySTL::next(it), *it)) { // 从后往前找打第一个 *it > *(it + 1) 的元素。
+                auto tmp_it = last;
+                while (!comp(*--tmp_it, *it)); // 从后往前找到第一个小于 *it 的元素。
+                tinySTL::iter_swap(it, tmp_it);
+                tinySTL::reverse(++it, last); // 交换之后，[++it, last) 还是升序排序。直接 reverse，即可得到降序序列。
+
+                return true;
+            }
+
+            if (it == first) { // 序列已经是降序序列。
+                tinySTL::reverse(first, last);
+
+                return false;
+            }
+        }
+    }
+
 }
 
 #endif //TINYSTL_ALGORITHM_BASE_H
