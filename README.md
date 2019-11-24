@@ -188,9 +188,7 @@ STL 的子集。
 
 ## TODO
 
-- copy（uninitialized_copy、memcpy） 系列
 - bind、function
-- 异常保证
 - [allocator static成员函数问题](https://www.zhihu.com/question/53085291/answer/133516400)
 - dynamic_bitset
 - string

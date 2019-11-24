@@ -130,8 +130,6 @@ namespace tinySTL {
         return {first1, first2};
     }
 
-
-
     /**
      * find
      * find_if
@@ -835,11 +833,11 @@ namespace tinySTL {
     // 如果 a 等于 b，则返回 true。
     template <class InputIterator, class OutputIterator1, class OutputIterator2, class UnaryPredicate>
     tinySTL::pair<OutputIterator1, OutputIterator2>
-            partition_copy(InputIterator first,
-                           InputIterator last,
-                           OutputIterator1 d_first_true,
-                           OutputIterator2 d_first_false,
-                           UnaryPredicate p) {
+    partition_copy(InputIterator first,
+                   InputIterator last,
+                   OutputIterator1 d_first_true,
+                   OutputIterator2 d_first_false,
+                   UnaryPredicate p) {
         while (first != last) {
             if (p(*first)) {
                 *d_first_true++ = *first;
@@ -1025,14 +1023,14 @@ namespace tinySTL {
     // 其中 comp 比较函数：
     // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
     // 如果 a 小于 b，则返回 true。
-    template class InputIterator, class RandomIterator>
+    template <class InputIterator, class RandomIterator>
     RandomIterator partial_sort_copy(InputIterator first, InputIterator last,
                                      RandomIterator d_first, RandomIterator d_last) {
         using value_type = iterator_traits<RandomIterator>::value_type;
         return partial_sort_copy(first, last, d_first, d_last, tinySTL::less<value_type>());
     }
 
-    template class InputIterator, class RandomIterator, class Compare>
+    template <class InputIterator, class RandomIterator, class Compare>
     RandomIterator partial_sort_copy(InputIterator first, InputIterator last,
                                      RandomIterator d_first, RandomIterator d_last, Compare comp) {
         auto d_middle = d_first;
@@ -1706,7 +1704,7 @@ namespace tinySTL {
      */
     // 如果范围 [first1, last1) 和范围 [first2, first2 + (last1 - first1)) 相等，返回 true ，否则返回 false。
     template <class InputIterator1, class InputIterator2>
-    bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator1 first2) {
+    bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2) {
         while (first1 != last1 && *first1 == *first2) {
             ++first1;
             ++first2;
@@ -1735,7 +1733,7 @@ namespace tinySTL {
 
     // 如果范围 [first1, last1) 和范围 [first2, last2) 相等，返回 true ，否则返回 false。
     template <class InputIterator1, class InputIterator2>
-    bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator1 first2, InputIterator1 last2) {
+    bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2) {
         while (first1 != last1 && first2 != last2 && *first1 == *first2) {
             ++first1;
             ++first2;
@@ -1745,7 +1743,7 @@ namespace tinySTL {
     }
 
     template <class InputIterator1, class InputIterator2,  class BinaryPredicate>
-    bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator1 first2, InputIterator1 last2, BinaryPredicate p) {
+    bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, BinaryPredicate p) {
         while (first1 != last1 && first2 != last2 && p(*first1, *first2)) {
             ++first1;
             ++first2;
@@ -1761,7 +1759,7 @@ namespace tinySTL {
     // 检查第范围 [first1, last1) 是否按字典序小于范围 [first2, last2)。
     // 找到一个小于，就返回 true。
     template <class InputIterator1, class InputIterator2>
-    bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1, InputIterator1 first2, InputIterator1 last2) {
+    bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2) {
         while (first1 != last1 && first2 != last2) {
             if (*first1 < *first2) {
                 return true;
@@ -1785,7 +1783,7 @@ namespace tinySTL {
     // 所以，Type1& 是不合法的。除非 Type1 的移动等价于拷贝，否则 Type1 也是不合法的。
     // InputIterator1 与 InputIterator2 类型的对象在解引用后分别能隐式转换到 Type1 与 Type2
     template <class InputIterator1, class InputIterator2, class Compare>
-    bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1, InputIterator1 first2, InputIterator1 last2, Compare comp) {
+    bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, Compare comp) {
         while (first1 != last1 && first2 != last2) {
             if (comp(*first1, *first2)) {
                 return true;
@@ -1945,7 +1943,6 @@ namespace tinySTL {
             }
         }
     }
-
 }
 
 #endif //TINYSTL_ALGORITHM_BASE_H
