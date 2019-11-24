@@ -13,11 +13,160 @@
 
 namespace tinySTL {
 
+    /**
+     * all_of
+     * any_of
+     * none_of
+     */
+    // 对于[first, last) 范围内所有的元素，p(*it) == true。
+    template <class InputIterator, class UnaryPredicate>
+    bool all_of(InputIterator first, InputIterator last, UnaryPredicate p) {
+        return find_if_not(first, last, p) == last;
+    }
 
+    // 对于[first, last) 范围内，存在元素，使得 p(*it) == true。
+    template <class InputIterator, class UnaryPredicate>
+    bool any_of(InputIterator first, InputIterator last, UnaryPredicate p) {
+        return find_if(first, last, p) != last;
+    }
 
+    // 对于[first, last) 范围内所有的元素，p(*it) != true，即 p(*it) == false。
+    template <class InputIterator, class UnaryPredicate>
+    bool none_of(InputIterator first, InputIterator last, UnaryPredicate p) {
+        return find_if(first, last, p) == last;
+    }
 
+    /**
+     * for_each
+     */
+    // 对 [first, last) 范围的元素调用 f，即 f(*it)
+    template <class InputIterator, class UnaryFunction>
+    UnaryFunction for_each(InputIterator first, InputIterator last, UnaryFunction f) {
+        while (first != last) {
+            f(*first++);
+        }
 
+        return f; // （C++11 起）隐式移动
+    }
 
+    /**
+     * count
+     * count_if
+     */
+    // 统计 [first, last) 范围内等于 value 的元素的个数。
+    template <class InputIterator, class T>
+    typename iterator_traits<InputIterator>::difference_type
+    count(InputIterator first, InputIterator last, const T& value) {
+        typename iterator_traits<InputIterator>::difference_type result = 0;
+        while (first != last) {
+            if (*first == last) {
+                ++result;
+            }
+            ++first;
+        }
+
+        return result;
+    }
+    // 统计 [first, last) 范围内 p(*it) == true 的元素的个数。
+    template <class InputIterator, class UnaryPredicate>
+    typename iterator_traits<InputIterator>::difference_type
+    count(InputIterator first, InputIterator last, UnaryPredicate p) {
+        typename iterator_traits<InputIterator>::difference_type result = 0;
+        while (first != last) {
+            if (p(*first)) {
+                ++result;
+            }
+            ++first;
+        }
+
+        return result;
+    }
+
+    /**
+     * mismatch
+     */
+    // 找到第一个 !(*it1 == *it2) 迭代器 pair。
+    //
+    // 其中 p 函数：
+    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
+    // 若元素相等，则返回 true。
+    template <class InputIterator1, class InputIterator2>
+    tinySTL::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2) {
+        while (first1 != last1 && *first1 == *first2) {
+            ++first1;
+            ++first2;
+        }
+
+        return {first1, first2};
+    }
+
+    template <class InputIterator1, class InputIterator2, class BinaryPredicate>
+    tinySTL::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, BinaryPredicate p) {
+        while (first1 != last1 && p(*first1, *first2)) {
+            ++first1;
+            ++first2;
+        }
+
+        return {first1, first2};
+    }
+
+    template <class InputIterator1, class InputIterator2>
+    tinySTL::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2) {
+        while (first1 != last1 && first2 == last2 && *first1 == *first2) {
+            ++first1;
+            ++first2;
+        }
+
+        return {first1, first2};
+    }
+
+    template <class InputIterator1, class InputIterator2, class BinaryPredicate>
+    tinySTL::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, BinaryPredicate p) {
+        while (first1 != last1 && first2 == last2 && p(*first1, *first2)) {
+            ++first1;
+            ++first2;
+        }
+
+        return {first1, first2};
+    }
+
+    /**
+     * find
+     * find_if
+     * find_if_not
+     */
+    // 在 [first, last) 范围内查找等于 value 的元素。
+    //
+    // 其中 p 函数：
+    // 若 p(*it) == true / false。
+    template <class InputIterator, class T>
+    InputIterator find(InputIterator first, InputIterator last, const T& value) {
+        while (first != last && *first != value) {
+            ++first;
+        }
+
+        return first;
+    }
+
+    // 在 [first, last) 范围内查找等于 p(*it) == true 的元素。
+    template <class InputIterator, class UnaryPredicate>
+    InputIterator find_if(InputIterator first, InputIterator last, UnaryPredicate p) {
+        while (first != last && !p(*first)) {
+            ++first;
+        }
+
+        return first;
+    }
+
+    // 在 [first, last) 范围内查找等于 p(*it) == false 的元素。
+    template <class InputIterator, class UnaryPredicate>
+    InputIterator find_if_not(InputIterator first, InputIterator last, UnaryPredicate p) {
+        while (first != last && p(*first)) {
+            ++first;
+        }
+
+        return first;
+    }
 
     /**
      * find_end
@@ -684,11 +833,11 @@ namespace tinySTL {
     // 如果 a 等于 b，则返回 true。
     template <class InputIterator, class OutputIterator1, class OutputIterator2, class UnaryPredicate>
     tinySTL::pair<OutputIterator1, OutputIterator2>
-            partition_copy(InputIterator first,
-                           InputIterator last,
-                           OutputIterator1 d_first_true,
-                           OutputIterator2 d_first_false,
-                           UnaryPredicate p) {
+    partition_copy(InputIterator first,
+                   InputIterator last,
+                   OutputIterator1 d_first_true,
+                   OutputIterator2 d_first_false,
+                   UnaryPredicate p) {
         while (first != last) {
             if (p(*first)) {
                 *d_first_true++ = *first;
@@ -874,14 +1023,14 @@ namespace tinySTL {
     // 其中 comp 比较函数：
     // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
     // 如果 a 小于 b，则返回 true。
-    template class InputIterator, class RandomIterator>
+    template <class InputIterator, class RandomIterator>
     RandomIterator partial_sort_copy(InputIterator first, InputIterator last,
                                      RandomIterator d_first, RandomIterator d_last) {
         using value_type = iterator_traits<RandomIterator>::value_type;
         return partial_sort_copy(first, last, d_first, d_last, tinySTL::less<value_type>());
     }
 
-    template class InputIterator, class RandomIterator, class Compare>
+    template <class InputIterator, class RandomIterator, class Compare>
     RandomIterator partial_sort_copy(InputIterator first, InputIterator last,
                                      RandomIterator d_first, RandomIterator d_last, Compare comp) {
         auto d_middle = d_first;
@@ -1584,7 +1733,7 @@ namespace tinySTL {
 
     // 如果范围 [first1, last1) 和范围 [first2, last2) 相等，返回 true ，否则返回 false。
     template <class InputIterator1, class InputIterator2>
-    bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator1 first2, InputIterator1 last2) {
+    bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2) {
         while (first1 != last1 && first2 != last2 && *first1 == *first2) {
             ++first1;
             ++first2;
@@ -1793,176 +1942,6 @@ namespace tinySTL {
                 return false;
             }
         }
-    }
-
-}
-
-namespace tinySTL {
-    /**
-     * all_of
-     * any_of
-     * none_of
-     */
-    // 对于[first, last) 范围内所有的元素，p(*it) == true。
-    template <class InputIterator, class UnaryPredicate>
-    bool all_of(InputIterator first, InputIterator last, UnaryPredicate p) {
-        return find_if_not(first, last, p) == last;
-    }
-
-    // 对于[first, last) 范围内，存在元素，使得 p(*it) == true。
-    template <class InputIterator, class UnaryPredicate>
-    bool any_of(InputIterator first, InputIterator last, UnaryPredicate p) {
-        return find_if(first, last, p) != last;
-    }
-
-    // 对于[first, last) 范围内所有的元素，p(*it) != true，即 p(*it) == false。
-    template <class InputIterator, class UnaryPredicate>
-    bool none_of(InputIterator first, InputIterator last, UnaryPredicate p) {
-        return find_if(first, last, p) == last;
-    }
-
-    /**
-     * for_each
-     */
-    // 对 [first, last) 范围的元素调用 f，即 f(*it)
-    template <class InputIterator, class UnaryFunction>
-    UnaryFunction for_each(InputIterator first, InputIterator last, UnaryFunction f) {
-        while (first != last) {
-            f(*first++);
-        }
-
-        return f; // （C++11 起）隐式移动
-    }
-
-
-    /**
-     * count
-     * count_if
-     */
-    // 统计 [first, last) 范围内等于 value 的元素的个数。
-    template <class InputIterator, class T>
-    typename iterator_traits<InputIterator>::difference_type
-    count(InputIterator first, InputIterator last, const T& value) {
-        typename iterator_traits<InputIterator>::difference_type result = 0;
-        while (first != last) {
-            if (*first == last) {
-                ++result;
-            }
-            ++first;
-        }
-
-        return result;
-    }
-    // 统计 [first, last) 范围内 p(*it) == true 的元素的个数。
-    template <class InputIterator, class UnaryPredicate>
-    typename iterator_traits<InputIterator>::difference_type
-    count(InputIterator first, InputIterator last, UnaryPredicate p) {
-        typename iterator_traits<InputIterator>::difference_type result = 0;
-        while (first != last) {
-            if (p(*first)) {
-                ++result;
-            }
-            ++first;
-        }
-
-        return result;
-    }
-
-    /**
-     * mismatch
-     */
-    // 找到第一个 !(*it1 == *it2) 迭代器 pair。
-    //
-    // 其中 p 函数：
-    // 它的声明等价于 bool pred(const Type1 &a, const Type2 &b);
-    // 若元素相等，则返回 true。
-    template <class InputIterator1, class InputIterator2>
-    tinySTL::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2) {
-        while (first1 != last1 && *first1 == *first2) {
-            ++first1;
-            ++first2;
-        }
-
-        return {first1, first2};
-    }
-
-    template <class InputIterator1, class InputIterator2, class BinaryPredicate>
-    tinySTL::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, BinaryPredicate p) {
-        while (first1 != last1 && p(*first1, *first2)) {
-            ++first1;
-            ++first2;
-        }
-
-        return {first1, first2};
-    }
-
-    template <class InputIterator1, class InputIterator2>
-    tinySTL::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2) {
-        while (first1 != last1 && first2 == last2 && *first1 == *first2) {
-            ++first1;
-            ++first2;
-        }
-
-        return {first1, first2};
-    }
-
-    template <class InputIterator1, class InputIterator2, class BinaryPredicate>
-    tinySTL::pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, BinaryPredicate p) {
-        while (first1 != last1 && first2 == last2 && p(*first1, *first2)) {
-            ++first1;
-            ++first2;
-        }
-
-        return {first1, first2};
-    }
-
-    template <class InputIterator1, class InputIterator2>
-    bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2) {
-        while (first1 != last1 && *first1 == *first2) {
-            ++first1;
-            ++first2;
-        }
-
-        return first1 == last1;
-    }
-
-
-    // 其中 p 比较函数：
-    // 它的声明等价于 bool p(const Type1 &a, const Type2 &b);
-    // 如果 a 等于 b，则返回 true。
-    // 虽然形参的声明不一定是 const&，但是函数不能修改传递给它的对象，
-    // 以及能接受各种形式的（包括 const）Type1 和 Type2 。
-    // 所以，Type1& 是不合法的。除非 Type1 的移动等价于拷贝，否则 Type1 也是不合法的。
-    // InputIterator1 与 InputIterator2 类型的对象在解引用后分别能隐式转换到 Type1 与 Type2
-    template <class InputIterator1, class InputIterator2, class BinaryPredicate>
-    bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, BinaryPredicate p) {
-        while (first1 != last1 && p(*first1, *first2)) {
-            ++first1;
-            ++first2;
-        }
-
-        return first1 == last1;
-    }
-
-    // 如果范围 [first1, last1) 和范围 [first2, last2) 相等，返回 true ，否则返回 false。
-    template <class InputIterator1, class InputIterator2>
-    bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator1 first2, InputIterator1 last2) {
-        while (first1 != last1 && first2 != last2 && *first1 == *first2) {
-            ++first1;
-            ++first2;
-        }
-
-        return first1 == last1 && first2 == last2;
-    }
-
-    template <class InputIterator1, class InputIterator2,  class BinaryPredicate>
-    bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, BinaryPredicate p) {
-        while (first1 != last1 && first2 != last2 && p(*first1, *first2)) {
-            ++first1;
-            ++first2;
-        }
-
-        return first1 == last1 && first2 == last2;
     }
 }
 
