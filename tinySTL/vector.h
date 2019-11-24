@@ -6,7 +6,6 @@
 #include <vector>
 #include <memory>
 #include <utility>
-#include <algorithm>
 #include <stdexcept>
 
 #include "alloc.h"
