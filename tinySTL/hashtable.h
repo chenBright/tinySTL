@@ -116,21 +116,27 @@ namespace tinySTL {
         using hashtable_node_allocator = typename Allocator::template rebind<hashtable_node<value_type>>::other;
         using hashtable_node_pointer_allocator = typename Allocator::template rebind<hashtable_node<value_type>*>::other;
 
+        static const int primes_num_ = 28;
+        static const unsigned long primes_list_[primes_num_] = {
+                53ul,        97ul,        193ul,       389ul,       769ul,        1543ul,       3079ul,
+                6151ul,      12289ul,     24593ul,     49157ul,     98317ul,      196613ul,     393241ul,
+                786433ul,    1572869ul,   3145739ul,   6291469ul,   12582917ul,   25165843ul,   50331653ul,
+                100663319ul, 201326611ul, 402653189ul, 805306457ul, 1610612741ul, 3221225473ul, 4294967291ul,
+        };
+
         hasher hash_;
         key_equal equals_;
 
         hashtable_node_allocator nodeAllocator;
 
         tinySTL::vector<hashtable_node<value_type>*, hashtable_node_pointer_allocator> buckets_;
-        size_type numElements_{};
+        size_type numElements_;
 
     public:
         explicit hashtable(size_type n = 100, const HashFunction& hash = HashFunction(), const KeyEqual& equals = KeyEqual())
             : hash_(hash),
-              equals_(equals),
-              buckets_(n, nullptr),
-              numElements_(0) {
-
+              equals_(equals) {
+            initialize_buckets(n);
         }
 
         hashtable(const hashtable& other) {
@@ -304,7 +310,7 @@ namespace tinySTL {
             auto index = bucket_num(KeyOfValue()(*position));
             if (position.node_ == buckets_[index]) {
                 buckets_[index] = position.node_->next_;
-                destory_node(position.node_);
+                destroy_node(position.node_);
 
                 return resultIterator;
             }
@@ -312,7 +318,7 @@ namespace tinySTL {
             for (auto current = buckets_[index]; current->next_ != nullptr; current = current->next_) {
                 if (current->next_ == position.node_) {
                     current->next_ = position.node_->next_;
-                    destory_node(position.node_);
+                    destroy_node(position.node_);
 
                     return resultIterator;
                 }
@@ -353,8 +359,9 @@ namespace tinySTL {
             return buckets_.size();
         }
 
+        // 最多可以有多少 buckets
         size_type max_bucket_count() const {
-            return buckets_.max_size();
+            return primes_list_[primes_num_ - 1];
         }
 
         size_type bucket_size(size_type index) const {
@@ -401,18 +408,30 @@ namespace tinySTL {
             return newNode;
         }
 
-        void destory_node(hashtable_node<value_type>* node) {
+        void destroy_node(hashtable_node<value_type>* node) {
             nodeAllocator.destory(node->data_);
             deallocate_node(node);
         }
 
+        void initialize_buckets(size_type n) {
+            const size_type n_buckets = next_size(n);
+            buckets_.reserve(n_buckets);
+            buckets_.insert(buckets_.end(), n_buckets, static_cast<hashtable_node<value_type>*>(nullptr));
+            numElements_ = 0;
+        }
+
+        size_type next_size(size_type n) const {
+            return next_prime(n);
+        }
+
         void resize(size_type newNumElements) {
-            if (newNumElements < numElements_) {
+            // 当 newNumElements 大于 bucket's size,则试图重建表格 buckets_。
+            if (newNumElements <= buckets_.size()) {
                 return;
             }
 
-            size_type newSize = buckets_.size() + tinySTL::max(newNumElements, buckets_.size());
-            decltype(buckets_) tmp(newNumElements, nullptr);
+            size_type newSize = next_size(newNumElements);
+            decltype(buckets_) tmp(newSize, static_cast<hashtable_node<value_type>*>(nullptr));
             for (size_type i = 0; i < buckets_.size(); ++i) {
                 auto first = buckets_[i];
                 while (first != nullptr) {
@@ -424,7 +443,7 @@ namespace tinySTL {
                 }
             }
 
-            tmp.swap(buckets_);
+            buckets_.swap(tmp);
         }
 
         template <class Y>
@@ -509,6 +528,15 @@ namespace tinySTL {
 
         size_type bucket_num(const key_type& key) {
             return bucket_num(key, bucket_count());
+        }
+
+        // 在质数数组中找到第一个大于等于 n 的质数。
+        inline unsigned long next_prime(unsigned long n) {
+            const unsigned long* first = primes_list_;
+            const unsigned long* last = primes_list_ + primes_num_;
+            const unsigned long* position = lower_bound(first, last, n);
+
+            return position == last ? *(last - 1) : *position;
         }
     }; // class hashtable
 
