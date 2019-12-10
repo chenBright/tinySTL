@@ -25,7 +25,7 @@ namespace tinySTL {
     public:
         PtrDeleter() : func_(std::bind(&PtrDeleter::defaultFunction, this, std::placeholders::_1)) {}
 
-        PtrDeleter(const DeleteFunction& df) : func_(df) {}
+        explicit PtrDeleter(const DeleteFunction& df) : func_(df) {}
 
         void operator()(T* ptr) {
             func_(ptr);
@@ -49,7 +49,7 @@ namespace tinySTL {
     public:
         PtrDeleter() : func_(std::bind(&PtrDeleter::defaultFunction, this, std::placeholders::_1)) {}
 
-        PtrDeleter(const DeleteFunction& df) : func_(df) {}
+        explicit PtrDeleter(const DeleteFunction& df) : func_(df) {}
 
         void operator()(T* ptr) {
             func_(ptr);
@@ -81,24 +81,27 @@ namespace tinySTL {
         using element_type = T;
 
     private:
-        std::atomic_int* count_;            // 引用计数
-        std::atomic_int* weak_count_;       // 弱引用计数
-        T* ptr_;                            // 被管理的资源的指针
-        Deleter deleter_;                   // 删除器
+        std::atomic_long* count_;       // 引用计数
+        std::atomic_long* weak_count_;  // 弱引用计数
+        T* ptr_;                        // 被管理的资源的指针
+        Deleter deleter_;               // 删除器
 
     public:
         shared_ptr() noexcept : count_(nullptr), weak_count_(nullptr), ptr_(nullptr) {}
 
         explicit shared_ptr(T* ptr) noexcept
-            : count_(new std::atomic_int(1)),
-              weak_count_(new std::atomic_int(0)),
+            : count_(new std::atomic_long(1)),
+              weak_count_(new std::atomic_long(0)),
               ptr_(ptr) {
 
         }
 
+        // nullptr 的重载函数
+        explicit shared_ptr(std::nullptr_t) : shared_ptr() {}
+
         shared_ptr(const shared_ptr& other)
-            : count_(other.count_),
-              weak_count_(new std::atomic_int(0)),
+            : count_(other.count_), // 对于内建类型，不需要调用 move 函数
+              weak_count_(other.weak_count_),
               ptr_(other.ptr_),
               deleter_(other.deleter_) {
 
@@ -115,6 +118,7 @@ namespace tinySTL {
               deleter_(tinySTL::move(other.deleter_)) {
 
             other.count_ = nullptr;
+            other.weak_count_ = nullptr;
             other.ptr_ = nullptr;
         }
 
@@ -136,9 +140,6 @@ namespace tinySTL {
         shared_ptr& operator=(const shared_ptr& other) {
             if (this != &other) {
                 clear();
-                if (other.is_empty()) {
-                    return *this;
-                }
 
                 count_ = other.count_;
                 weak_count_ = other.weak_count_;
@@ -156,6 +157,7 @@ namespace tinySTL {
         shared_ptr& operator=(shared_ptr&& other) noexcept {
             if (this != &other) {
                 clear();
+
                 count_ = other.count_;
                 weak_count_ = other.weak_count_;
                 ptr_ = other.ptr_;
@@ -176,6 +178,7 @@ namespace tinySTL {
 
         void swap(shared_ptr& other) noexcept {
             using tinySTL::swap;
+
             swap(count_, other.count_);
             swap(weak_count_, other.weak_count_);
             swap(ptr_, other.ptr_);
@@ -222,6 +225,10 @@ namespace tinySTL {
                 deleter_(ptr_);
             }
 
+            // 只有当两个引用计数都为 0 时，才能 delete 引用计数。
+            // 当 *count_ == 0 而 *weak_ptr_ != 0 时，
+            // 表示虽然资源已经释放了，但还有 weak_ptr 存在，
+            // 可能还需要用到 count_ 和 weak_count_。
             if (*count_ == 0 && *weak_count_ == 0) {
                 delete count_;
                 delete weak_count_;
@@ -370,6 +377,7 @@ namespace tinySTL {
             }
         }
 
+        // other 移动后，other == nullptr 且 other.use_count == 0。
         weak_ptr(weak_ptr&& other) noexcept
             : count_(other.count_),
               weak_count_(other.weak_count_),
@@ -386,6 +394,8 @@ namespace tinySTL {
 
         weak_ptr& operator=(const weak_ptr& other) {
             if (this != &other) {
+                clear();
+
                 count_ = other.count_;
                 weak_count_ = other.weak_count_;
                 ptr_ = other.ptr_;
@@ -400,6 +410,8 @@ namespace tinySTL {
         }
 
         weak_ptr& operator=(const shared_ptr<T>& sptr) {
+            clear();
+
             count_ = sptr.count_;
             weak_count_ = sptr.weak_count_;
             ptr_ = sptr.ptr_;
@@ -418,6 +430,7 @@ namespace tinySTL {
 
         void swap(weak_ptr& other) noexcept {
             using tinySTL::swap;
+
             swap(count_, other.count_);
             swap(weak_count_, other.weak_count_);
             swap(ptr_, other.ptr_);
@@ -425,7 +438,7 @@ namespace tinySTL {
         }
 
         long use_count() const noexcept {
-            if (count_ == nullptr) {
+            if (ptr_ == nullptr) {
                 return 0;
             }
 
@@ -456,7 +469,8 @@ namespace tinySTL {
             if (*count_ == 0 && --*weak_count_ == 0) {
                 delete count_;
                 delete weak_count_;
-                deleter_(ptr_);
+                // 如果 *count_ == 0，则资源已经被 shared_ptr 释放了，不能重复释放。
+//                deleter_(ptr_);
             }
 
             count_ = nullptr;
@@ -526,6 +540,7 @@ namespace tinySTL {
 
         void swap(unique_ptr& other) {
             using tinySTL::swap;
+
             swap(ptr_, other.ptr_);
             swap(deleter_, other.deleter_);
         }
