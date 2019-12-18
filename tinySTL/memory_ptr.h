@@ -514,7 +514,7 @@ namespace tinySTL {
         }
 
         unique_ptr& operator=(unique_ptr&& other) noexcept {
-            ptr_ = other.ptr_;
+            reset(other.release());
             deleter_ = std::move(other.deleter_);
             other.ptr_ = nullptr;
         }
