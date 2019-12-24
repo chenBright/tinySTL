@@ -53,6 +53,12 @@ namespace tinySTL {
 
         allocator_type dataAllocator;        // 内存空间配置器
 
+        // 扩容因子使用 1.5 而不是 2。
+        // 参考
+        // https://github.com/chenBright/interview_notes/blob/fe3f078f7b39653283fb2b4c8ff8c4010e0c2892/cpp/vector/vector_memory.md
+        // https://www.zhihu.com/question/36538542/answer/67994276
+        constexpr static double grow_factor = 1.5;
+
     public:
         // 构造函数相关（部分实现）：https://zh.cppreference.com/w/cpp/container/vector/vector
         vector() : start_(nullptr), finish_(nullptr), end_of_storage_(nullptr) {}
@@ -463,7 +469,7 @@ namespace tinySTL {
         void copy_initialize(InputIterator first, InputIterator last, input_iterator_tag) {
             while (first != last) {
                 if (capacity() == size()) {
-                    realloctae(empty() ? 1 : 2 * size());
+                    realloctae(empty() ? 1 : vector::grow_factor * size());
                 }
                 push_back(*first++);
             }
@@ -531,7 +537,7 @@ namespace tinySTL {
 
                 return newPosition;
             } else {
-                const size_type newSize = empty() ? 1 : 2 * size();
+                const size_type newSize = empty() ? 1 : vector::grow_factor * size();
                 vector tmp;
                 tmp.start_ = dataAllocator.allocate(newSize);
                 auto newPosition = tmp.start_ + (position - cbegin());
