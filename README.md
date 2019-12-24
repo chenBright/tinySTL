@@ -2,7 +2,7 @@
 
 STL 的子集。
 
-本项目为本人的练习项目，所以暂时未提供测试，不能保证完全正确。请多多包涵。
+本项目为本人的练习项目。
 
 ## 已完成
 
@@ -189,6 +189,5 @@ STL 的子集。
 ## TODO
 
 - - string
-- bind、function
-- [allocator static成员函数问题](https://www.zhihu.com/question/53085291/answer/133516400)
 - dynamic_bitset
+- [allocator static成员函数问题](https://www.zhihu.com/question/53085291/answer/133516400)
