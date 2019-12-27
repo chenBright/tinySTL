@@ -141,7 +141,7 @@ namespace tinySTL {
         }
 
         reference at(size_type position) {
-            return check_and_at(position); // 返回位于指定位置 pos 的元素的引用，有边界检查
+            return const_cast<reference>(check_and_at(position)); // 返回位于指定位置 pos 的元素的引用，有边界检查
         }
 
         const_reference at(size_type position) const {

@@ -14,7 +14,7 @@ namespace tinySTL {
     public:
         using iterator_category = typename iterator_traits<Iterator>::iterator_category ;
         using value_type        = typename iterator_traits<Iterator>::value_type;
-        using difference_type   = typename iterator_traits<Iterator>::differebce_type;
+        using difference_type   = typename iterator_traits<Iterator>::difference_type;
         using pointer           = typename iterator_traits<Iterator>::pointer;
         using reference         = typename iterator_traits<Iterator>::reference;
 
