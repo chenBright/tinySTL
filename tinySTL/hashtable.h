@@ -13,6 +13,9 @@
 #include "utility_move.h"
 
 namespace tinySTL {
+
+    // 哈希表结点
+    // 哈希表使用的避免冲突的策略是：链地址法。
     template <class T>
     struct hashtable_node {
         T data_;
@@ -23,22 +26,24 @@ namespace tinySTL {
             class Allocator = tinySTL::allocator<Value>>
     class hashtable;
 
+    // 哈希表的迭代器
     template <class Key, class Value, class Reference, class Pointer, class Hash, class KeyOfValue, class KeyEqual, class Allocator>
     struct hashtable_iterator {
-        using value_type = Value;
-        using reference = Reference;
-        using pointer = Pointer;
-        using difference_type = std::ptrdiff_t;
-        using iterator_category = forward_iterator_tag;
+        using value_type = Value;                       // 迭代器所指的对象的类型
+        using reference = Reference;                    // 两个迭代器之间的距离
+        using pointer = Pointer;                        // 迭代器所指的对象的指针
+        using difference_type = std::ptrdiff_t;         // 两个迭代器之间的距离
+        using iterator_category = forward_iterator_tag; // 迭代器类型
 
+        // 迭代器
         using iterator = hashtable_iterator<Key, Value, Value&, Value*, Hash, KeyOfValue, KeyEqual, Allocator>;
         using const_iterator = hashtable_iterator<Key, Value, const Value&, const Value*, Hash, KeyOfValue, KeyEqual, Allocator>;
         using self = hashtable_iterator<Key, Value, Reference, Pointer, Hash, KeyOfValue, KeyEqual, Allocator>;
 
         using hashtable_type = hashtable<Key, Value, Hash, KeyOfValue, KeyEqual, Allocator>;
 
-        hashtable_node<value_type>* node_;
-        const hashtable_type* hashtable_;
+        hashtable_node<value_type>* node_;  // 迭代器所指向的结点的指针
+        const hashtable_type* hashtable_;   // 迭代器所属的哈希表的指针
 
         hashtable_iterator() : node_(nullptr), hashtable_(nullptr) {}
 
@@ -96,27 +101,30 @@ namespace tinySTL {
         friend struct hashtable_iterator<Key, Value, Value&, Value*, HashFunction, KeyOfValue, KeyEqual, Allocator>;
         friend struct hashtable_iterator<Key, Value, const Value&, const Value*, HashFunction, KeyOfValue, KeyEqual, Allocator>;
     public:
-        using key_type          = Key;
-        using value_type        = Value;
-        using allocator_type    = Allocator;
-        using size_type         = std::size_t;
-        using difference_type   = std::ptrdiff_t;
-        using reference         = value_type&;
-        using const_reference   = const value_type&;
-        using pointer           = value_type*;
-        using const_pointer     = const value_type*;
+        using key_type          = Key;                  // key 的数据类型
+        using value_type        = Value;                // value 的数据类型
+        using size_type         = std::size_t;          // 数量类型
+        using difference_type   = std::ptrdiff_t;       // 用来保存两个指针（迭代器）的距离
+        using reference         = value_type&;          // 引用
+        using const_reference   = const value_type&;    // 常量引用
+        using pointer           = value_type*;          // 指针
+        using const_pointer     = const value_type*;    // 常量指针
 
-        using hasher            = HashFunction;
-        using key_equal         = KeyEqual;
+        using hasher            = HashFunction;         // 哈希函数
+        using key_equal         = KeyEqual;             // 判断 key 是否相等的函数
 
+        // 普通迭代器、反向迭代器
         using iterator          = hashtable_iterator<Key, Value, Value&, Value*, HashFunction, KeyOfValue, KeyEqual, Allocator>;
         using const_iterator    = hashtable_iterator<Key, Value, const Value&, const Value*, HashFunction, KeyOfValue, KeyEqual, Allocator>;
+
+        using allocator_type    = Allocator;
 
     private:
         using hashtable_node_allocator = typename Allocator::template rebind<hashtable_node<value_type>>::other;
         using hashtable_node_pointer_allocator = typename Allocator::template rebind<hashtable_node<value_type>*>::other;
 
-        static const int primes_num_ = 28;
+        static const int primes_num_ = 28; // 素数个数
+        // 表格的大小从该素数表中确定，虽然链地址法不要求哈希表的大小一定为素数。
         static const unsigned long primes_list_[primes_num_] = {
                 53ul,        97ul,        193ul,       389ul,       769ul,        1543ul,       3079ul,
                 6151ul,      12289ul,     24593ul,     49157ul,     98317ul,      196613ul,     393241ul,
@@ -239,7 +247,10 @@ namespace tinySTL {
 
         tinySTL::pair<iterator, iterator> equal_range(const key_type& key) {
             auto tmp = static_cast<const hashtable&>(*this).equal_range(key); // 调用 const 版本
-            return {const_cast<iterator>(tmp.first), const_cast<iterator>(tmp.second)};
+            return {
+                const_cast<iterator>(tmp.first),
+                const_cast<iterator>(tmp.second)
+            };
         }
 
         tinySTL::pair<const_iterator, const_iterator> equal_range(const key_type& key) const {
@@ -257,6 +268,7 @@ namespace tinySTL {
             return distance(tmp.first, tmp.second);
         }
 
+        // 允许插入的 key 与哈希表中的元素的 key 相同
         iterator insert_equal(const value_type& value) {
             return insert_equal_aux(value);
         }
@@ -283,6 +295,7 @@ namespace tinySTL {
             return insert_equal(value_type(tinySTL::forward<Args>(args)...));
         }
 
+        // 插入的 key 在哈希表中唯一
         tinySTL::pair<iterator, bool> insert_unique(const value_type& value) {
             return insert_unique_aux(value);
         }
@@ -309,6 +322,7 @@ namespace tinySTL {
 
             auto index = bucket_num(KeyOfValue()(*position));
             if (position.node_ == buckets_[index]) {
+                // 删除结点是头结点
                 buckets_[index] = position.node_->next_;
                 destroy_node(position.node_);
 
@@ -377,6 +391,24 @@ namespace tinySTL {
             return bucket_num(key);
         }
 
+        // 返回每个桶元素的平均数
+        float load_factor() const {
+            return size() / bucket_count();
+        }
+
+        float max_load_factor() const {
+            size_type maxLoadFactor = 0;
+            tinySTL::for_each(buckets_.begin(), buckets_.end(), [&maxLoadFactor](hashtable_node<value_type>* node) {
+                size_type count = 0;
+                for (auto current = node; current != nullptr;++current) {
+                    ++count;
+                }
+                if (count > maxLoadFactor) {
+                    maxLoadFactor = count;
+                }
+            });
+        }
+
         hasher hash_finction() const {
             return hash_;
         }
@@ -425,25 +457,28 @@ namespace tinySTL {
         }
 
         void resize(size_type newNumElements) {
-            // 当 newNumElements 大于 bucket's size,则试图重建表格 buckets_。
+            // 当 newNumElements 大于 bucket's size，则重建表格 buckets_。
             if (newNumElements <= buckets_.size()) {
                 return;
             }
 
-            size_type newSize = next_size(newNumElements);
+            size_type newSize = next_size(newNumElements); // 计算重建后的表格大小。
+            // 重建的表格
             decltype(buckets_) tmp(newSize, static_cast<hashtable_node<value_type>*>(nullptr));
             for (size_type i = 0; i < buckets_.size(); ++i) {
                 auto first = buckets_[i];
                 while (first != nullptr) {
+                    // 计算哈希值
                     auto newIndex = bucket_num(KeyOfValue()(first->data_), newSize);
-                    buckets_[i] = first->next;
-                    first->next_ = tmp[newIndex]->next_;
-                    tmp[newIndex] = first;
-                    first = buckets_[i];
+                    // 放到对应的链表中
+                    buckets_[i] = first->next;              // 取出该结点
+                    first->next_ = tmp[newIndex]->next_;    // 头插法，将其插入到新链表的头
+                    tmp[newIndex] = first;                  // 重置头指针
+                    first = buckets_[i];                    // 指向下一结点
                 }
             }
 
-            buckets_.swap(tmp);
+            buckets_.swap(tmp); // 更新哈希表
         }
 
         template <class Y>
@@ -522,6 +557,7 @@ namespace tinySTL {
             }
         }
 
+        // 计算哈希值
         size_type bucket_num(const key_type& key, size_type n) {
             return hash_(key) % n;
         }
