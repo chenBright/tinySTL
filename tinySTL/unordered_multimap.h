@@ -23,7 +23,6 @@ namespace tinySTL {
     // 未实现的接口：
     // iterator insert(const_iterator hint, const value_type& value);
     // iterator insert(const_iterator hint, value_type&& value);
-    // max_load_factor();
     // void rehash( size_type count );
     // void reserve( size_type count );
     template <class Key, class T, class Hash = tinySTL::hash<Key>, class KeyEqual = tinySTL::equal_to<Key>,
@@ -223,7 +222,11 @@ namespace tinySTL {
         }
 
         float load_factor() const {
-            return size() / bucket_count();
+            return hashtable_.load_factor();
+        }
+
+        float max_load_factor() {
+            return hashtable_.max_load_factor();
         }
 
         hasher hash_function() const {
