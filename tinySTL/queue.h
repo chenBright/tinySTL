@@ -9,6 +9,7 @@
 
 namespace tinySTL {
     // 队列
+    // 接口功能见：https://zh.cppreference.com/w/cpp/container/queue
     // 以某种容器作为底部数据结构，是底层容器的包装器。
     // queue 不是 container，是 container adapter。
     // queue 没有迭代器。

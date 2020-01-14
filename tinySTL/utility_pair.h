@@ -10,6 +10,7 @@
 #include "algorithm_base.h"
 
 namespace tinySTL {
+    // 接口功能见：https://zh.cppreference.com/w/cpp/utility/pair
     template <class T1, class T2>
     struct pair {
         using first_type    = T1;
