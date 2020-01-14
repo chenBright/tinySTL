@@ -7,7 +7,6 @@
 #include "iterator_base.h"
 #include "functional_base.h"
 
-#include "algorithm_heap.h" // heap 算法
 #include "utility_move.h"
 
 namespace tinySTL {

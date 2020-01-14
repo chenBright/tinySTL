@@ -10,6 +10,8 @@
 #include "utility_move.h"
 
 namespace tinySTL {
+    // 优先队列
+    // 接口功能见：https://zh.cppreference.com/w/cpp/container/priority_queue
     template <class T, class Container = vector<T>, class Compare = tinySTL::less<typename Container::value_type>>
     class priority_queue {
     public:

@@ -9,6 +9,7 @@
 
 namespace tinySTL {
     // 栈
+    // 接口功能见：https://zh.cppreference.com/w/cpp/container/stack
     // 以某种容器作为底部数据结构，是底层容器的包装器。
     // stack 不是 container，是 container adapter。
     // stack 没有迭代器。
