@@ -12,9 +12,14 @@ namespace tinySTL {
         return back_insert_iterator<Container>(c);
     }
 
-    template< class Container >
-    front_insert_iterator<Container> front_inserter( Container& c ) {
+    template<class Container >
+    front_insert_iterator<Container> front_inserter(Container& c) {
         return front_insert_iterator<Container>(c);
+    }
+
+    template <class Container>
+    insert_iterator<Container> inserter(Container& c, typename Container::iterator i) {
+        return insert_iterator<Container>(c, i);
     }
 
 }
