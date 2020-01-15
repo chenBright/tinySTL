@@ -15,6 +15,7 @@ STL 的子集。
     - front_insert_iterator
     - front_inserter
     - insert_iterator
+    - inserter
 - vector
 - list
 - deque
