@@ -13,6 +13,7 @@ STL 的子集。
     - back_insert_iterator
     - back_inserter
     - front_insert_iterator
+    - front_inserter
 - vector
 - list
 - deque
