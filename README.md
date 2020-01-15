@@ -12,6 +12,7 @@ STL 的子集。
     - 反向迭代器
     - back_insert_iterator
     - back_inserter
+    - front_insert_iterator
 - vector
 - list
 - deque
