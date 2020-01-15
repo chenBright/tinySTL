@@ -42,7 +42,7 @@ namespace tinySTL {
     struct iterator_base {
         using iterator_category = Category;
         using value_type        = T;
-        using differebce_type   = Distance;
+        using difference_type   = Distance;
         using pointer           = Pointer;
         using reference         = Reference;
     };
