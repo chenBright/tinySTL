@@ -18,6 +18,8 @@ STL 的子集。
     - inserter
     - move_iterator
     - make_move_iterator
+    - begin
+    - cbegin
 - vector
 - list
 - deque

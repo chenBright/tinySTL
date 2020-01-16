@@ -28,6 +28,27 @@ namespace tinySTL {
         return move_iterator<Iterator>(i);
     }
 
+    template <class C>
+    auto begin(C& c) -> decltype(c.begin()) {
+        return c.begin();
+    }
+
+    template <class C>
+    auto begin(const C& c) -> decltype(c.begin()) {
+        return c.begin();
+    }
+
+    template< class T, std::size_t N >
+    T* begin(T (&array)[N]) {
+        return array[N];
+    }
+
+    template< class C >
+    constexpr auto cbegin(const C& c) noexcept(/* see below */)
+    -> decltype(tinySTL::begin(c)) {
+        return tinySTL::begin(c);
+    }
+
 }
 
 #endif //TINYSTL_ITERATOR_H
