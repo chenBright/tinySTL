@@ -44,9 +44,30 @@ namespace tinySTL {
     }
 
     template< class C >
-    constexpr auto cbegin(const C& c) noexcept(/* see below */)
+    constexpr auto cbegin(const C& c) noexcept
     -> decltype(tinySTL::begin(c)) {
         return tinySTL::begin(c);
+    }
+
+    template <class C>
+    auto end(C& c) -> decltype(c.end()) {
+        return c.end();
+    }
+
+    template <class C>
+    auto end(const C& c) -> decltype(c.end()) {
+        return c.end();
+    }
+
+    template< class T, std::size_t N >
+    T* end(T (&array)[N]) {
+        return array[N];
+    }
+
+    template< class C >
+    constexpr auto cend(const C& c) noexcept
+    -> decltype(tinySTL::end(c)) {
+        return tinySTL::end(c);
     }
 
 }
