@@ -22,6 +22,8 @@ STL 的子集。
     - cbegin
     - end
     - cend
+    - rbegin
+    - crbegin
 - vector
 - list
 - deque
