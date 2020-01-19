@@ -61,7 +61,7 @@ namespace tinySTL {
 
     template< class T, std::size_t N >
     T* end(T (&array)[N]) {
-        return &array[N];
+        return array + N;
     }
 
     template< class C >
@@ -88,6 +88,26 @@ namespace tinySTL {
     template< class C >
     auto crbegin(const C& c) -> decltype(rbegin(c)) {
         return rbegin(c);
+    }
+
+    template <class C>
+    auto rend(C& c) -> decltype(c.rend()) {
+        return c.rend();
+    }
+
+    template <class C>
+    auto rend(const C& c) -> decltype(c.rend()) {
+        return c.rend();
+    }
+
+    template< class T, std::size_t N >
+    reverse_iterator<T*> rend(T (&array)[N]) {
+        return reverse_iterator<T*>(array + N);
+    }
+
+    template< class C >
+    auto crend(const C& c) -> decltype(rend(c)) {
+        return rend(c);
     }
 
 }
