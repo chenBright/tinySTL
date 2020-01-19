@@ -43,6 +43,7 @@ namespace tinySTL {
         return &array;
     }
 
+    // C++ 14
     template< class C >
     constexpr auto cbegin(const C& c) noexcept
     -> decltype(tinySTL::begin(c)) {
@@ -64,6 +65,7 @@ namespace tinySTL {
         return array + N;
     }
 
+    // C++ 14
     template< class C >
     constexpr auto cend(const C& c) noexcept
     -> decltype(tinySTL::end(c)) {
@@ -85,6 +87,7 @@ namespace tinySTL {
         return reverse_iterator<T*>(&array);
     }
 
+    // C++ 14
     template< class C >
     auto crbegin(const C& c) -> decltype(rbegin(c)) {
         return rbegin(c);
@@ -100,16 +103,16 @@ namespace tinySTL {
         return c.rend();
     }
 
-    template< class T, std::size_t N >
+    template<class T, std::size_t N>
     reverse_iterator<T*> rend(T (&array)[N]) {
         return reverse_iterator<T*>(array + N);
     }
 
-    template< class C >
+    // C++ 14
+    template<class C>
     auto crend(const C& c) -> decltype(rend(c)) {
         return rend(c);
     }
-
 }
 
 #endif //TINYSTL_ITERATOR_H
