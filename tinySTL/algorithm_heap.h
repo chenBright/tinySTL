@@ -116,10 +116,10 @@ namespace tinySTL {
         }
 
         auto maxIndex = distance(first, last);
-        // 对每个堆（每颗子树）进行"下沉"操作。
+        // 对每个堆（每棵子树）进行"下沉"操作。
         // 只需要处理一般元素，即跳过大小为 1 的堆（叶子结点）。
         // 对大小为 1 的堆进行"下沉"操作，实际为空操作。
-        for (auto currentIndex = (maxIndex - 2) / 2; currentIndex >= 0; -- currentIndex) {
+        for (auto currentIndex = (maxIndex - 2) / 2; currentIndex >= 0; --currentIndex) {
             detail::pop_heap_aux(first, currentIndex, maxIndex, tinySTL::move(first[currentIndex]), comp);
         }
     }

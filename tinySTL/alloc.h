@@ -250,9 +250,15 @@ namespace tinySTL {
 
         // 内存块链表节点
         union obj {
-            union obj *nextBlock; // 指针，指向下一个区块
-            char nextData[1]; // 看作指针，指向数据
+            union obj *nextBlock;   // 指针，指向下一个区块
+            char nextData[1];       // 柔型数组，指向数据
         };
+
+        // 参考 http://luodw.cc/2015/10/22/Cplus6/
+        // 柔型数组的好处：
+        // 1. 柔性数组不占内存，nextData 的值代表地址；
+        // 2. 可以通过 p->nextData 来访问字符串，符合常规用法;
+        // 3. 字符串长度为动态分配。
 
         static obj *freeLists[N_FREE_LISTS]; // 内存块链表数组
 

@@ -407,7 +407,7 @@ namespace tinySTL {
             auto new_src = static_cast<const unsigned char*>(src) + count;
 
             while (count-- > 0) {
-                *--new_dest = *new_src;
+                *--new_dest = *--new_src;
             }
 
             return dest;
