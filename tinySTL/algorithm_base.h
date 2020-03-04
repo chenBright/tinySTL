@@ -1256,7 +1256,7 @@ namespace tinySTL {
     template <class ForwardIterator, class T>
     tinySTL::pair<ForwardIterator, ForwardIterator>
     equal_range(ForwardIterator first, ForwardIterator last, const T& value) {
-        return {lower_bound(first, last, value, comp), upper_bound(first, last, value, comp)};
+        return equal_range(first, last, value, equal_to<T>());
     }
 
     template <class ForwardIterator, class T, class Compare>
@@ -1763,7 +1763,7 @@ namespace tinySTL {
         while (first1 != last1 && first2 != last2) {
             if (*first1 < *first2) {
                 return true;
-            } else if (*first2 > *first1) {
+            } else if (*first2 < *first1) {
                 return false;
             }
 
@@ -1771,7 +1771,7 @@ namespace tinySTL {
             ++first2;
         }
 
-        return first1 == last1 && first2 == last2;
+        return first1 == last1 && first2 != last2;
     }
 
 
