@@ -20,7 +20,8 @@ namespace tinySTL {
         bool shareable_;
 
     public:
-        RCObject() : refCount_(1), shareable_(true) {}
+        // refCount初始化为 0，其值完全有 RCPtr 控制。
+        RCObject() : refCount_(0), shareable_(true) {}
 
         RCObject(const RCObject&) : RCObject() {}
 
@@ -59,6 +60,65 @@ namespace tinySTL {
         }
     };
 
+    // 引用计数智能指针
+    // T 必须支持RCObject接口，因此 T 通常继承于RCObject。
+    template<class T>
+    class RCPtr {
+    private:
+        T* ptr_;
+
+    public:
+        explicit RCPtr(T* realPtr = nullptr) : ptr_(realPtr) {
+            init();
+        }
+
+        RCPtr(const RCPtr& other) : ptr_(other.ptr_) {}
+
+        RCPtr& operator=(const RCPtr& other) {
+            if (ptr_ != other.ptr_) {
+                if (ptr_ != nullptr) {
+                    ptr_->removeReference();
+                }
+                ptr_ = other.ptr_;
+                init();
+            }
+
+            return *this;
+        }
+
+        ~RCPtr() {
+            if (ptr_ != nullptr) {
+                ptr_->removeReference();
+            }
+        }
+
+    public:
+        T* operator->() const {
+            return ptr_;
+        }
+
+        T& operator*() const {
+            return *ptr_;
+        }
+
+    private:
+        void init() {
+            if (ptr_ == nullptr) {
+                return;
+            }
+
+            if (!ptr_->isSharabled()) {
+                // 如果其值不可共享，那么就赋值一份。
+                // 注意，这里将新对象的赋值行为，
+                // 由之前的 string 转移到RCPtr，
+                // 此时 T（在原有的String实现中是StringValue）
+                // 若要完成深拷贝，T（StringValue）必须自定义拷贝构造函数。
+                ptr_ = new T(*ptr_);
+            }
+            ptr_->addReference();
+        }
+    };
+
     class string {
         friend std::ostream& operator<<(std::ostream& os, const string& str);
 
@@ -67,22 +127,28 @@ namespace tinySTL {
     private:
         // 内部数据类
         struct string_value : public RCObject {
-            char* ptr_;
+            char* ptr_{};
             size_t size_;
 
-            explicit string_value(const char* str = "") {
-                size_ = strlen(str);
-                ptr_ = new char[size_ + 1];
-                strcpy(ptr_, str);
+            explicit string_value(const char* str = "") : size_(strlen(str)) {
+                init(str);
             }
 
-            ~string_value() {
+            string_value(const string_value& other) : string_value(other.ptr_) {}
+
+            ~string_value() override {
                 // Clang-Tidy: 'if' statement is unnecessary; deleting null pointer has no effect
                 delete[] ptr_;
             }
+
+        private:
+            void init(const char* str) {
+                ptr_ = new char[size_ + 1];
+                strcpy(ptr_, str);
+            }
         };
 
-        string_value* value_;
+        RCPtr<string_value> value_;
 
     public:
         explicit string(const char* str)

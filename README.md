@@ -43,6 +43,7 @@ STL 的子集。
 - unordered_map
 - unordered_multiset
 - unordered_multimap
+- string
 - type traits
     - integral_constant
     - true_type
@@ -205,6 +206,5 @@ STL 的子集。
 
 ## TODO
 
-- - string
 - dynamic_bitset
 - [allocator static成员函数问题](https://www.zhihu.com/question/53085291/answer/133516400)
