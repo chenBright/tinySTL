@@ -410,8 +410,8 @@ namespace tinySTL {
 
         void swap(list &other) {
             using tinySTL::swap;
-            std::swap(node_, other.node_);
-            std::swap(size_, other.size_);
+            swap(node_, other.node_);
+            swap(size_, other.size_);
         }
 
         // 归并两个已排序（升序）的链表，将 other 归并到 *this 中。
