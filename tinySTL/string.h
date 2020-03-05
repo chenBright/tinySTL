@@ -11,6 +11,14 @@
 
 namespace tinySTL {
 
+    // 参考
+    // https://blog.csdn.net/happykocola/article/details/72298820
+    // https://blog.csdn.net/happykocola/article/details/72354050
+    // https://blog.csdn.net/happykocola/article/details/72356415
+    // https://blog.csdn.net/HappyKocola/article/details/72368780
+    // https://blog.csdn.net/happykocola/article/details/72453268
+    // https://blog.csdn.net/happykocola/article/details/72457003
+
     // 引用计数基类
     class RCObject {
         friend class String;
@@ -92,7 +100,6 @@ namespace tinySTL {
             }
         }
 
-    public:
         T* operator->() const {
             return ptr_;
         }
@@ -101,13 +108,18 @@ namespace tinySTL {
             return *ptr_;
         }
 
+        void swap(RCPtr& other) {
+            using tinySTL::swap;
+            swap(ptr_, other.ptr_);
+        }
+
     private:
         void init() {
             if (ptr_ == nullptr) {
                 return;
             }
 
-            if (!ptr_->isSharabled()) {
+            if (!ptr_->isShareable()) {
                 // 如果其值不可共享，那么就赋值一份。
                 // 注意，这里将新对象的赋值行为，
                 // 由之前的 string 转移到RCPtr，
@@ -119,15 +131,87 @@ namespace tinySTL {
         }
     };
 
+    template<class T>
+    void swap(RCPtr<T>& left, RCPtr<T>& right) {
+        left.swap(right);
+    }
+
     class string {
         friend std::ostream& operator<<(std::ostream& os, const string& str);
 
         friend std::istream& operator>>(std::istream& is, string&);
 
+        friend class CharProxy;
+
+    public:
+        class CharProxy {
+        public:
+            CharProxy(string& str, int index)
+                : str_(str), charIndex_(index) {
+
+            }
+
+            // 左值运用
+            CharProxy& operator=(const CharProxy& other) {
+                // CharProxy 重载了 & 运算符，可以得到 char*
+                if (&(*this) != &other) {
+                    if (str_.value_->isShared()) {
+                        str_.value_ = RCPtr<string_value>(
+                                     new string_value(str_.value_->ptr_));
+                    }
+                    str_.value_->ptr_[charIndex_]
+                        = other.str_.value_->ptr_[other.charIndex_];
+                }
+
+                return *this;
+            }
+
+            // 左值运用
+            CharProxy& operator=(char c) {
+                if (static_cast<char>(*this) == c) {
+                    return *this;
+                }
+
+                if (str_.value_->isShared()) {
+                    str_.value_ = RCPtr<string_value>(
+                            new string_value(str_.value_->ptr_));
+                }
+                str_.value_->ptr_[charIndex_] = c;
+
+                return *this;
+            }
+
+            // 右值运用
+            explicit operator char() const {
+                return str_.value_->ptr_[charIndex_];
+            }
+
+            char* operator&() {
+                if (str_.value_->isShared()) {
+                    str_.value_ = RCPtr<string_value>(
+                            new string_value(str_.value_->ptr_));
+                }
+                str_.value_->markUnshareable();
+
+                return &str_.value_->ptr_[charIndex_];
+
+            }
+
+            const char* operator&() const {
+                return &str_.value_->ptr_[charIndex_];
+            }
+
+        private:
+            // 记录所引用的 string 对象和当前字符的下标，
+            // 在左值运用时，可以修改 string 对象的值。
+            string& str_;
+            int charIndex_;
+        };
+
     private:
         // 内部数据类
         struct string_value : public RCObject {
-            char* ptr_{};
+            char* ptr_ = nullptr;
             size_t size_;
 
             explicit string_value(const char* str = "") : size_(strlen(str)) {
@@ -155,30 +239,16 @@ namespace tinySTL {
             : value_(new string_value(str)) {
         }
 
-        string(const string& str) {
-            if (str.value_->isShareable()) {
-                value_ = str.value_;
-                value_->addReference();
-            } else {
-                value_ = new string_value(str.value_->ptr_);
-            }
-        }
+        string(const string& other) : value_(other.value_) {}
 
         ~string() {
             // Clang-Tidy: 'if' statement is unnecessary; deleting null pointer has no effect
             value_->removeReference();
         }
 
-        string& operator=(const string& str) {
-            if (str.value_ != value_) {
-                value_->removeReference();
-
-                if (str.value_->isShareable()) {
-                    value_ = str.value_;
-                    value_->addReference();
-                } else {
-                    value_ = new string_value(str.value_->ptr_);
-                }
+        string& operator=(const string& other) {
+            if (&other != this) {
+                value_ = other.value_;
             }
 
             return *this;
@@ -191,10 +261,6 @@ namespace tinySTL {
             return *this;
         }
 
-        size_t getRefCount() const {
-            return value_->getRefCount();
-        }
-
         inline size_t size() const {
             return value_->size_;
         }
@@ -203,15 +269,12 @@ namespace tinySTL {
             return value_->ptr_;
         }
 
-        inline void swap(string& str) noexcept {
+        inline void swap(string& other) noexcept {
             using tinySTL::swap;
-            swap(value_->ptr_, str.value_->ptr_);
-            swap(value_->size_, str.value_->size_);
-
+            swap(value_, other.value_);
         }
 
         string& operator += (const string& str) {
-            return operator=(str.c_str());
         }
 
         string& operator += (const char* str) {
@@ -231,27 +294,24 @@ namespace tinySTL {
             return *this;
         }
 
-        const char& operator[](size_t index) const {
+        // 返回代理类
+        // 代理类已实现写时复制
+        const CharProxy operator[](size_t index) const {
             if (index >= value_->size_) {
                 throw std::out_of_range("String : out of index!");
             }
 
-            return value_->ptr_[index];
+            return CharProxy(const_cast<string&>(*this), index);
         }
 
-        char& operator[](size_t index) {
-            // 调用const版本的operator[]，降低代码重复。
-
+        // 返回代理类
+        // 代理类已实现写时复制
+        CharProxy operator[](size_t index) {
             if (index >= value_->size_) {
                 throw std::out_of_range("String : out of index!");
             }
 
-            if (value_->isShared()) {
-                value_->removeReference();
-                value_ = new string_value(value_->ptr_);
-            }
-
-            return value_->ptr_[index];
+            return CharProxy(*this, index);
         }
     };
 
