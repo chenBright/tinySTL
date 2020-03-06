@@ -148,6 +148,13 @@ namespace tinySTL {
         friend class CharProxy;
 
     public:
+        // 写时复制的一些坑：
+        // https://www.cnblogs.com/promise6522/archive/2012/03/22/2412686.html
+        // http://yanyiwu.com/work/2016/01/30/copy-on-write-stl.html
+        // C++ 11 中禁止 string 使用写时复制优化
+        // 很多实现使用了 SSO 优化
+
+        // 为实现写时复制引入代理类
         class CharProxy {
         public:
             CharProxy(string& str, int index)
