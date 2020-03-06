@@ -84,11 +84,14 @@ namespace tinySTL {
 
         RCPtr& operator=(const RCPtr& other) {
             if (ptr_ != other.ptr_) {
-                if (ptr_ != nullptr) {
-                    ptr_->removeReference();
-                }
+                // 先拷贝内存再将引用计数减 1
+                auto oldPtr = ptr_;
                 ptr_ = other.ptr_;
                 init();
+
+                if (ptr_ != nullptr) {
+                    oldPtr->removeReference();
+                }
             }
 
             return *this;
@@ -136,6 +139,7 @@ namespace tinySTL {
         left.swap(right);
     }
 
+    // 简易的 string 类
     class string {
         friend std::ostream& operator<<(std::ostream& os, const string& str);
 
@@ -144,6 +148,13 @@ namespace tinySTL {
         friend class CharProxy;
 
     public:
+        // 写时复制的一些坑：
+        // https://www.cnblogs.com/promise6522/archive/2012/03/22/2412686.html
+        // http://yanyiwu.com/work/2016/01/30/copy-on-write-stl.html
+        // C++ 11 中禁止 string 使用写时复制优化
+        // 很多实现使用了 SSO 优化
+
+        // 为实现写时复制引入代理类
         class CharProxy {
         public:
             CharProxy(string& str, int index)
@@ -225,6 +236,23 @@ namespace tinySTL {
                 delete[] ptr_;
             }
 
+            string_value& operator += (const char* str) {
+                if (str != nullptr && *str != '\0') {
+                    // 异常安全
+                    size_t len = size_ + ::strlen(str) + 1;
+                    char* tmp = new char[len];
+                    strcpy(tmp, ptr_);
+                    strcpy(tmp + size_, str);
+
+                    using tinySTL::swap;
+                    swap(ptr_, tmp);
+                    size_ = len;
+                    delete[] tmp;
+                }
+
+                return *this;
+            }
+
         private:
             void init(const char* str) {
                 ptr_ = new char[size_ + 1];
@@ -274,21 +302,21 @@ namespace tinySTL {
             swap(value_, other.value_);
         }
 
-        string& operator += (const string& str) {
+        string& operator += (const string& other) {
+            if (this != &other) {
+                return operator+=(other.value_->ptr_);
+            }
+
+            return *this;
         }
 
         string& operator += (const char* str) {
             if (str != nullptr && *str != '\0') {
-                // 异常安全
-                size_t len = value_->size_ + ::strlen(str) + 1;
-                char* tmp = new char[len];
-                strcpy(tmp, value_->ptr_);
-                strcpy(tmp + value_->size_, str);
-
-                using tinySTL::swap;
-                swap(value_->ptr_, tmp);
-                value_->size_ = len;
-                delete[] tmp;
+                if (value_->isShared()) {
+                    value_ = RCPtr<string_value>(
+                            new string_value(value_->ptr_));
+                }
+                value_->operator+=(str);
             }
 
             return *this;
