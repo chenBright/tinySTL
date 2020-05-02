@@ -930,7 +930,7 @@ namespace tinySTL {
     // 如果 a 小于 b，则返回 true。
     template <class ForwardIterator>
     ForwardIterator is_sorted_until(ForwardIterator first, ForwardIterator last) {
-        reutrn is_sorted_until(first, last, tinySTL::less<iterator_traits<ForwardIterator>::value_type>());
+        return is_sorted_until(first, last, tinySTL::less<typename iterator_traits<ForwardIterator>::value_type>());
     }
 
     template <class ForwardIterator, class Compare>
@@ -956,7 +956,7 @@ namespace tinySTL {
     // 非稳定排序
     template <class RandomIterator>
     void sort(RandomIterator first, RandomIterator last) {
-        using value_type = iterator_traits<RandomIterator>::value_type;
+        using value_type = typename iterator_traits<RandomIterator>::value_type;
         sort(first, last, tinySTL::less<value_type>());
     }
 
@@ -997,7 +997,7 @@ namespace tinySTL {
     // 如果 a 小于 b，则返回 true。
     template <class RandomIterator>
     void partial_sort(RandomIterator first, RandomIterator middle, RandomIterator last) {
-        using value_type = iterator_traits<RandomIterator>::value_type;
+        using value_type = typename iterator_traits<RandomIterator>::value_type;
         partial_sort(first, middle, last, tinySTL::less<value_type>());
     }
 
@@ -1026,7 +1026,7 @@ namespace tinySTL {
     template <class InputIterator, class RandomIterator>
     RandomIterator partial_sort_copy(InputIterator first, InputIterator last,
                                      RandomIterator d_first, RandomIterator d_last) {
-        using value_type = iterator_traits<RandomIterator>::value_type;
+        using value_type = typename iterator_traits<RandomIterator>::value_type;
         return partial_sort_copy(first, last, d_first, d_last, tinySTL::less<value_type>());
     }
 
@@ -1062,7 +1062,7 @@ namespace tinySTL {
     // 如果 a 小于 b，则返回 true。
     template <class RandomIterator>
     void stable_sort(RandomIterator first, RandomIterator last) {
-        using value_type = iterator_traits<RandomIterator>::value_type;
+        using value_type = typename iterator_traits<RandomIterator>::value_type;
         stable_sort(first, last, tinySTL::less<value_type>());
     }
 
@@ -1093,7 +1093,7 @@ namespace tinySTL {
     // 如果 a 小于 b，则返回 true。
     template <class RandomIterator>
     void nth_element(RandomIterator first, RandomIterator nth, RandomIterator last) {
-        using value_type = iterator_traits<RandomIterator>::value_type;
+        using value_type = typename iterator_traits<RandomIterator>::value_type;
         nth_element(first, nth, last, tinySTL::less<value_type>());
     }
 
@@ -1159,9 +1159,9 @@ namespace tinySTL {
         auto count = tinySTL::distance(first, last);
         while (count > 0) {
             auto half = count / 2;
-            auto mid = tinySTL::next(start, half);
+            auto mid = tinySTL::next(first, half);
             if (comp(*mid, value)) {
-                start = tinySTL::next(mid);
+                first = tinySTL::next(mid);
                 count -= half + 1;
             } else {
                 count = half;
@@ -1179,6 +1179,7 @@ namespace tinySTL {
     // 其中 comp 比较函数：
     // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
     // 如果 a 小于 b，则返回 true。
+    template <class ForwardIterator, class T>
     ForwardIterator upper_bound(ForwardIterator first, ForwardIterator last, const T& value) {
         auto count = tinySTL::distance(first, last);
         while (count > 0) {
@@ -1202,9 +1203,9 @@ namespace tinySTL {
         auto count = tinySTL::distance(first, last);
         while (count > 0) {
             auto half = count / 2;
-            auto mid = tinySTL::next(start, half);
+            auto mid = tinySTL::next(first, half);
             if (!comp(value, *mid)) {
-                start = tinySTL::next(mid);
+                first = tinySTL::next(mid);
                 count -= half + 1;
             } else {
                 count = half;
@@ -1224,7 +1225,7 @@ namespace tinySTL {
     // 如果 a 小于 b，则返回 true。
     template <class ForwardIterator, class T>
     bool binary_search(ForwardIterator first, ForwardIterator last, const T& value) {
-        auto result = lower_bound(first, last, value, comp);
+        auto result = lower_bound(first, last, value);
         if (result == last) {
             return false;
         }
@@ -1319,7 +1320,7 @@ namespace tinySTL {
     // 如果 a 小于 b，则返回 true。
     template <class BidirIterator>
     void inplace_merge(BidirIterator first, BidirIterator middle, BidirIterator last) {
-        using value_type = iterator_traits<BidirIterator>::value_type;
+        using value_type = typename iterator_traits<BidirIterator>::value_type;
         inplace_merge(first, middle, last, tinySTL::less<value_type>());
     }
 
@@ -1807,7 +1808,7 @@ namespace tinySTL {
     // 它的声明等价于 bool comp(const Type1 &a, const Type2 &b);
     // 如果 a 小于 b，则返回 true。
     template <class ForwardIterator1, class ForwardIterator2>
-    bool is_permutation(ForwardIterator1 first1, ForwardIterator1 last1, ForwardIterator2 first2) {
+    bool is_permutation(ForwardIterator1 first1, ForwardIterator1 last1, ForwardIterator2 first2, ForwardIterator2 last2) {
         if (tinySTL::distance(first1, last1) != tinySTL::distance(first2, last2)) {
             return false;
         }
@@ -1828,20 +1829,23 @@ namespace tinySTL {
     }
 
     template <class ForwardIterator1, class ForwardIterator2, class Compare>
-    bool is_permutation(ForwardIterator1 first1, ForwardIterator1 last1, ForwardIterator2 first2, Compare comp) {
+    bool is_permutation(ForwardIterator1 first1, ForwardIterator1 last1, ForwardIterator2 first2, ForwardIterator2 last2, Compare comp) {
         if (tinySTL::distance(first1, last1) != tinySTL::distance(first2, last2)) {
             return false;
         }
 
         for (auto it = first1; it != last1; ++it) {
             // 如果前面已经存在等于 *it 的元素，表示统计过个数了，则不需要统计了。
-            if (tinySTL::find(first1, it, [i, comp](auto x) { return comp(*it, x); }) != it) {
+            if (tinySTL::find(first1, it,
+                    [it, comp](typename iterator_traits<ForwardIterator1>::value_type x) { return comp(*it, x); }) != it) {
                 continue;
             }
 
             // 统计元素个数
-            if (tinySTL::count(it,     last1, [i, comp](auto x) { return comp(*it, x); }) !=
-                tinySTL::count(first2, last2, [i, comp](auto x) { return comp(*it, x); })) {
+            if (tinySTL::count(it,     last1,
+                    [it, comp](typename iterator_traits<ForwardIterator1>::value_type x) { return comp(*it, x); }) !=
+                tinySTL::count(first2, last2,
+                        [it, comp](typename iterator_traits<ForwardIterator2>::value_type x) { return comp(*it, x); })) {
                 return false;
             }
         }

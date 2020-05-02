@@ -8,6 +8,7 @@
 
 namespace tinySTL {
     // hashtable 无法处理下面所述类型以外的类型，需要用户提供随影类型的特化版本 hash。
+    // 各种字符串Hash函数比较：https://www.byvoid.com/zhs/blog/string-hash-compare
     template <class Key>
     struct hash : public unarg_function<Key, std::size_t> {};
 
@@ -122,8 +123,7 @@ namespace tinySTL {
         const size_t fnv_prime = 16777619u;
     #endif
         size_t result = fnv_offset;
-        for (size_t i = 0; i < count; ++i)
-        {
+        for (size_t i = 0; i < count; ++i) {
             result ^= (size_t)first[i];
             result *= fnv_prime;
         }
@@ -133,22 +133,21 @@ namespace tinySTL {
     template <>
     struct hash<float> {
         std::size_t operator()(const float& x) const {
-            // TODO 可以使用 reinterpret_cast 代替 类型转换吗？
-            return x == 0.0f ? 0 : bitwise_hash((const unsigned char*)&x, sizeof(float));
+            return x == 0.0f ? 0 : bitwise_hash(reinterpret_cast<const unsigned char*>(&x), sizeof(float));
         }
     };
 
     template <>
     struct hash<double > {
         std::size_t operator()(const double& x) const {
-            return x == 0.0f ? 0 : bitwise_hash((const unsigned char*)&x, sizeof(double));
+            return x == 0.0f ? 0 : bitwise_hash(reinterpret_cast<const unsigned char*>(&x), sizeof(double));
         }
     };
 
     template <>
     struct hash<long double> {
         std::size_t operator()(const long double& x ) const {
-            return x == 0.0f ? 0 : bitwise_hash((const unsigned char*)&x, sizeof(long double));
+            return x == 0.0f ? 0 : bitwise_hash(reinterpret_cast<const unsigned char*>(&x), sizeof(long double));
         }
     };
 } // namespace tinySTL
