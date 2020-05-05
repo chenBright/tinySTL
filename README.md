@@ -177,6 +177,7 @@ STL 的子集。
 - memory（简单实现）
     - shared_ptr
     - weak_ptr
+    - enable_shared_from_this
     - unique_ptr
     - addressof
     - uninitialized_copy
