@@ -484,6 +484,54 @@ namespace tinySTL {
         left.swap(right);
     }
 
+    // 参考
+    // https://blog.csdn.net/weixin_41442027/article/details/105609088
+    // https://my.oschina.net/u/4396841/blog/3429379/print
+    // https://www.cnblogs.com/codingmengmeng/p/9123874.html
+    // https://www.cnblogs.com/zhanggaofeng/p/10294507.html
+    // http://hahaya.github.io/use-enable-shared-from-this
+    template <class T>
+    class enable_shared_from_this {
+    public:
+        template <class T1, class T2>
+        friend void do_enable(shared_ptr<T1> ptr, enable_shared_from_this<T2>* esftPtr);
+    private:
+        // 在第一次创建 shared_ptr 时，weakPtr_ 才指向某个资源。
+        mutable weak_ptr<T> weakPtr_;
+
+    public:
+        enable_shared_from_this() noexcept = default;
+
+        enable_shared_from_this(const enable_shared_from_this&) noexcept = default;
+
+        ~enable_shared_from_this() = default;
+
+        enable_shared_from_this& operator=(const enable_shared_from_this&) noexcept = default;
+
+        shared_ptr<T> shared_fromt_this() {
+            return shared_ptr<T>(weakPtr_);
+        }
+
+        shared_ptr<T const> shared_fromt_this() const {
+            return shared_ptr<const T>(weakPtr_);
+        }
+    };
+
+    // 使用了 SFINAE 技术，即匹配失败不是错误，在编译时期来确定某个 type 是否具有我们需要的性质。
+    // 如果 esftPtr 的类型是一个继承自 enable_shared_from_this 的类型，则会匹配第一个版本的函数。
+    // 否则，匹配第二个版本的函数，什么都不用做。
+    template <class T1, class T2>
+    void do_enable(shared_ptr<T1> sPtr, enable_shared_from_this<T2>* esftPtr) {
+        // 如果 weakPtr_ 为指向资源，即第一次创建 shared_ptr，则令其指向 sPtr 的资源。
+        if (esftPtr->weakPtr_.expired()) {
+            esftPtr->weakPtr_ = sPtr;
+        }
+    }
+
+    template <class T1, class T2>
+    void do_enable(...) {}
+
+
     template <class T, class Deleter = PtrDeleter<T>>
     class unique_ptr {
     public:
